@@ -118,7 +118,7 @@ for (id in 1:max(dfc$ID2.y, na.rm = TRUE)) {
 
 # ========== TODO: Update for new biomass ============
 
-## Dump messy file before cleaning
+## Dump messy file before cleaning (this does not have biomass values)
 date.today <- format(Sys.Date(), "%y%m%d")
 filePath.all <- paste(
   "working/HY2014_selectedDataAllColumns_",
@@ -127,7 +127,7 @@ filePath.all <- paste(
   sep = "")
 write.csv(dfg, filePath.all, na = "")
 
-# Get biomass values
+# Calculate biomass if value does not exist then keep only rows with biomass
 dfcBiomass <- dfc %>% 
   mutate(biomass = case_when(
     is.na(TotalBiomass.g.) ~ Tota.Biomass.g..bag - TareBag.g..1,
@@ -154,7 +154,7 @@ df.clean <- df.clean %>%
   select(-NOTES, -Notes2, -Notes3) %>% 
   rename("Column" = Col,
          "SampleID" = "BarcodeFinal",
-         "GrainWeightWet" = TotalGrain.g.,
+         "GrainWeight" = TotalGrain.g.,
          "Protein" = protein,
          "Moisture" = moisture,
          "Starch" = starch,
@@ -164,11 +164,11 @@ df.clean <- df.clean %>%
          "Logitude" = coords.x1,
          "Latitude" = coords.x2,
          "Notes" = NotesKeep,
-         "BiomassWet" = biomass) %>% 
+         "ResidueWeight" = biomass) %>% 
   mutate(Year = 2014, FieldID = "CookEast")
 
 filePath.clean <- paste(
-  "working/HY2014_selectedDataClean_",
+  "working/HY2014_cleanedData_",
   date.today,
   ".csv",
   sep = "")
