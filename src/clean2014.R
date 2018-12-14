@@ -14,19 +14,22 @@ georef <- geojson_read("input/CookEast_GeoreferencePoints_171127.json",
 # Merge the data based on col and row2 because John Morse said he focused on
 # row and columns, not ID2 values (this is important because ID2 values are not
 # consistent with row/column values)
-df <- merge(hy2014, georef,
-            by.x = c("Col", "Row2"),
-            by.y = c("Column", "Row2"),
-            all.x = TRUE)
+#df <- merge(hy2014, georef,
+#            by.x = c("Col", "Row2"),
+#            by.y = c("Column", "Row2"),
+#            all.x = TRUE)
+df <- hy2014 %>% 
+  rename("Column" = Col, "ID2Bad" = "ID2") %>% 
+  join(as.data.frame(georef), by = c("Column", "Row2"))
 
 # Remove missing data
-dfc <- df[!is.na(df$ID2.y),]
+dfc <- df[!is.na(df$ID2),]
 
 # Create dataframe with "good" values
 dfg <- subset(dfc, FALSE)
 
-for (id in 1:max(dfc$ID2.y, na.rm = TRUE)) {
-  reps <- dfc[dfc$ID2.y == id,]
+for (id in 1:max(dfc$ID2, na.rm = TRUE)) {
+  reps <- dfc[dfc$ID2 == id,]
   
   # Keep if is only value
   if (nrow(reps) == 1) {
@@ -133,16 +136,16 @@ dfcBiomass <- dfc %>%
     is.na(TotalBiomass.g.) ~ Tota.Biomass.g..bag - TareBag.g..1,
     TRUE ~ TotalBiomass.g.)) %>% 
   filter(!is.na(biomass)) %>% 
-  select(biomass, ID2.y)
+  select(biomass, ID2)
 
 # Merge biomass with main df
-dfdBiomass <- left_join(dfg, dfcBiomass, by = c("ID2.y"))
+dfdBiomass <- left_join(dfg, dfcBiomass, by = c("ID2"))
 
 ## Clean data
 df.clean <- dfdBiomass %>% 
-  select("Col", "Row2", "BarcodeFinal", "Crop", "TotalGrain.g.",
+  select("Column", "Row2", "BarcodeFinal", "Crop", "TotalGrain.g.",
          "protein", "moisture", "starch", "gluten", "testWeight",
-         "NOTES", "Notes2", "Notes3", "ID2.y", "coords.x1", "coords.x2",
+         "NOTES", "Notes2", "Notes3", "ID2", "coords.x1", "coords.x2",
          "biomass")
 
 df.clean <- within(df.clean, NotesKeep <- paste(NOTES, Notes2, Notes3,
@@ -152,15 +155,14 @@ df.clean <- df.clean %>%
   mutate(NotesKeep = paste(NOTES, Notes2, Notes3,
                            sep = " | ")) %>% 
   select(-NOTES, -Notes2, -Notes3) %>% 
-  rename("Column" = Col,
-         "SampleID" = "BarcodeFinal",
+  rename("SampleID" = "BarcodeFinal",
          "GrainWeight" = TotalGrain.g.,
          "Protein" = protein,
          "Moisture" = moisture,
          "Starch" = starch,
          "WGlutDM" = "gluten",
          "TestWeight" = testWeight,
-         "ID2" = ID2.y,
+         "ID2" = ID2,
          "Logitude" = coords.x1,
          "Latitude" = coords.x2,
          "Notes" = NotesKeep,
