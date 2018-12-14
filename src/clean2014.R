@@ -5,7 +5,7 @@
 # ---- Setup ----
 library(rgdal)
 library(geojsonio)
-library(plyr)
+library(tidyverse)
 
 hy2014 <- read.csv("input/HY2014GB_aggregate_all_data_171122.csv")
 hy2014$ShoudKeep <- NULL
@@ -119,34 +119,57 @@ for (id in 1:max(dfc$ID2.y, na.rm = TRUE)) {
 # ========== TODO: Update for new biomass ============
 
 ## Dump messy file before cleaning
-#date.today <- format(Sys.Date(), "%y%m%d")
-#filePath.all <- paste(
-#  "Output/selectedDataAllColumns_",
-#  date.today,
-#  ".csv",
-#  sep = "")
-#write.csv(dfg, filePath.all)
-#
+date.today <- format(Sys.Date(), "%y%m%d")
+filePath.all <- paste(
+  "working/HY2014_selectedDataAllColumns_",
+  date.today,
+  ".csv",
+  sep = "")
+write.csv(dfg, filePath.all, na = "")
+
+# Get biomass values
+dfcBiomass <- dfc %>% 
+  mutate(biomass = case_when(
+    is.na(TotalBiomass.g.) ~ Tota.Biomass.g..bag - TareBag.g..1,
+    TRUE ~ TotalBiomass.g.)) %>% 
+  filter(!is.na(biomass)) %>% 
+  select(biomass, ID2.y)
+
+# Merge biomass with main df
+dfdBiomass <- left_join(dfg, dfcBiomass, by = c("ID2.y"))
+
 ## Clean data
-#col.keep <- c("Col", "Row2", "BarcodeFinal", "Crop", "TotalGrain.g.",
-#              "protein", "moisture", "starch", "gluten", "testWeight",
-#              "NOTES", "Notes2", "Notes3", "ID2.y", "coords.x1", "coords.x2")
-#dfg.slim <- dfg[, col.keep]
-#dfg.slim <- within(dfg.slim, NotesKeep <- paste(NOTES, Notes2, Notes3,
-#                                                sep = " | "))
-##col.keep$Notes <- paste(dfg.slim$NOTES, dfg.slim$Notes2, dfg.slim$Notes3,
-##                        sep = " | ")
-#dfg.slim$NOTES <- NULL
-#dfg.slim$Notes2 <- NULL
-#dfg.slim$Notes3 <- NULL
-#names(dfg.slim) <- c("Column", "Row2", "SampleID", "Crop", "GrainWeightWet",
-#                     "Protein", "Moisture", "Starch", "WGlutDM", "TestWeight", "ID2",
-#                     "Longitude", "Latitude", "Notes")
-#dfg.slim$FieldID <- "CookEast"
-#dfg.slim$Year <- 2014
-#filePath.slim <- paste(
-#  "Output/selectedDataSlimColumns_",
-#  date.today,
-#  ".csv",
-#  sep = "")
-#write.csv(dfg.slim, filePath.slim, row.names=FALSE)#
+df.clean <- dfdBiomass %>% 
+  select("Col", "Row2", "BarcodeFinal", "Crop", "TotalGrain.g.",
+         "protein", "moisture", "starch", "gluten", "testWeight",
+         "NOTES", "Notes2", "Notes3", "ID2.y", "coords.x1", "coords.x2",
+         "biomass")
+
+df.clean <- within(df.clean, NotesKeep <- paste(NOTES, Notes2, Notes3,
+                                                sep = " | "))
+
+df.clean <- df.clean %>% 
+  mutate(NotesKeep = paste(NOTES, Notes2, Notes3,
+                           sep = " | ")) %>% 
+  select(-NOTES, -Notes2, -Notes3) %>% 
+  rename("Column" = Col,
+         "SampleID" = "BarcodeFinal",
+         "GrainWeightWet" = TotalGrain.g.,
+         "Protein" = protein,
+         "Moisture" = moisture,
+         "Starch" = starch,
+         "WGlutDM" = "gluten",
+         "TestWeight" = testWeight,
+         "ID2" = ID2.y,
+         "Logitude" = coords.x1,
+         "Latitude" = coords.x2,
+         "Notes" = NotesKeep,
+         "BiomassWet" = biomass) %>% 
+  mutate(Year = 2014, FieldID = "CookEast")
+
+filePath.clean <- paste(
+  "working/HY2014_selectedDataClean_",
+  date.today,
+  ".csv",
+  sep = "")
+write.csv(df.clean, filePath.clean, row.names=FALSE, na = "")
