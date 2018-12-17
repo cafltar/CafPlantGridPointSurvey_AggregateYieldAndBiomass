@@ -24,3 +24,9 @@
 	* From: [G:\Team Drives\CafPlantGridPointSurvey\1999-2016\Working\Excel\Working]
 * [CookEast_GeoreferencePoints_171127.json](CookEast_GeoreferencePoints_171127.json)
 	* From: [C:\Dev\Projects\CookEastPlantHandHarvest\R\cleaningHY2014\Input]
+	
+## 12/17/2018
+
+* [StripbyStripAvg2.xlsx](StripbyStripAvg2.xlsx)
+	* From: G:\My Drive\Projects\CookEastModelingRelativeYields\Received\FromDaveHuggins
+	* Best known data from Kadar related to his Relative Yield project
