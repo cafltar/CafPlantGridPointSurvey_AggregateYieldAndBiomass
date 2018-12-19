@@ -26,7 +26,7 @@ compare.cols <- function(df.in, column1, column2) {
 # Load data
 legacy <- read_excel(
   "input/Cook Farm All years all points.xlsx", 
-  na = "-99999")
+  na = c("-99999", "-77777"))
 georef <- st_read("input/CookEast_GeoreferencePoints_171127.json")
 
 # Keep only values from grid point project
@@ -49,6 +49,9 @@ id.errors <- df %>%
   select(`Sample Location ID`, `ID2`)
 if(nrow(id.errors) > 0) { stop("Merge check failed") }
 
+# Remove ID2 values with NA (fields north of current CookEast used to be sampled)
+df <- df %>% filter(!is.na(ID2))
+
 # Compare yields with those that Kadar used for relative yield project (which is last known (to me) yield data that Dave looked at)
 check.yields(df, "99", 1999, "Yield _1999")
 check.yields(df, "00", 2000, "Yield _2000")
@@ -67,6 +70,46 @@ compare.cols(df, "Grain Carbon %", "Grain Carbon %__1")
 compare.cols(df, "Grain Sulfur %", "Grain Sulfur %__1")
 compare.cols(df, "Grain Nitrogen %", "Grain Nitrogen %__1")
 compare.cols(df, "Crop", "Crop__1")
+
+# Check that residue was calculated correctly (11 obs had error)
+residue.check <- df %>% 
+  select(Year,
+         ID2, 
+         `Residue plus Grain Wet Weight (grams)`,
+         `Residue sample Grain Wet Weight (grams)`,
+         `Total Residue Wet Weight (grams)`,
+         `Non-Residue Grain Wet Weight (grams)`) %>% 
+  mutate(ResidueWetWeightCalc = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>% 
+  filter(abs(ResidueWetWeightCalc - `Total Residue Wet Weight (grams)`) > 0.01)
+if(nrow(residue.check) > 0) { stop("Residue column is not trustworthy") }
+
+# Check that mass per area is greater in residue + grain than just grain samples (2 obs had error)
+mass.check <- df %>% 
+  select(Year,
+         ID2,
+         `Residue plus Grain Wet Weight (grams)`,
+         `Residue sample Grain Wet Weight (grams)`,
+         `Total Residue Wet Weight (grams)`,
+         `Non-Residue Grain Wet Weight (grams)`,
+         `Non-Residue Grain Sample Area (square meters)`,
+         `Residue Sample Area (square meters)`) %>% 
+  mutate(biomass.area = `Residue plus Grain Wet Weight (grams)` / `Residue Sample Area (square meters)`) %>% 
+  mutate(grain.area = `Non-Residue Grain Wet Weight (grams)` / `Non-Residue Grain Sample Area (square meters)`) %>% 
+  filter(!is.na(biomass.area) & !is.na(grain.area)) %>% 
+  filter(biomass.area < grain.area)
+if(nrow(mass.check) > 0) { stop("Some grain mass/area greater than biomass / area")}
+
+# No need to check yield, the calculation is in the excel sheet
+
+# Calculate residue values
+df <- df %>% 
+  mutate(ResidueWetMass = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>% 
+  mutate(ResidueMoistureProportion = (`Residue Sub-Sample Wet Weight (grams)` - `Residue Sub-Sample Dry Weight (grams)`) / `Residue Sub-Sample Wet Weight (grams)`) %>% 
+  mutate(ResidueDry = ResidueWetMass - (1 - ResidueMoistureProportion)) %>% 
+  mutate(ResidueDryPerArea = ResidueDry / `Residue Sample Area (square meters)`)
+
+df <- df %>% 
+  mutate(HarvestIndex = `total grain yield dry(grams/M2)` / (ResidueDryPerArea + `total grain yield dry(grams/M2)`))
 
 # TODO: Need to rename columns, finalize ones to include
 df.clean <- df %>% 
