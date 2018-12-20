@@ -81,27 +81,11 @@ residue.check <- df %>%
          `Non-Residue Grain Wet Weight (grams)`) %>% 
   mutate(ResidueWetWeightCalc = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>% 
   filter(abs(ResidueWetWeightCalc - `Total Residue Wet Weight (grams)`) > 0.01)
-if(nrow(residue.check) > 0) { stop("Residue column is not trustworthy") }
+if(nrow(residue.check) > 0) { stop("Residue column is not trustworthy; review dataframe 'residue.check'") }
 
-# Check that mass per area is greater in residue + grain than just grain samples (2 obs had error)
-mass.check <- df %>% 
-  select(Year,
-         ID2,
-         `Residue plus Grain Wet Weight (grams)`,
-         `Residue sample Grain Wet Weight (grams)`,
-         `Total Residue Wet Weight (grams)`,
-         `Non-Residue Grain Wet Weight (grams)`,
-         `Non-Residue Grain Sample Area (square meters)`,
-         `Residue Sample Area (square meters)`) %>% 
-  mutate(biomass.area = `Residue plus Grain Wet Weight (grams)` / `Residue Sample Area (square meters)`) %>% 
-  mutate(grain.area = `Non-Residue Grain Wet Weight (grams)` / `Non-Residue Grain Sample Area (square meters)`) %>% 
-  filter(!is.na(biomass.area) & !is.na(grain.area)) %>% 
-  filter(biomass.area < grain.area)
-if(nrow(mass.check) > 0) { stop("Some grain mass/area greater than biomass / area")}
+# No need to check yield, the calculation is in the excel sheet and passes muster
 
-# No need to check yield, the calculation is in the excel sheet
-
-# Calculate residue values
+# Calculate residue values, don't use supplied since it seems to have errors
 df <- df %>% 
   mutate(ResidueWetMass = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>% 
   mutate(ResidueMoistureProportion = (`Residue Sub-Sample Wet Weight (grams)` - `Residue Sub-Sample Dry Weight (grams)`) / `Residue Sub-Sample Wet Weight (grams)`) %>% 
@@ -111,10 +95,12 @@ df <- df %>%
 df <- df %>% 
   mutate(HarvestIndex = `total grain yield dry(grams/M2)` / (ResidueDryPerArea + `total grain yield dry(grams/M2)`))
 
+# TODO: Merge comments
+
 # TODO: Need to rename columns, finalize ones to include
 df.clean <- df %>% 
   select(Year, `Grain Carbon %`, `Grain Sulfur %`, `Grain Nitrogen %`,
-         `Total Residue Wet Weight (grams)`, 
+         ResidueDryPerArea, 
          `Residue Sub-Sample Wet Weight (grams)`,
          `Residue Sub-Sample Dry Weight (grams)`,
          `Residue Nitrogen %`, `Residue Sulfur %`, `Residue Carbon %`,
