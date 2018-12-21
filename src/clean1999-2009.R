@@ -86,31 +86,41 @@ if(nrow(residue.check) > 0) { stop("Residue column is not trustworthy; review da
 # No need to check yield, the calculation is in the excel sheet and passes muster
 
 # Calculate residue values, don't use supplied since it seems to have errors
+# Also calc HI for review
 df <- df %>% 
   mutate(ResidueWetMass = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>% 
   mutate(ResidueMoistureProportion = (`Residue Sub-Sample Wet Weight (grams)` - `Residue Sub-Sample Dry Weight (grams)`) / `Residue Sub-Sample Wet Weight (grams)`) %>% 
   mutate(ResidueDry = ResidueWetMass - (1 - ResidueMoistureProportion)) %>% 
-  mutate(ResidueDryPerArea = ResidueDry / `Residue Sample Area (square meters)`)
-
-df <- df %>% 
-  mutate(HarvestIndex = `total grain yield dry(grams/M2)` / (ResidueDryPerArea + `total grain yield dry(grams/M2)`))
-
-# TODO: Merge comments
+  mutate(ResidueDryPerArea = ResidueDry / `Residue Sample Area (square meters)`) %>% 
+  mutate(HarvestIndex = `total grain yield dry(grams/M2)` / (ResidueDryPerArea + `total grain yield dry(grams/M2)`)) 
 
 # TODO: Need to rename columns, finalize ones to include
 df.clean <- df %>% 
-  select(Year, `Grain Carbon %`, `Grain Sulfur %`, `Grain Nitrogen %`,
-         ResidueDryPerArea, 
-         `Residue Sub-Sample Wet Weight (grams)`,
-         `Residue Sub-Sample Dry Weight (grams)`,
-         `Residue Nitrogen %`, `Residue Sulfur %`, `Residue Carbon %`,
-         `Grain Harvest Comments`, `Residue Sample Comments`,
+  mutate(Comments = coalesce(`Grain Harvest Comments`, `Residue Sample Comments`)) %>% 
+  select(Year, 
+         Crop, X, Y, ID2,
          `total grain yield dry(grams/M2)`,
-         X, Y, ID2, Crop) %>% 
+         `Grain Carbon %`, `Grain Nitrogen %`, `Grain Sulfur %`,
+         ResidueDryPerArea, 
+         `Residue Carbon %`,`Residue Nitrogen %`, `Residue Sulfur %`, 
+         Comments) %>% 
+  rename(HarvestYear = Year,
+         Crop = Crop,
+         Latitude = X,
+         Longitude = Y,
+         ID2 = ID2,
+         GrainYieldDry = `total grain yield dry(grams/M2)`,
+         GrainCarbon = `Grain Carbon %`,
+         GrainNitrogen = `Grain Nitrogen %`,
+         GrainSulfur = `Grain Sulfur %`,
+         ResidueMassDry = ResidueDryPerArea,
+         ResidueCarbon = `Residue Carbon %`,
+         ResidueNitrogen = `Residue Nitrogen %`,
+         ResidueSulfur = `Residue Sulfur %`,
+         Comments = Comments) %>% 
   filter(!is.na(ID2))
 
-
-date.today <- format(Sys.Date(), "%y%m%d")
+date.today <- format(Sys.Date(), "%Y%m%d")
 filePath.all <- paste(
   "working/HY1999-HY2009_AllColumns_",
   date.today,
