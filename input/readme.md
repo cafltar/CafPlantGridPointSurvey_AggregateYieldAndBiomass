@@ -30,3 +30,12 @@
 * [StripbyStripAvg2.xlsx](StripbyStripAvg2.xlsx)
 	* From: G:\My Drive\Projects\CookEastModelingRelativeYields\Received\FromDaveHuggins
 	* Best known data from Kadar related to his Relative Yield project
+	
+## 12/21/2018
+
+* [Yields and Residue 2010 Final.xls](Yields%20and%20Residue%202010%20Final.xls)
+	* From: G:\Team Drives\CafPlantGridPointSurvey\1999-2016\Received\FromBackups\2010
+	* Has residue wet/dry values not included in [Grid Points Yields and Residue 2010.xls]
+* [CAF_HY2010_Grain_NIR_5.19.16.xlsx](CAF_HY2010_Grain_NIR_5.19.16.xlsx)
+	* From: [G:\Team Drives\CafPlantGridPointSurvey\1999-2016\Received\FromBackups\2010]
+	* Has some grain NIR data, but may be sampled separately from grid points (it's listed udner a different project name, "VRF")
