@@ -4,23 +4,10 @@ library(sf)
 
 source("src/functions.R")
 
-df2011 <- read_excel("input/HarvestCompilation2010-2016_171012.xlsx", 
-                     "2011") %>% 
-  filter(!is.na(UID) | (!is.na(Row) & !is.na(Column))) %>% 
-  arrange(UID)
-  
-
-df2011.check <- read_excel("input/Yields and Residue HY2011 112311.xls", 
+df2011 <- read_excel("input/Yields and Residue HY2011 112311.xls", 
                            "Grid Point Yields Only") %>% 
   filter(!is.na(UID) | (!is.na(Row) & !is.na(Column))) %>% 
   arrange(UID)
-
-# Values in df2010 were copy pasted from df2010.check, but make sure at least two columns match
-check.grain.wet <- df2011$`Total Grain Wet (g)` == df2011.check$`Total Grain Wet (g)`
-if(length(check.grain.wet) < length(df2011$`Total Grain Wet (g)`)) {stop("Error")}
-check.biomass.wet <- df2011$`Total Residue and Grain Wet (g)` == df2011.check$`Total Residue and Grain Wet (g)`
-if(length(check.biomass.wet) < length(df2011$`Total Residue and Grain Wet (g)`)) {stop("Error")}
-
 
 # Merge the georef data based on col and row2
 df <- append_georef_to_df(df2011, "Row", "Column")
@@ -34,8 +21,8 @@ if(nrow(df.id2.check) > 0) { stop("Error in ID2, Row2, Col") }
 
 # TODO: Incomplete, need dry weights, need to calc dry yield, need dry residue, need C, N values... ahhhh!!!
 df.calcs <- df %>% 
-  mutate(Comments = case_when(is.na(as.numeric(df$`Total Residue and Grain Wet (g)`)) ~ paste("Residue note: ", `Total Residue and Grain Wet (g)`, sep = ""))) %>% 
-  mutate(Comments = case_when(is.na(as.numeric(df$`Total Grain Wet (g)`)) ~ paste(Comments, " | Grain note: ", `Total Grain Wet (g)`, sep = ""))) %>% 
+  mutate(Comments = case_when(is.na(as.numeric(df$`Total Residue and Grain Wet (g)`)) ~ paste("Residue note: ", df$`Total Residue and Grain Wet (g)`, sep = ""), TRUE ~ "")) %>% 
+  mutate(Comments = case_when(is.na(as.numeric(df$`Total Grain Wet (g)`)) ~ paste(Comments, " | Grain note: ", df$`Total Grain Wet (g)`, sep = ""), TRUE ~ Comments)) %>% 
   mutate(BiomassWet = as.numeric(`Total Residue and Grain Wet (g)`)) %>% 
   mutate(GrainMassWet = as.numeric(`Total Grain Wet (g)`)) %>% 
   mutate(ResidueMassWetPerArea = BiomassWet - GrainMassWet / `Area (m2)`) %>% 
