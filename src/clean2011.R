@@ -7,6 +7,7 @@ source("src/functions.R")
 df2011 <- read_excel("input/Yields and Residue HY2011 112311.xls", 
                            "Grid Point Yields Only") %>% 
   filter(!is.na(UID) | (!is.na(Row) & !is.na(Column))) %>% 
+  mutate(SampleID = toupper(Barcode)) %>% 
   arrange(UID)
 
 # Merge the georef data based on col and row2
@@ -29,11 +30,21 @@ df.calcs <- df %>%
   mutate(GrainYieldWetPerArea = GrainMassWet / `Area (m2)`)
 
 # TODO: Figure out if "wet" here means dry, or if there are missing data somewhere...
-#df.clean <- df %>% 
-#  select(Year,
-#         `Current Crop`,
-#         Barcode,
-#         X,
-#         Y,
-#         ID2,
-#         )
+df.clean <- df.calcs %>% 
+  rename(HarvestYear = Year,
+         Crop = `Current Crop`,
+         Longitude = X,
+         Latitude = Y,
+         GrainYieldDryPerArea = GrainYieldWetPerArea,
+         ResidueMassDryPerArea = ResidueMassWetPerArea) %>% 
+  select(HarvestYear,
+         Crop,
+         SampleID,
+         Longitude,
+         Latitude,
+         ID2,
+         GrainYieldDryPerArea,
+         ResidueMassDryPerArea,
+         Comments)
+
+write_csv_gridPointSurvey(df.clean, 2011)
