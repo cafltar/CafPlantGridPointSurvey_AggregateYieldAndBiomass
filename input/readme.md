@@ -39,3 +39,21 @@
 * [CAF_HY2010_Grain_NIR_5.19.16.xlsx](CAF_HY2010_Grain_NIR_5.19.16.xlsx)
 	* From: [G:\Team Drives\CafPlantGridPointSurvey\1999-2016\Received\FromBackups\2010]
 	* Has some grain NIR data, but may be sampled separately from grid points (it's listed udner a different project name, "VRF")
+	
+## 01/31/209
+
+* [Cook FarmHY13_GP_GB_Res_STJohnHY13WW_Res.xlsx](Cook FarmHY13_GP_GB_Res_STJohnHY13WW_Res.xlsx)
+	* From: G:\My Drive\Projects\CookEastPlantHandHarvest\1999-2016\Received\FromBackups\2013\Cook FarmHY13_GP_GB_Res_STJohnHY13WW_Res.xlsx
+	* Has C and N values for residue
+* [CF13GPGB Part2.xlsx](CF13GPGB Part2.xlsx)
+	* From: G:\My Drive\Projects\CookEastPlantHandHarvest\1999-2016\Received\FromBackups\2013\CF13GPGB Part2.xlsx
+	* Has C and N values for grain
+* [CF13GPGB.xlsx](CF13GPGB.xlsx)
+	* From: G:\My Drive\Projects\CookEastPlantHandHarvest\1999-2016\Received\FromBackups\2013\CF13GPGB.xlsx
+	* Has C and N value for grain
+* [Cook Farm HY2013 GP SW_SB_GB Weights (2).xlsx](Cook%20Farm%20HY2013%20GP%20SW_SB_GB Weights%20(2).xlsx)
+	* From: G:\My Drive\Projects\CookEastPlantHandHarvest\1999-2016\Received\FromBackups\2013\Cook Farm HY2013 GP SW_SB_GB Weights (2).xlsx
+	* Has grain and residue C and N values
+* [Cook Farm HY2013 GP WW Grain (2).ods](Cook Farm HY2013 GP WW Grain (2).ods)
+	* From: G:\My Drive\Projects\CookEastPlantHandHarvest\1999-2016\Received\FromBackups\2013\Cook Farm HY2013 GP WW Grain (2).ods
+	* Has C and N values for residue not present in similarily named file
