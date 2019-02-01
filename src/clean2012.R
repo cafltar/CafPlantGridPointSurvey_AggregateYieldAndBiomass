@@ -8,6 +8,7 @@ df2012 <- read_excel("input/Yields and Residue 2012 011513.xlsx",
                            "Grid Points",
                            skip = 1) %>% 
   filter(!is.na(ID2) | (!is.na(ROW2) & !is.na(COLUMN))) %>% 
+  mutate(SampleID = toupper(Barcode)) %>% 
   arrange(ID2)
 
 # Merge the georef data based on col and row2
@@ -26,25 +27,24 @@ df.calcs <- df %>%
   mutate(HarvestYear = 2012)
 
 df.clean <- df.calcs %>% 
-  select(HarvestYear,
-         Crop,
-         Barcode,
-         X,
-         Y,
-         ID2.x,
-         GrainYieldDryPerArea,
-         Protein,
-         Moisture,
-         Starch,
-         Gluten,
-         Comments) %>% 
-  rename(SampleID = Barcode,
-         Longitude = X,
+  rename(Longitude = X,
          Latitude = Y,
          ID2 = ID2.x,
          GrainProtein = Protein,
          GrainMoisture = Moisture,
          GrainStarch = Starch,
-         GrainGluten = Gluten)
-
-# TODO: Output
+         GrainWGlutDM = Gluten) %>% 
+  select(HarvestYear,
+         Crop,
+         SampleID,
+         Longitude,
+         Latitude,
+         ID2,
+         GrainYieldDryPerArea,
+         GrainProtein,
+         GrainMoisture,
+         GrainStarch,
+         GrainWGlutDM,
+         Comments)
+  
+write_csv_gridPointSurvey(df.clean, 2012)
