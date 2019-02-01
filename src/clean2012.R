@@ -19,13 +19,13 @@ df.id2.check <- df %>%
   filter(ID2.x != ID2.y)
 if(nrow(df.id2.check) > 0) { stop("Error in ID2, Row2, Col") }
 
-# TODO: Calculate residue dry and per area
 df.calcs <- df %>% 
   mutate(GrainYieldDryPerArea = `Grain Weight Dry (g)` / `Area (m2)`) %>% 
   mutate(Comments = case_when((!is.na(df$`Test Weight`) & is.na(as.numeric(df$`Test Weight`))) ~ paste("TestWeight note: ", df$`Test Weight`, sep = ""), TRUE ~ "")) %>% 
   mutate(Comments = case_when(!is.na(df$..24) ~ paste(Comments, " | Sample note: ", df$..24, sep = ""), TRUE ~ Comments)) %>% 
   mutate(HarvestYear = 2012)
 
+# Wet masses are considered dry, per Dave Huggin's decision
 df.clean <- df.calcs %>% 
   rename(Longitude = X,
          Latitude = Y,
