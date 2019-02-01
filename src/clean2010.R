@@ -4,12 +4,14 @@ library(sf)
 
 source("src/functions.R")
 
-df2010 <- read_excel("input/Grid Points Yields and Residue 2010.xls")
+df2010 <- read_excel("input/Grid Points Yields and Residue 2010.xls") %>% 
+  mutate(`Bag Barcode` = toupper(`Bag Barcode`))
 df.res <- read_excel("input/Yields and Residue 2010 Final.xls", 
                      "All Data", 
                      skip = 1, 
                      n_max = 1157) %>% 
-  filter(Project == "GP")
+  filter(Project == "GP") %>% 
+  mutate(`Bag Barcode` = toupper(`Bag Barcode`))
 
 # Check that grain mass match
 df.grain.check <- df2010 %>% 
