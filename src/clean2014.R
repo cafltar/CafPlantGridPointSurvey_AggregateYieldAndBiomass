@@ -3,14 +3,20 @@
 # Purpose: Select "best" data from various conflicting values from HY2014 data.  Derived from [GPHY2017selectBestData.R](https://github.com/cafltar/CookEastPlantHandHarvest_R/blob/master/cleaningHY2014/GPHY2017selectBestData.R) (note, filename is misnomer, should be HY2014)
 
 # ---- Setup ----
-library(rgdal)
-library(geojsonio)
+#library(rgdal)
+#library(geojsonio)
 library(tidyverse)
 
-hy2014 <- read.csv("input/HY2014GB_aggregate_all_data_171122.csv")
-hy2014$ShoudKeep <- NULL
-georef <- geojson_read("input/CookEast_GeoreferencePoints_171127.json",
-                       what = "sp")
+source("src/functions.R")
+
+df2014 <- read.csv("input/HY2014GB_aggregate_all_data_171122.csv") %>% 
+  mutate(ShouldKeep = NULL)
+
+#hy2014$ShoudKeep <- NULL
+#georef <- geojson_read("input/CookEast_GeoreferencePoints_171127.json",
+#                       what = "sp")
+df <- append_georef_to_df(df2014, "Row2", "Col")
+
 # Merge the data based on col and row2 because John Morse said he focused on
 # row and columns, not ID2 values (this is important because ID2 values are not
 # consistent with row/column values)
@@ -18,9 +24,14 @@ georef <- geojson_read("input/CookEast_GeoreferencePoints_171127.json",
 #            by.x = c("Col", "Row2"),
 #            by.y = c("Column", "Row2"),
 #            all.x = TRUE)
-df <- hy2014 %>% 
-  rename("Column" = Col, "ID2Bad" = "ID2") %>% 
-  join(as.data.frame(georef), by = c("Column", "Row2"))
+#df <- hy2014 %>% 
+#  rename("Column" = Col, "ID2Bad" = "ID2") %>% 
+#  join(as.data.frame(georef), by = c("Column", "Row2"))
+
+# Check that ID2 values are ok after merging with row2 and col (it's not)
+df.id2.check <- df %>% 
+  filter(df$ID2.x != df$ID2.y)
+if(nrow(df.id2.check) > 0) { stop("Error in ID2, Row2, Col") }
 
 # Remove missing data
 dfc <- df[!is.na(df$ID2),]
