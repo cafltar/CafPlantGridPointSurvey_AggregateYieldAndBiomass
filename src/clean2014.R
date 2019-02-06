@@ -3,8 +3,6 @@
 # Purpose: Select "best" data from various conflicting values from HY2014 data.  Derived from [GPHY2017selectBestData.R](https://github.com/cafltar/CookEastPlantHandHarvest_R/blob/master/cleaningHY2014/GPHY2017selectBestData.R) (note, filename is misnomer, should be HY2014)
 
 # ---- Setup ----
-#library(rgdal)
-#library(geojsonio)
 library(tidyverse)
 
 source("src/functions.R")
@@ -12,26 +10,8 @@ source("src/functions.R")
 df2014 <- read.csv("input/HY2014GB_aggregate_all_data_171122.csv") %>% 
   mutate(ShouldKeep = NULL)
 
-#hy2014$ShoudKeep <- NULL
-#georef <- geojson_read("input/CookEast_GeoreferencePoints_171127.json",
-#                       what = "sp")
-df <- append_georef_to_df(df2014, "Row2", "Col")
-
-# Merge the data based on col and row2 because John Morse said he focused on
-# row and columns, not ID2 values (this is important because ID2 values are not
-# consistent with row/column values)
-#df <- merge(hy2014, georef,
-#            by.x = c("Col", "Row2"),
-#            by.y = c("Column", "Row2"),
-#            all.x = TRUE)
-#df <- hy2014 %>% 
-#  rename("Column" = Col, "ID2Bad" = "ID2") %>% 
-#  join(as.data.frame(georef), by = c("Column", "Row2"))
-
-# Check that ID2 values are ok after merging with row2 and col (it's not)
-df.id2.check <- df %>% 
-  filter(df$ID2.x != df$ID2.y)
-if(nrow(df.id2.check) > 0) { stop("Error in ID2, Row2, Col") }
+df <- append_georef_to_df(df2014, "Row2", "Col") %>% 
+  rename(ID2 = ID2.y)
 
 # Remove missing data
 dfc <- df[!is.na(df$ID2),]
@@ -122,29 +102,9 @@ for (id in 1:max(dfc$ID2, na.rm = TRUE)) {
   }
 }
 
-# Test output to compare selected values with manual selection ----
-#filePath <- paste(
-#                  "Output/selectValueTest_",
-#                  format(Sys.Date(), "%y%m%d"),
-#                  ".csv",
-#                  sep = "")
-#write.csv(dfg, filePath)
-
-# ========== TODO: Update for new biomass ============
-
-## Dump messy file before cleaning (this does not have biomass values)
-date.today <- format(Sys.Date(), "%y%m%d")
-filePath.all <- paste(
-  "working/HY2014_selectedDataAllColumns_",
-  date.today,
-  ".csv",
-  sep = "")
-write.csv(dfg, filePath.all, na = "")
-
 # Calculate biomass if value does not exist then keep only rows with biomass
 dfcBiomass <- dfc %>% 
-  mutate(biomass = case_when(
-    is.na(TotalBiomass.g.) ~ Tota.Biomass.g..bag - TareBag.g..1,
+  mutate(biomass = case_when(is.na(TotalBiomass.g.) ~ Tota.Biomass.g..bag - TareBag.g..1,
     TRUE ~ TotalBiomass.g.)) %>% 
   filter(!is.na(biomass)) %>% 
   select(biomass, ID2)
@@ -152,37 +112,37 @@ dfcBiomass <- dfc %>%
 # Merge biomass with main df
 dfdBiomass <- left_join(dfg, dfcBiomass, by = c("ID2"))
 
+# Calc per area
+# NOTE: The actual area harvested was not recorded for 2014. It is likely that confusion over SOP caused area to be 1 m x 2 m or 2 m2 (harvesting within area inside pvc pipes instead of four rows of 2 m lenght - as was previous methods).  After mapping yields and comparing between years, Dave Huggins decided that 2014 was likely harvested at 2 m2. See notes in "CookEastPlantHandHarvest" OneNote (Bryan's WSU account)
+df.calc <- dfdBiomass %>% 
+  mutate(GrainYieldDryPerArea = TotalGrain.g. / 2,
+         ResidueMassDryPerArea = (biomass - TotalGrain.g.) / 2,
+         Comments = paste(NOTES, Notes2, Notes3,
+                          sep = " | "),
+         HarvestYear = 2014)
+  
 ## Clean data
-df.clean <- dfdBiomass %>% 
-  select("Column", "Row2", "BarcodeFinal", "Crop", "TotalGrain.g.",
-         "protein", "moisture", "starch", "gluten", "testWeight",
-         "NOTES", "Notes2", "Notes3", "ID2", "coords.x1", "coords.x2",
-         "biomass")
+df.clean <- df.calc %>% 
+  rename("SampleID" = BarcodeFinal,
+         "GrainMassDryPerArea" = TotalGrain.g.,
+         "GrainProtein" = protein,
+         "GrainMoisture" = moisture,
+         "GrainStarch" = starch,
+         "GrainWGlutDM" = gluten,
+         "Longitude" = X,
+         "Latitude" = Y) %>% 
+  select(HarvestYear,
+         Crop,
+         SampleID,
+         Longitude,
+         Latitude,
+         ID2,
+         GrainYieldDryPerArea,
+         GrainProtein,
+         GrainMoisture,
+         GrainStarch,
+         GrainWGlutDM,
+         ResidueMassDryPerArea,
+         Comments)
 
-df.clean <- within(df.clean, NotesKeep <- paste(NOTES, Notes2, Notes3,
-                                                sep = " | "))
-
-df.clean <- df.clean %>% 
-  mutate(NotesKeep = paste(NOTES, Notes2, Notes3,
-                           sep = " | ")) %>% 
-  select(-NOTES, -Notes2, -Notes3) %>% 
-  rename("SampleID" = "BarcodeFinal",
-         "GrainWeight" = TotalGrain.g.,
-         "Protein" = protein,
-         "Moisture" = moisture,
-         "Starch" = starch,
-         "WGlutDM" = "gluten",
-         "TestWeight" = testWeight,
-         "ID2" = ID2,
-         "Logitude" = coords.x1,
-         "Latitude" = coords.x2,
-         "Notes" = NotesKeep,
-         "ResidueWeight" = biomass) %>% 
-  mutate(Year = 2014, FieldID = "CookEast")
-
-filePath.clean <- paste(
-  "working/HY2014_cleanedData_",
-  date.today,
-  ".csv",
-  sep = "")
-write.csv(df.clean, filePath.clean, row.names=FALSE, na = "")
+write_csv_gridPointSurvey(df.clean, 2014)
