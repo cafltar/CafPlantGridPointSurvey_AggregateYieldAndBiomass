@@ -1,49 +1,44 @@
 ---
 title: "Explore 1999-2016 Harvest Data"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
+    fig_height: 8
+    fig_width: 11
 ---
 
 ```{r include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
 ```{r setup}
-setwd("C:/Dev/Projects/CafPlantGridPointSurvey/R/AggregateYieldAndBiomass_1999-2016")
+#setwd("C:/Dev/Projects/CafPlantGridPointSurvey/R/AggregateYieldAndBiomass_1999-2016")
 library(tidyverse)
 library(plotly)
 
 source("src/functions.R")
 source("src/cleaningFunctions.R")
+```
 
+```{r}
 df <- get_clean1999_2016()
 ```
 
 
-
-
 # Summary by year and crop
 ```{r}
-df.summary <- df %>% 
+p <- df %>% 
   filter(!is.na(GrainYieldDryPerArea)) %>% 
-  group_by(HarvestYear, Crop) %>% 
-  summarize(meanYield = mean(GrainYieldDryPerArea, na.rm = TRUE),
-            maxYield = max(GrainYieldDryPerArea, na.rm = TRUE),
-            minYield = min(GrainYieldDryPerArea, na.rm = TRUE))
-
-#df.summary %>% print(n = 15)
-
-p <- df.summary %>% 
-  ggplot(aes(x = HarvestYear, y = meanYield)) +
-    geom_ribbon(aes(x = HarvestYear, ymax = maxYield, ymin = minYield), alpha = 0.6, fill = "grey") +
-    geom_line() +
-    geom_point(size = 1) +
+  ggplot(aes(x = as.factor(HarvestYear), y = GrainYieldDryPerArea), na.rm = TRUE) +
+  geom_boxplot() +  
     facet_wrap(~ Crop) +
-    theme(panel.grid.minor = element_line(color = "white", size = 0.1)) +
-    scale_x_continuous(minor_breaks = seq(1999, 2016, 1)) +
-    labs(x = "harvest year", y = "mean yield (g / m2)")
+    theme(axis.text.x = element_text(angle = 90)) +
+    labs(x = "harvest year", y = "yield (g / m2)")
 ggplotly(p)
+#p
 ```
 
 ```{r}
@@ -59,47 +54,62 @@ ggplotly(p)
 ```
 
 ```{r}
-df.summary <- df %>% 
+p <- df %>% 
   filter(!is.na(ResidueMassDryPerArea) & !is.na(GrainYieldDryPerArea)) %>% 
   mutate(HarvestIndex = GrainYieldDryPerArea / (GrainYieldDryPerArea + ResidueMassDryPerArea)) %>% 
-  group_by(HarvestYear, Crop) %>% 
-  summarize(meanHarvestIndex = mean(HarvestIndex, na.rm = TRUE),
-            maxHarvestIndex = max(HarvestIndex, na.rm = TRUE),
-            minHarvestIndex = min(HarvestIndex, na.rm = TRUE))
-
-#df.summary %>% print(n = 15)
-
-p <- df.summary %>% 
-  ggplot(aes(x = as.factor(HarvestYear), y = meanHarvestIndex)) +
-    geom_boxplot() +
-    #geom_ribbon(aes(x = HarvestYear, ymax = maxHarvestIndex, ymin = minHarvestIndex), alpha = 0.6, fill = "grey") +
-    #geom_line() +
-    #geom_point(size = 1) +
+  ggplot(aes(x = as.factor(HarvestYear), y = HarvestIndex), na.rm = TRUE) +
+  geom_boxplot() +  
     facet_wrap(~ Crop) +
-    #theme(panel.grid.minor = element_line(color = "white", size = 0.1)) +
-    #scale_x_continuous(minor_breaks = seq(1999, 2016, 1)) +
-    labs(x = "harvest year", y = "mean harvest index")
-p
-#ggplotly(p)
+    theme(axis.text.x = element_text(angle = 90)) +
+    labs(x = "harvest year", y = "harvest index")
+ggplotly(p)
+#p
 ```
 
 ```{r}
-df.summary <- df %>% 
-  filter(!is.na(ResidueMassDryPerArea) & !is.na(GrainYieldDryPerArea)) %>% 
-  mutate(HarvestIndex = GrainYieldDryPerArea / (GrainYieldDryPerArea + ResidueMassDryPerArea),
-         YearFactor = as.factor(HarvestYear)) %>% 
-  group_by(HarvestYear, Crop) %>% 
-  summarize(meanHarvestIndex = mean(HarvestIndex, na.rm = TRUE),
-            maxHarvestIndex = max(HarvestIndex, na.rm = TRUE),
-            minHarvestIndex = min(HarvestIndex, na.rm = TRUE))
-
-#df.summary %>% print(n = 15)
-
-p <- df.summary %>% 
-  ggplot(aes(x = as.factor(HarvestYear), y = meanHarvestIndex)) +
-    geom_boxplot() +
+p <- df %>% 
+  filter(!is.na(GrainCarbon)) %>% 
+  ggplot(aes(x = as.factor(HarvestYear), y = GrainCarbon), na.rm = TRUE) +
+  geom_boxplot() +  
     facet_wrap(~ Crop) +
-    labs(x = "harvest year", y = "mean harvest index")
-#p
+    theme(axis.text.x = element_text(angle = 90)) +
+    labs(x = "harvest year", y = "grain carbon (%)")
 ggplotly(p)
+#p
+```
+
+```{r}
+p <- df %>% 
+  filter(!is.na(GrainNitrogen)) %>% 
+  ggplot(aes(x = as.factor(HarvestYear), y = GrainNitrogen), na.rm = TRUE) +
+  geom_boxplot() +  
+    facet_wrap(~ Crop) +
+    theme(axis.text.x = element_text(angle = 90)) +
+    labs(x = "harvest year", y = "grain nitrogen (%)")
+ggplotly(p)
+#p
+```
+
+```{r}
+p <- df %>% 
+  filter(!is.na(ResidueCarbon)) %>% 
+  ggplot(aes(x = as.factor(HarvestYear), y = ResidueCarbon), na.rm = TRUE) +
+  geom_boxplot() +  
+    facet_wrap(~ Crop) +
+    theme(axis.text.x = element_text(angle = 90)) +
+    labs(x = "harvest year", y = "residue carbon (%)")
+ggplotly(p)
+#p
+```
+
+```{r}
+p <- df %>% 
+  filter(!is.na(ResidueNitrogen)) %>% 
+  ggplot(aes(x = as.factor(HarvestYear), y = ResidueNitrogen), na.rm = TRUE) +
+  geom_boxplot() +  
+    facet_wrap(~ Crop) +
+    theme(axis.text.x = element_text(angle = 90)) +
+    labs(x = "harvest year", y = "residue nitrogen (%)")
+ggplotly(p)
+#p
 ```
