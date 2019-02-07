@@ -5,5 +5,9 @@ df <- get_clean1999_2016()
 
 
 
-#write_csv_gridPointSurvey(df, "1999-2016")
+df %>% 
+  group_by(HarvestYear, Crop) %>% 
+  summarize(mean(GrainYieldDryPerArea, na.rm = TRUE),
+            mean(ResidueMassDryPerArea, na.rm = TRUE))
 
+#write_csv_gridPointSurvey(df, "1999-2016")

@@ -208,7 +208,7 @@ get_clean2011 <- function() {
     mutate(Comments = case_when(is.na(as.numeric(df$`Total Grain Wet (g)`)) ~ paste(Comments, " | Grain note: ", df$`Total Grain Wet (g)`, sep = ""), TRUE ~ Comments)) %>% 
     mutate(BiomassWet = as.numeric(`Total Residue and Grain Wet (g)`)) %>% 
     mutate(GrainMassWet = as.numeric(`Total Grain Wet (g)`)) %>% 
-    mutate(ResidueMassWetPerArea = BiomassWet - GrainMassWet / `Area (m2)`) %>% 
+    mutate(ResidueMassWetPerArea = (BiomassWet - GrainMassWet) / `Area (m2)`) %>% 
     mutate(GrainYieldWetPerArea = GrainMassWet / `Area (m2)`)
   
   # TODO: Figure out if "wet" here means dry, or if there are missing data somewhere...
@@ -241,6 +241,7 @@ get_clean2012 <- function() {
                        skip = 1) %>% 
     filter(!is.na(ID2) | (!is.na(ROW2) & !is.na(COLUMN))) %>% 
     mutate(SampleID = toupper(Barcode)) %>% 
+    
     arrange(ID2)
   
   # Merge the georef data based on col and row2
@@ -277,7 +278,8 @@ get_clean2012 <- function() {
            GrainMoisture,
            GrainStarch,
            GrainWGlutDM,
-           Comments)
+           Comments) %>% 
+    replace(. == "SL", "GB")
 }
 get_clean2013 <- function() {
   require(tidyverse)
