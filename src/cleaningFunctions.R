@@ -174,8 +174,8 @@ get_clean2010 <- function() {
     rename("HarvestYear" = Year,
            "Crop" = `Grain Type`,
            "SampleID" = `Bag Barcode`,
-           "Latitude" = X,
-           "Longitude" = Y) %>% 
+           "Latitude" = Y,
+           "Longitude" = X) %>% 
     filter(!is.na(ID2)) %>% 
     arrange(HarvestYear, ID2)
 }
