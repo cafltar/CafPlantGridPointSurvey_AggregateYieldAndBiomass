@@ -278,8 +278,8 @@ get_clean2012 <- function() {
            GrainMoisture,
            GrainStarch,
            GrainWGlutDM,
-           Comments) %>% 
-    replace(. == "SL", "GB")
+           Comments) #%>% 
+    #replace(. == "SL", "GB")
 }
 get_clean2013 <- function() {
   require(tidyverse)
