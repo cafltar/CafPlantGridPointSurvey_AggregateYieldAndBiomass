@@ -1,4 +1,4 @@
-get_clean1999_2009 <- function() {
+get_clean1999_2009_deprecated <- function() {
   require(tidyverse)
   require(readxl)
   require(sf)
@@ -108,6 +108,7 @@ get_clean1999_2009 <- function() {
     filter(!is.na(ID2), Crop != "Fallow") %>%
     arrange(HarvestYear, ID2)
 }
+
 get_clean2010 <- function() {
   require(tidyverse)
   require(readxl)
