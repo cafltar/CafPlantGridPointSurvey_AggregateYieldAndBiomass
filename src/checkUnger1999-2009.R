@@ -237,7 +237,7 @@ df.merged <- df %>%
   left_join(df.unger, by = c("Year", "Column" , "Row2"))
 
 # Looking at mean and SE by crop
-dff %>% 
+df.merged %>% 
   filter(abs(`Grain Nitrogen %..19` - GrainNitrogen) > 0.01) %>% 
   group_by(Crop..3) %>% 
   summarize(meanU = mean(`Grain Nitrogen %..19`, na.rm = T), 
@@ -246,7 +246,7 @@ dff %>%
             seR = sd(GrainNitrogen, na.rm = T)/sqrt(length(GrainNitrogen)))
 
 # Get mean and SE of difference between %N values by crop
-dff %>% 
+df.merged %>% 
   mutate(diffN = abs(`Grain Nitrogen %..19` - GrainNitrogen)) %>%
   filter(diffN > 0) %>% 
   group_by(Crop..3) %>% 
@@ -257,7 +257,7 @@ dff %>%
 
 
 # Get mean and SE of difference between %N values by crop (dropping zeros)
-dff %>% 
+df.merged %>% 
   mutate(diffN = abs(`Grain Nitrogen %..19` - GrainNitrogen)) %>%
   filter(diffN > 0) %>% 
   group_by(Crop..3) %>% 
@@ -267,24 +267,24 @@ dff %>%
             nR = length(GrainNitrogen))
 
 # Get mean and SE of difference between %N values by crop (dropping zeros)
-df.diffN <- dff %>% 
+df.diffN <- df.merged %>% 
   mutate(diffN = abs(`Grain Nitrogen %..19` - GrainNitrogen)) %>%
   filter(diffN > 0)
 
 # Testing normality (http://www.sthda.com/english/wiki/normality-test-in-r) ----
 library(ggpubr)
-dff.SW <- dff %>% 
+dff.SW <- df.merged %>% 
   filter(Year == 2003 & Crop == "SW")
 ggdensity(dff.SW$`Grain Nitrogen %..19`)
 ggqqplot(dff.SW$`Grain Nitrogen %..19`)
 
-dff.WW <- dff %>% 
+dff.WW <- df.merged %>% 
   filter(Year == 2003 & Crop == "WW")
 ggdensity(dff.WW$`Grain Nitrogen %..19`)
 ggqqplot(dff.WW$`Grain Nitrogen %..19`)
 
-ggdensity(dff$`Grain Nitrogen %..19`)
-ggqqplot(dff$GrainNitrogen)
+ggdensity(df.merged$`Grain Nitrogen %..19`)
+ggqqplot(df.merged$GrainNitrogen)
 
 ggdensity(df.diffN$diffN)
 ggqqplot(df.diffN$diffN)
@@ -295,10 +295,64 @@ source("http://goo.gl/UUyEzD")
 outlierKD(dff.SW, `Grain Nitrogen %..19`)
 
 # Actually, just create own outlier function
-removeOutliersUnivariate <- function(df, variable) {
-  var.vector <- df$variable
-  outliers <- boxplot.stats(var.vector)$out
-  df.clean <- df %>% 
-    mutate(variable = replace(variable %in% outliers, NA)) %>% 
-    as.data.frame()
+removeOutliers <- function(x, na.rm = TRUE) {
+  qnt <- quantile(x, probs=c(0.25, 0.75), na.rm = na.rm)
+  H <- 1.5 * IQR(x, na.rm = na.rm)
+  y <- x
+  y[x < (qnt[1] - H)] <- NA
+  y[x > (qnt[2] + H)] <- NA
+  return(y)
 }
+
+# Does it work?
+removeOutliers(dff.SW$`Grain Nitrogen %..19`)
+
+# Can I use group_by and mutate with the function?
+df.merged %>%
+  group_by(Year, Crop) %>% 
+  mutate(PerNUbbie = removeOutliers(`Grain Nitrogen %..19`),
+         PerNUnger = removeOutliers(GrainNitrogen)) %>% 
+  mutate(PerNFinal = case_when(!is.na(PerNUbbie) & !is.na(PerNUnger) ~ (PerNUbbie + PerNUnger) / 2,
+                               is.na(PerNUbbie) & !is.na(PerNUnger) ~ PerNUnger,
+                               !is.na(PerNUbbie) & is.na(PerNUnger) ~ PerNUbbie)) %>% 
+  filter(Year == 2003) %>% 
+  select(Year, ID2, `Grain Nitrogen %..19`, GrainNitrogen, Column, Row2, PerNUbbie, PerNUnger, PerNFinal) %>% 
+  print(n=100)
+
+# I can!  So now save to variable and compare cleaned and dirty versions
+df.merged.cleanedN <- df.merged %>%
+  group_by(Year, Crop) %>% 
+  mutate(PerNUbbie = removeOutliers(`Grain Nitrogen %..19`),
+         PerNUnger = removeOutliers(GrainNitrogen)) %>% 
+  mutate(PerNFinal = case_when(!is.na(PerNUbbie) & !is.na(PerNUnger) ~ (PerNUbbie + PerNUnger) / 2,
+                               is.na(PerNUbbie) & !is.na(PerNUnger) ~ PerNUnger,
+                               !is.na(PerNUbbie) & is.na(PerNUnger) ~ PerNUbbie))
+
+# Histograms
+df.merged.cleanedN %>% 
+  ggplot(aes(x = `Grain Nitrogen %..19`)) +
+  geom_histogram() +
+  facet_grid(rows = vars(Crop), cols = vars(Year))
+df.merged.cleanedN %>% 
+  ggplot(aes(x = GrainNitrogen)) +
+  geom_histogram() +
+  facet_grid(rows = vars(Crop), cols = vars(Year))
+df.merged.cleanedN %>% 
+  ggplot(aes(x = PerNFinal)) +
+  geom_histogram() +
+  facet_grid(rows = vars(Crop), cols = vars(Year))
+
+# Summary
+df.merged.cleanedN %>% 
+  select(Year, Crop, `Grain Nitrogen %..19`, GrainNitrogen, PerNFinal) %>% 
+  group_by(Year, Crop) %>% 
+  summarize(meanUbbie = mean(`Grain Nitrogen %..19`, na.rm = T), 
+            meanUnger = mean(GrainNitrogen, na.rm = T),
+            meanFinal = mean(PerNFinal, na.rm = T),
+            seUbbie = sd(`Grain Nitrogen %..19`, na.rm = T)/sqrt(length(`Grain Nitrogen %..19`)),
+            seUnger = sd(GrainNitrogen, na.rm = T)/sqrt(length(GrainNitrogen)),
+            seFinal = sd(PerNFinal, na.rm = T)/sqrt(length(PerNFinal)),
+            nUbbie = length(`Grain Nitrogen %..19`),
+            nUnger = length(GrainNitrogen),
+            nFinal = length(PerNFinal)) %>% 
+  print(n = 100)
