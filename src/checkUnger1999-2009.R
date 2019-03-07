@@ -291,13 +291,13 @@ ggqqplot(df.diffN$diffN)
 
 
 # Playing with libraries to remove outliers (https://www.r-bloggers.com/identify-describe-plot-and-remove-the-outliers-from-the-dataset/) ----
-source("http://goo.gl/UUyEzD")
-outlierKD(dff.SW, `Grain Nitrogen %..19`)
+#source("http://goo.gl/UUyEzD")
+#outlierKD(dff.SW, `Grain Nitrogen %..19`)
 
-# Actually, just create own outlier function
+# Actually, just create own outlier function (find extreme outliers 3 * IQR)
 removeOutliers <- function(x, na.rm = TRUE) {
   qnt <- quantile(x, probs=c(0.25, 0.75), na.rm = na.rm)
-  H <- 1.5 * IQR(x, na.rm = na.rm)
+  H <- 3 * IQR(x, na.rm = na.rm)
   y <- x
   y[x < (qnt[1] - H)] <- NA
   y[x > (qnt[2] + H)] <- NA
@@ -344,6 +344,7 @@ df.merged.cleanedN %>%
 
 # Summary
 df.merged.cleanedN %>% 
+  mutate(`Grain Nitrogen %..19` = case_when(`Grain Nitrogen %..19` > 0 ~ `Grain Nitrogen %..19`)) %>% 
   select(Year, Crop, `Grain Nitrogen %..19`, GrainNitrogen, PerNFinal) %>% 
   group_by(Year, Crop) %>% 
   summarize(meanUbbie = mean(`Grain Nitrogen %..19`, na.rm = T), 
@@ -352,7 +353,7 @@ df.merged.cleanedN %>%
             seUbbie = sd(`Grain Nitrogen %..19`, na.rm = T)/sqrt(length(`Grain Nitrogen %..19`)),
             seUnger = sd(GrainNitrogen, na.rm = T)/sqrt(length(GrainNitrogen)),
             seFinal = sd(PerNFinal, na.rm = T)/sqrt(length(PerNFinal)),
-            nUbbie = length(`Grain Nitrogen %..19`),
-            nUnger = length(GrainNitrogen),
-            nFinal = length(PerNFinal)) %>% 
+            nUbbie = length(`Grain Nitrogen %..19`[!is.na(`Grain Nitrogen %..19`)]),
+            nUnger = length(GrainNitrogen[!is.na(GrainNitrogen)]),
+            nFinal = length(PerNFinal[!is.na(PerNFinal)])) %>% 
   print(n = 100)
