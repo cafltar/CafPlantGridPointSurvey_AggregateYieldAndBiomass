@@ -163,29 +163,30 @@ getUngerDF <- function(worksheet) {
     na = c("na", "NA")
   )  %>% 
     select(c(1:14)) %>% 
-    mutate(Year = worksheet) %>% 
+    mutate(Year = as.numeric(worksheet)) %>% 
     rename(GrainCarbon = contains("%C"),
            GrainNitrogen = contains("%N"),
            GrainProtein = contains("rotein")) %>% 
-    select(Year,
-           COLUMN, 
-           ROW2,
-           Crop,
-           `Total grain weight (dry) (g)`,
-           GrainCarbon,
-           GrainNitrogen,
-           GrainProtein) %>% 
     mutate(Column = as.integer(COLUMN),
            Row2 = as.character(ROW2),
            GrainMassDry = as.numeric(`Total grain weight (dry) (g)`),
            GrainCarbon = as.numeric(GrainCarbon),
            GrainNitrogn = as.numeric(GrainNitrogen),
-           GrainProtein = as.numeric(GrainProtein))
+           GrainProtein = as.numeric(GrainProtein)) %>% 
+    select(Year,
+           Column, 
+           Row2,
+           Crop,
+           GrainMassDry,
+           GrainCarbon,
+           GrainNitrogen,
+           GrainProtein)
   
   return(df)
 }
 
-foo <- bind_rows(
+# Get all data from Unger, merge together
+df.unger <- bind_rows(
   getUngerDF("1999"),
   getUngerDF("2000"),
   getUngerDF("2001"),
@@ -197,3 +198,107 @@ foo <- bind_rows(
   getUngerDF("2007"),
   getUngerDF("2008"),
   getUngerDF("2009"))
+
+# Compare all years
+
+df %>% 
+  left_join(df.unger, by = c("Year", "Column" , "Row2")) %>%
+  filter(abs(`total grain yield dry (grams)` - GrainMassDry) > 0.1) %>% 
+  select(Year, ID2, `total grain yield dry (grams)`, GrainMassDry, `Grain Carbon %..21`, GrainCarbon, Column, Row2, Crop..3) %>% 
+  print(n=500)
+
+# 125 values do not match, majority of them in 2001
+
+df %>% 
+  left_join(df.unger, by = c("Year", "Column" , "Row2")) %>%
+  filter(abs(`Grain Carbon %..21` - GrainCarbon) > 0.01) %>% 
+  select(Year, ID2, `Grain Carbon %..21`, GrainCarbon, Column, Row2) %>% 
+  print(n=20)
+
+# 171 values do not match
+
+df %>% 
+  left_join(df.unger, by = c("Year", "Column" , "Row2")) %>%
+  filter(abs(`Grain Nitrogen %..19` - GrainNitrogen) > 0.01) %>% 
+  select(Year, ID2, `Grain Nitrogen %..19`, GrainNitrogen, Column, Row2, Crop..3) %>% 
+  print(n=500)
+
+# 164 values do not match
+
+# Check values present in "Yields and Residue 2007 a.xls" that have the odd "+4 g" added stuff
+df %>% 
+  left_join(df.unger, by = c("Year", "Column" , "Row2")) %>%
+  filter(Year == 2007 & (ID2 == 21 | ID2 == 45 | ID2 == 46 | ID2 == 71)) %>% 
+  select(Year, ID2, `total grain yield dry (grams)`, GrainMassDry, `Grain Carbon %..21`, GrainCarbon, Column, Row2, Crop..3) %>% 
+  print(n=500)
+# They match.  Asked Dave Huggins, he says that's actually correct (due to bag weight)
+
+df.merged <- df %>% 
+  left_join(df.unger, by = c("Year", "Column" , "Row2"))
+
+# Looking at mean and SE by crop
+dff %>% 
+  filter(abs(`Grain Nitrogen %..19` - GrainNitrogen) > 0.01) %>% 
+  group_by(Crop..3) %>% 
+  summarize(meanU = mean(`Grain Nitrogen %..19`, na.rm = T), 
+            meanR = mean(GrainNitrogen, na.rm = T),
+            seU = sd(`Grain Nitrogen %..19`, na.rm = T)/sqrt(length(`Grain Nitrogen %..19`)),
+            seR = sd(GrainNitrogen, na.rm = T)/sqrt(length(GrainNitrogen)))
+
+# Get mean and SE of difference between %N values by crop
+dff %>% 
+  mutate(diffN = abs(`Grain Nitrogen %..19` - GrainNitrogen)) %>%
+  filter(diffN > 0) %>% 
+  group_by(Crop..3) %>% 
+  summarize(meanDiff = mean(diffN, na.rm = T), 
+            seDiff = sd(diffN, na.rm = T)/sqrt(length(diffN)),
+            nU = length(`Grain Nitrogen %..19`),
+            nR = length(GrainNitrogen))
+
+
+# Get mean and SE of difference between %N values by crop (dropping zeros)
+dff %>% 
+  mutate(diffN = abs(`Grain Nitrogen %..19` - GrainNitrogen)) %>%
+  filter(diffN > 0) %>% 
+  group_by(Crop..3) %>% 
+  summarize(meanDiff = mean(diffN, na.rm = T), 
+            seDiff = sd(diffN, na.rm = T)/sqrt(length(diffN)),
+            nU = length(`Grain Nitrogen %..19`),
+            nR = length(GrainNitrogen))
+
+# Get mean and SE of difference between %N values by crop (dropping zeros)
+df.diffN <- dff %>% 
+  mutate(diffN = abs(`Grain Nitrogen %..19` - GrainNitrogen)) %>%
+  filter(diffN > 0)
+
+# Testing normality (http://www.sthda.com/english/wiki/normality-test-in-r) ----
+library(ggpubr)
+dff.SW <- dff %>% 
+  filter(Year == 2003 & Crop == "SW")
+ggdensity(dff.SW$`Grain Nitrogen %..19`)
+ggqqplot(dff.SW$`Grain Nitrogen %..19`)
+
+dff.WW <- dff %>% 
+  filter(Year == 2003 & Crop == "WW")
+ggdensity(dff.WW$`Grain Nitrogen %..19`)
+ggqqplot(dff.WW$`Grain Nitrogen %..19`)
+
+ggdensity(dff$`Grain Nitrogen %..19`)
+ggqqplot(dff$GrainNitrogen)
+
+ggdensity(df.diffN$diffN)
+ggqqplot(df.diffN$diffN)
+
+
+# Playing with libraries to remove outliers (https://www.r-bloggers.com/identify-describe-plot-and-remove-the-outliers-from-the-dataset/) ----
+source("http://goo.gl/UUyEzD")
+outlierKD(dff.SW, `Grain Nitrogen %..19`)
+
+# Actually, just create own outlier function
+removeOutliersUnivariate <- function(df, variable) {
+  var.vector <- df$variable
+  outliers <- boxplot.stats(var.vector)$out
+  df.clean <- df %>% 
+    mutate(variable = replace(variable %in% outliers, NA)) %>% 
+    as.data.frame()
+}
