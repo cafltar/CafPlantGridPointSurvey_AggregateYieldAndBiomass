@@ -294,7 +294,7 @@ ggqqplot(df.diffN$diffN)
 #source("http://goo.gl/UUyEzD")
 #outlierKD(dff.SW, `Grain Nitrogen %..19`)
 
-# Actually, just create own outlier function (find extreme outliers 3 * IQR)
+# Actually, just create own outlier function (find extreme outliers 3*IQR)
 removeOutliers <- function(x, na.rm = TRUE) {
   qnt <- quantile(x, probs=c(0.25, 0.75), na.rm = na.rm)
   H <- 3 * IQR(x, na.rm = na.rm)
@@ -357,3 +357,26 @@ df.merged.cleanedN %>%
             nUnger = length(GrainNitrogen[!is.na(GrainNitrogen)]),
             nFinal = length(PerNFinal[!is.na(PerNFinal)])) %>% 
   print(n = 100)
+
+# Looks pretty good, but forgot to do some stuff.  Need to scrub some of Unger's data due to apparent copy/paste erros in excel and scrub 0 values from both
+df.merged.rm.zeros.outliers <- df.merged %>% 
+  mutate(GrainNUbbie = case_when(`Grain Nitrogen %..19` > 0 ~ `Grain Nitrogen %..19`),
+         GrainNUnger = case_when(GrainNitrogen > 0 ~ GrainNitrogen,
+                                 Year == 1999 & Crop == "SW" ~ NA_real_,
+                                 Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
+  mutate(GrainNUbbieRmOutlier = removeOutliers(GrainNUbbie),
+         GrainNUngerRmOutlier = removeOutliers(GrainNUnger)) %>% 
+  mutate(GrainNFinal = case_when(!is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ (GrainNUbbieRmOutlier + GrainNUngerRmOutlier) / 2,
+                                 is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ GrainNUngerRmOutlier,
+                                 !is.na(GrainNUbbieRmOutlier) & is.na(GrainNUngerRmOutlier) ~ GrainNUbbieRmOutlier))
+
+df.merged.rm.zeros.outliers %>% 
+  ggplot(aes(x = GrainNUbbieRmOutlier)) +
+  geom_histogram() +
+  facet_grid(rows = vars(Crop), cols = vars(Year))
+
+# Write for Huggins to review changes
+df.merged.rm.zeros.outliers %>% 
+  select(Year, ID2, Crop, `Grain Nitrogen %..19`, GrainNitrogen, GrainNUbbie, GrainNUnger, GrainNUbbieRmOutlier, GrainNUngerRmOutlier, GrainNFinal) %>% 
+  write_csv("output/quickExportForHugginsReview_20190307.csv")
+
