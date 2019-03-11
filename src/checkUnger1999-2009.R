@@ -7,7 +7,7 @@ source("src/functions.R")
 # Load data
 legacy <- read_excel(
   "input/Cook Farm All years all points.xlsx",
-  na = c("-99999", "-77777"))
+  na = c("-99999", "-77777", -99999))
 
 # Keep only values from grid point project
 legacy <- legacy %>% filter(Project == "grid points" | Project == "Grid Points")
@@ -212,8 +212,8 @@ df %>%
 df %>% 
   left_join(df.unger, by = c("Year", "Column" , "Row2")) %>%
   filter(abs(`Grain Carbon %..21` - GrainCarbon) > 0.01) %>% 
-  select(Year, ID2, `Grain Carbon %..21`, GrainCarbon, Column, Row2) %>% 
-  print(n=20)
+  select(Year, ID2, `Grain Carbon %..21`, GrainCarbon, Column, Row2, Crop..3) %>% 
+  print(n=500)
 
 # 171 values do not match
 
@@ -359,7 +359,8 @@ df.merged.cleanedN %>%
   print(n = 100)
 
 # Looks pretty good, but forgot to do some stuff.  Need to scrub some of Unger's data due to apparent copy/paste erros in excel and scrub 0 values from both
-df.merged.rm.zeros.outliers <- df.merged %>% 
+df.merged.rm.zeros.outliersN <- df.merged %>% 
+  group_by(Year, Crop) %>% 
   mutate(GrainNUbbie = case_when(`Grain Nitrogen %..19` > 0 ~ `Grain Nitrogen %..19`),
          GrainNUnger = case_when(GrainNitrogen > 0 ~ GrainNitrogen,
                                  Year == 1999 & Crop == "SW" ~ NA_real_,
@@ -370,13 +371,118 @@ df.merged.rm.zeros.outliers <- df.merged %>%
                                  is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ GrainNUngerRmOutlier,
                                  !is.na(GrainNUbbieRmOutlier) & is.na(GrainNUngerRmOutlier) ~ GrainNUbbieRmOutlier))
 
-df.merged.rm.zeros.outliers %>% 
+df.merged.rm.zeros.outliersN %>% 
   ggplot(aes(x = GrainNUbbieRmOutlier)) +
   geom_histogram() +
   facet_grid(rows = vars(Crop), cols = vars(Year))
 
 # Write for Huggins to review changes
-df.merged.rm.zeros.outliers %>% 
+df.merged.rm.zeros.outliersN %>% 
   select(Year, ID2, Crop, `Grain Nitrogen %..19`, GrainNitrogen, GrainNUbbie, GrainNUnger, GrainNUbbieRmOutlier, GrainNUngerRmOutlier, GrainNFinal) %>% 
-  write_csv("output/quickExportForHugginsReview_20190307.csv")
+  write_csv("output/nitrogenExportForReview_20190311.csv")
 
+# Now lets clean C and grain mass
+df.merged.rm.zeros.outliersC <- df.merged %>% 
+  group_by(Year, Crop) %>% 
+  mutate(GrainCUbbie = case_when(`Grain Carbon %..21` > 0 ~ `Grain Carbon %..21`),
+         GrainCUnger = case_when(GrainCarbon > 0 ~ GrainCarbon,
+                                 Year == 1999 & Crop == "SW" ~ NA_real_,
+                                 Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
+  mutate(GrainCUbbieRmOutlier = removeOutliers(GrainCUbbie),
+         GrainCUngerRmOutlier = removeOutliers(GrainCUnger)) %>% 
+  mutate(GrainCFinal = case_when(!is.na(GrainCUbbieRmOutlier) & !is.na(GrainCUngerRmOutlier) ~ (GrainCUbbieRmOutlier + GrainCUngerRmOutlier) / 2,
+                                 is.na(GrainCUbbieRmOutlier) & !is.na(GrainCUngerRmOutlier) ~ GrainCUngerRmOutlier,
+                                 !is.na(GrainCUbbieRmOutlier) & is.na(GrainCUngerRmOutlier) ~ GrainCUbbieRmOutlier))
+
+df.merged.rm.zeros.outliersC %>% 
+  ggplot(aes(x = GrainCFinal)) +
+  geom_histogram() +
+  facet_grid(rows = vars(Crop), cols = vars(Year))
+
+df.merged.rm.zeros.outliersC %>% 
+  group_by(Year, Crop) %>% 
+  summarize(maxUbbie = max(`Grain Carbon %..21`, na.rm = T),
+            maxUnger = max(GrainCarbon, na.rm = T),
+            maxFinal = max(GrainCFinal, na.rm = T),
+            meanUbbie = mean(`Grain Carbon %..21`, na.rm = T), 
+            meanUnger = mean(GrainCarbon, na.rm = T),
+            meanFinal = mean(GrainCFinal, na.rm = T),
+            seUbbie = sd(`Grain Carbon %..21`, na.rm = T)/sqrt(length(`Grain Carbon %..21`)),
+            seUnger = sd(GrainCarbon, na.rm = T)/sqrt(length(GrainCarbon)),
+            seFinal = sd(GrainCFinal, na.rm = T)/sqrt(length(GrainCFinal)),
+            nUbbie = length(`Grain Carbon %..21`[!is.na(`Grain Carbon %..21`)]),
+            nUnger = length(GrainCarbon[!is.na(GrainCarbon)]),
+            nFinal = length(GrainCFinal[!is.na(GrainCFinal)])) %>% 
+  print(n = 100)
+
+# Some odd results in summary, like; why did 20 values from Unger get scrubbed 2001 SC?  Is outlier test testing something outside of what I expected?
+
+# Write to review changes
+df.merged.rm.zeros.outliersC %>% 
+  select(Year, ID2, Crop, `Grain Carbon %..21`, GrainCarbon, GrainCUbbie, GrainCUnger, GrainCUbbieRmOutlier, GrainCUngerRmOutlier, GrainCFinal) %>% 
+  write_csv("output/carbonExportForReview_20190311.csv")
+
+# Ahhh... Eff, forgot to group_by year and crop.  Added to previous code.
+
+# Any reason to scrub outliers from Ubbies grain data?
+df.merged.rm.zeros.outliersMass <- df.merged %>% 
+  group_by(Year, Crop) %>% 
+  mutate(GrainMassUbbie = case_when(`total grain yield dry (grams)` > 0 ~ `total grain yield dry (grams)`)) %>% 
+  mutate(GrainMassUbbieRmOutlier = removeOutliers(GrainMassUbbie)) %>% 
+  mutate(GrainMassFinal = GrainMassUbbieRmOutlier)
+
+df.merged.rm.zeros.outliersMass %>% 
+  ggplot(aes(x = GrainMassUbbie)) +
+  geom_histogram() +
+  facet_grid(rows = vars(Crop), cols = vars(Year))
+
+df.merged.rm.zeros.outliersMass %>% 
+  ggplot(aes(x = GrainMassFinal)) +
+  geom_histogram() +
+  facet_grid(rows = vars(Crop), cols = vars(Year))
+
+df.merged.rm.zeros.outliersMass %>% 
+  group_by(Year, Crop) %>% 
+  summarize(maxUbbie = max(`total grain yield dry (grams)`, na.rm = T),
+            maxFinal = max(GrainMassFinal, na.rm = T),
+            meanUbbie = mean(`total grain yield dry (grams)`, na.rm = T),
+            meanFinal = mean(GrainMassFinal, na.rm = T),
+            seUbbie = sd(`total grain yield dry (grams)`, na.rm = T)/sqrt(length(`total grain yield dry (grams)`)),
+            seFinal = sd(GrainMassFinal, na.rm = T)/sqrt(length(GrainMassFinal)),
+            nUbbie = length(`total grain yield dry (grams)`[!is.na(`total grain yield dry (grams)`)]),
+            nFinal = length(GrainMassFinal[!is.na(GrainMassFinal)])) %>% 
+  print(n = 100)
+
+# Yeah, there are some apparent extremem outliers.
+
+# Okay, do it all together now, output for review:
+df.merged.rm.zeros.outliers <- df.merged %>% 
+  group_by(Year, Crop) %>% 
+  mutate(GrainNUbbie = case_when(`Grain Nitrogen %..19` > 0 ~ `Grain Nitrogen %..19`),
+         GrainNUnger = case_when(GrainNitrogen > 0 ~ GrainNitrogen,
+                                 Year == 1999 & Crop == "SW" ~ NA_real_,
+                                 Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
+  mutate(GrainNUbbieRmOutlier = removeOutliers(GrainNUbbie),
+         GrainNUngerRmOutlier = removeOutliers(GrainNUnger)) %>% 
+  mutate(GrainNFinal = case_when(!is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ (GrainNUbbieRmOutlier + GrainNUngerRmOutlier) / 2,
+                                 is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ GrainNUngerRmOutlier,
+                                 !is.na(GrainNUbbieRmOutlier) & is.na(GrainNUngerRmOutlier) ~ GrainNUbbieRmOutlier)) %>% 
+  mutate(GrainCUbbie = case_when(`Grain Carbon %..21` > 0 ~ `Grain Carbon %..21`),
+         GrainCUnger = case_when(GrainCarbon > 0 ~ GrainCarbon,
+                                 Year == 1999 & Crop == "SW" ~ NA_real_,
+                                 Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
+  mutate(GrainCUbbieRmOutlier = removeOutliers(GrainCUbbie),
+         GrainCUngerRmOutlier = removeOutliers(GrainCUnger)) %>% 
+  mutate(GrainCFinal = case_when(!is.na(GrainCUbbieRmOutlier) & !is.na(GrainCUngerRmOutlier) ~ (GrainCUbbieRmOutlier + GrainCUngerRmOutlier) / 2,
+                                 is.na(GrainCUbbieRmOutlier) & !is.na(GrainCUngerRmOutlier) ~ GrainCUngerRmOutlier,
+                                 !is.na(GrainCUbbieRmOutlier) & is.na(GrainCUngerRmOutlier) ~ GrainCUbbieRmOutlier)) %>% 
+  mutate(GrainMassUbbie = case_when(`total grain yield dry (grams)` > 0 ~ `total grain yield dry (grams)`)) %>% 
+  mutate(GrainMassUbbieRmOutlier = removeOutliers(GrainMassUbbie)) %>% 
+  mutate(GrainMassFinal = GrainMassUbbieRmOutlier)
+
+df.merged.rm.zeros.outliers %>% 
+  select(Year, ID2, Crop, 
+         `total grain yield dry (grams)`, GrainMassFinal,
+         `Grain Nitrogen %..19`, GrainNitrogen, GrainNUbbie, GrainNUnger, GrainNUbbieRmOutlier, GrainNUngerRmOutlier, GrainNFinal,
+         `Grain Carbon %..21`, GrainCarbon, GrainCUbbie, GrainCUnger, GrainCUbbieRmOutlier, GrainCUngerRmOutlier, GrainCFinal) %>% 
+  write_csv("output/MassCNExportForReview_20190311.csv", na = "")
