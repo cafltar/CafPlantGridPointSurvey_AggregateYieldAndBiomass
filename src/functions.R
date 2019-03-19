@@ -46,3 +46,42 @@ check_yields <- function(df.in, sheet.name, year, yield.column) {
     summarize(total.diff = sum(yield.diff, na.rm = TRUE))
   if(yield.total.diff[[1]] > 0.01) { stop("Yield check failed") }
 }
+
+getUngerDF <- function(worksheet) {
+  df <- read_xlsx(
+    "input/CAF N data set.xlsx",
+    sheet = worksheet,
+    col_names = TRUE,
+    na = c("na", "NA")
+  )  %>% 
+    select(c(1:14)) %>% 
+    mutate(Year = as.numeric(worksheet)) %>% 
+    rename(GrainCarbon = contains("%C"),
+           GrainNitrogen = contains("%N"),
+           GrainProtein = contains("rotein")) %>% 
+    mutate(Column = as.integer(COLUMN),
+           Row2 = as.character(ROW2),
+           GrainMassDry = as.numeric(`Total grain weight (dry) (g)`),
+           GrainCarbon = as.numeric(GrainCarbon),
+           GrainNitrogn = as.numeric(GrainNitrogen),
+           GrainProtein = as.numeric(GrainProtein)) %>% 
+    select(Year,
+           Column, 
+           Row2,
+           Crop,
+           GrainMassDry,
+           GrainCarbon,
+           GrainNitrogen,
+           GrainProtein)
+  
+  return(df)
+}
+
+removeOutliers <- function(x, na.rm = TRUE) {
+  qnt <- quantile(x, probs=c(0.25, 0.75), na.rm = na.rm)
+  H <- 3 * IQR(x, na.rm = na.rm)
+  y <- x
+  y[x < (qnt[1] - H)] <- NA
+  y[x > (qnt[2] + H)] <- NA
+  return(y)
+}
