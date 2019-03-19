@@ -1,5 +1,6 @@
 ---
 title: "Explore 1999-2016 Harvest Data"
+always_allow_html: yes
 output:
   html_document:
     df_print: paged
