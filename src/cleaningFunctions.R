@@ -1,3 +1,144 @@
+get_dirty1999_2009 <- function() {
+  # Note that quality/verification checks are scrubbed out of this function. See "checkUnger1999-2009.R" for such tests.
+  
+  require(tidyverse)
+  require(readxl)
+  require(sf)
+  
+  source("src/functions.R")
+  
+  # Load data
+  df.ubbie <- read_excel(
+    "input/Cook Farm All years all points.xlsx",
+    na = c("-99999", "-77777")) %>% 
+    filter(Project == "grid points" | Project == "Grid Points")
+  
+  # Get all data from Unger, merge together
+  df.unger <- bind_rows(
+    getUngerDF("1999"),
+    getUngerDF("2000"),
+    getUngerDF("2001"),
+    getUngerDF("2002"),
+    getUngerDF("2003"),
+    getUngerDF("2004"),
+    getUngerDF("2005"),
+    getUngerDF("2006"),
+    getUngerDF("2007"),
+    getUngerDF("2008"),
+    getUngerDF("2009"))
+  
+  df.merged <- df.ubbie %>% 
+    mutate(Column = as.integer(Column)) %>% 
+    left_join(df.unger, by = c("Year", "Column" , "Row Letter" = "Row2"))
+  
+  df.merged.rm.zeros.outliers <- df.merged %>% 
+    group_by(Year, Crop) %>% 
+    mutate(GrainNUbbie = case_when(`Grain Nitrogen %..19` > 0 ~ `Grain Nitrogen %..19`),
+           GrainNUnger = case_when(GrainNitrogen > 0 ~ GrainNitrogen,
+                                   Year == 1999 & Crop == "SW" ~ NA_real_,
+                                   Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
+    mutate(GrainNUbbieRmOutlier = removeOutliers(GrainNUbbie),
+           GrainNUngerRmOutlier = removeOutliers(GrainNUnger)) %>% 
+    mutate(GrainNFinal = case_when(!is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ (GrainNUbbieRmOutlier + GrainNUngerRmOutlier) / 2,
+                                   is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ GrainNUngerRmOutlier,
+                                   !is.na(GrainNUbbieRmOutlier) & is.na(GrainNUngerRmOutlier) ~ GrainNUbbieRmOutlier)) %>% 
+    mutate(GrainCUbbie = case_when(`Grain Carbon %..21` > 0 ~ `Grain Carbon %..21`),
+           GrainCUnger = case_when(GrainCarbon > 0 ~ GrainCarbon,
+                                   Year == 1999 & Crop == "SW" ~ NA_real_,
+                                   Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
+    mutate(GrainCUbbieRmOutlier = removeOutliers(GrainCUbbie),
+           GrainCUngerRmOutlier = removeOutliers(GrainCUnger)) %>% 
+    mutate(GrainCFinal = case_when(!is.na(GrainCUbbieRmOutlier) & !is.na(GrainCUngerRmOutlier) ~ (GrainCUbbieRmOutlier + GrainCUngerRmOutlier) / 2,
+                                   is.na(GrainCUbbieRmOutlier) & !is.na(GrainCUngerRmOutlier) ~ GrainCUngerRmOutlier,
+                                   !is.na(GrainCUbbieRmOutlier) & is.na(GrainCUngerRmOutlier) ~ GrainCUbbieRmOutlier)) %>% 
+    mutate(GrainMassUbbie = case_when(`total grain yield dry (grams)` > 0 ~ `total grain yield dry (grams)`)) %>% 
+    mutate(GrainMassUbbieRmOutlier = removeOutliers(GrainMassUbbie)) %>% 
+    mutate(GrainMassFinal = GrainMassUbbieRmOutlier) %>% 
+    ungroup()
+  
+  
+  # Merge lat/lon data based on col and row2
+  df <- append_georef_to_df(df.merged.rm.zeros.outliers, 
+                            "Row Letter", 
+                            "Column")
+  
+  # Remove ID2 values with NA (fields north of current CookEast used to be sampled)
+  # Calculate residue values, don't use supplied since it seems to have errors
+  # Also calc HI for review
+  df.calc <- df %>%
+    mutate(GrainYieldDryPerArea = GrainMassFinal / `total area harvested (M2)`) %>% 
+    mutate(ResidueWetMass = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>%
+    mutate(ResidueMoistureProportion = (`Residue Sub-Sample Wet Weight (grams)` - `Residue Sub-Sample Dry Weight (grams)`) / `Residue Sub-Sample Wet Weight (grams)`) %>%
+    mutate(ResidueDry = ResidueWetMass * (1 - ResidueMoistureProportion)) %>%
+    mutate(ResidueMassDryPerArea = ResidueDry / `Residue Sample Area (square meters)`)
+  
+  #--- Aside ----
+  # TODO: Unger's and Ubbie's data don't match - taking Ubbies, but need to verify
+  df.calc %>% 
+    filter(!is.na(ID2), `Crop..3` != "Fallow") %>% 
+    replace(. == "winter wheat", "WW") %>%
+    replace(. == "spring wheat", "SW") %>%
+    replace(. == "spring barley", "SB") %>%
+    replace(. == "spring canola", "SC") %>%
+    replace(. == "spring pea", "SP") %>%
+    replace(. == "winter barley", "WB") %>%
+    replace(. == "winter pea", "WP") %>%
+    replace(. == "winter canola", "WC") %>%
+    replace(. == "Winter Canola", "WC") %>%
+    replace(. == "winter lentil", "WL") %>%
+    replace(. == "Garbonzo Beans", "GB") %>%
+    filter(`Crop..3` != Crop) %>% 
+    select(Year, ID2, `Crop..3`, Crop) %>% 
+    print(n = 100)
+  # ----
+  
+  return(df.calc)
+}
+get_clean1999_2009 <- function() {
+  df.calc <- get_dirty1999_2009()
+  
+  df.clean <- df.calc %>% 
+    filter(!is.na(ID2), `Crop..3` != "Fallow") %>% 
+    mutate(Comments = coalesce(`Grain Harvest Comments`, `Residue Sample Comments`)) %>%
+    mutate(HarvestYear = as.integer(Year)) %>%
+    replace(. == "winter wheat", "WW") %>%
+    replace(. == "spring wheat", "SW") %>%
+    replace(. == "spring barley", "SB") %>%
+    replace(. == "spring canola", "SC") %>%
+    replace(. == "spring pea", "SP") %>%
+    replace(. == "winter barley", "WB") %>%
+    replace(. == "winter pea", "WP") %>%
+    replace(. == "winter canola", "WC") %>%
+    replace(. == "Winter Canola", "WC") %>%
+    replace(. == "winter lentil", "WL") %>%
+    replace(. == "Garbonzo Beans", "GB") %>%
+    rename(CropUnger = Crop,
+           GrainCarbonUnger = GrainCarbon,
+           GrainNitrogenUnger = GrainNitrogen,
+           Crop = Crop..3,
+           Latitude = Y,
+           Longitude = X,
+           GrainCarbon = GrainCFinal,
+           GrainNitrogen = GrainNFinal,
+           ResidueCarbon = `Residue Carbon %`,
+           ResidueNitrogen = `Residue Nitrogen %`) %>% 
+    select(HarvestYear,
+           Crop,
+           Longitude,
+           Latitude,
+           ID2,
+           GrainYieldDryPerArea,
+           GrainCarbon,
+           GrainNitrogen,
+           ResidueMassDryPerArea,
+           ResidueCarbon,
+           ResidueNitrogen,
+           Comments) %>% 
+    arrange(HarvestYear, ID2)
+  
+  return(df.clean)
+  
+}
 get_clean1999_2009_deprecated <- function() {
   require(tidyverse)
   require(readxl)
@@ -652,7 +793,7 @@ get_clean2016 <- function() {
            Comments)
 }
 
-get_clean1999_2016 <- function() {
+get_clean1999_2016 <- function(rm.outliers = T) {
   df1999_2009 <- get_clean1999_2009()
   df2010 <- get_clean2010()
   df2011 <- get_clean2011()
@@ -670,4 +811,24 @@ get_clean1999_2016 <- function() {
                   df2014,
                   df2015,
                   df2016)
+  
+  if(rm.outliers == T) {
+    df.clean <- df %>% 
+      group_by(HarvestYear, Crop) %>% 
+      mutate(GrainYieldDryPerArea = removeOutliers(GrainYieldDryPerArea),
+             GrainCarbon = removeOutliers(GrainCarbon),
+             GrainNitrogen = removeOutliers(GrainNitrogen),
+             ResidueMassDryPerArea = removeOutliers(ResidueMassDryPerArea),
+             ResidueCarbon = removeOutliers(ResidueCarbon),
+             ResidueNitrogen = removeOutliers(ResidueNitrogen),
+             GrainProtein = removeOutliers(GrainProtein),
+             GrainMoisture = removeOutliers(GrainMoisture),
+             GrainStarch = removeOutliers(GrainStarch),
+             GrainWGlutDM = removeOutliers(GrainWGlutDM),
+             GrainOilDM = removeOutliers(GrainOilDM))
+    
+    return(df.clean)
+  } else {
+    return(df);
+  }
 }
