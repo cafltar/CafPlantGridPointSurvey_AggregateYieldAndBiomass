@@ -33,7 +33,7 @@ get_dirty1999_2009 <- function() {
   
   df.merged.rm.zeros.outliers <- df.merged %>% 
     group_by(Year, Crop) %>% 
-    mutate(GrainNUbbie = case_when(`Grain Nitrogen %..19` > 0 ~ `Grain Nitrogen %..19`),
+    mutate(GrainNUbbie = case_when(`Grain Nitrogen %...19` > 0 ~ `Grain Nitrogen %...19`),
            GrainNUnger = case_when(GrainNitrogen > 0 ~ GrainNitrogen,
                                    Year == 1999 & Crop == "SW" ~ NA_real_,
                                    Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
@@ -42,7 +42,7 @@ get_dirty1999_2009 <- function() {
     mutate(GrainNFinal = case_when(!is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ (GrainNUbbieRmOutlier + GrainNUngerRmOutlier) / 2,
                                    is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ GrainNUngerRmOutlier,
                                    !is.na(GrainNUbbieRmOutlier) & is.na(GrainNUngerRmOutlier) ~ GrainNUbbieRmOutlier)) %>% 
-    mutate(GrainCUbbie = case_when(`Grain Carbon %..21` > 0 ~ `Grain Carbon %..21`),
+    mutate(GrainCUbbie = case_when(`Grain Carbon %...21` > 0 ~ `Grain Carbon %...21`),
            GrainCUnger = case_when(GrainCarbon > 0 ~ GrainCarbon,
                                    Year == 1999 & Crop == "SW" ~ NA_real_,
                                    Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
@@ -75,7 +75,7 @@ get_dirty1999_2009 <- function() {
   #--- Aside ----
   # TODO: Unger's and Ubbie's data don't match - taking Ubbies, but need to verify
   df.calc %>% 
-    filter(!is.na(ID2), `Crop..3` != "Fallow") %>% 
+    filter(!is.na(ID2), `Crop...3` != "Fallow") %>% 
     replace(. == "winter wheat", "WW") %>%
     replace(. == "spring wheat", "SW") %>%
     replace(. == "spring barley", "SB") %>%
@@ -87,8 +87,8 @@ get_dirty1999_2009 <- function() {
     replace(. == "Winter Canola", "WC") %>%
     replace(. == "winter lentil", "WL") %>%
     replace(. == "Garbonzo Beans", "GB") %>%
-    filter(`Crop..3` != Crop) %>% 
-    select(Year, ID2, `Crop..3`, Crop) %>% 
+    filter(`Crop...3` != Crop) %>% 
+    select(Year, ID2, `Crop...3`, Crop) %>% 
     print(n = 100)
   # ----
   
