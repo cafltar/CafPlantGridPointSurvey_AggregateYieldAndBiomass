@@ -85,3 +85,43 @@ removeOutliers <- function(x, na.rm = TRUE) {
   y[x > (qnt[2] + H)] <- NA
   return(y)
 }
+
+# Takes a vector of continuous data (x) and returns an int column with;
+#   1 = outside upper/lower inner fence
+#   2 = outside upper/lower outer fence
+getOutlierColumn <- function(x, na.rm = T) {
+  qnt <- quantile(x, probs=c(0.25, 0.75), na.rm = na.rm)
+  H <- 1.5 * IQR(x, na.rm = na.rm)
+  HExtreme <- 3 * IQR(x, na.rm = na.rm)
+  
+  outlier <- rep(0, length(x))
+  
+  outlier[(x < (qnt[1] - H)) | (x > (qnt[2] + H))] <- 1
+  outlier[(x < (qnt[1] - HExtreme)) | (x > (qnt[2] + HExtreme))] <- 2
+  
+  return(outlier)
+}
+
+# Takes a vector of continuous data (x) and returns int column with quartile
+getQuartileColumn <- function(x, na.rm = T) {
+  # -- Method 1
+  #quartiles <- as.integer(.bincode(x,
+  #                         breaks = quantile(x,
+  #                                           probs = seq(0,1,0.25),
+  #                                           na.rm = na.rm),
+  #                         include.lowest = T))
+  
+  # -- Method 2
+  #quartiles <- ntile(x, 4)
+  
+  # -- Method 3
+  qnt <- quantile(x, probs=seq(0,1,0.25), na.rm = na.rm)
+  quartiles <- rep(NA, length(x))
+  
+  quartiles[x <= qnt[2]] <- 1
+  quartiles[x > qnt[2] & x < qnt[3]] <- 2
+  quartiles[x >= qnt[3] & x < qnt[4]] <- 3
+  quartiles[x >= qnt[4]] <- 4
+  
+  return(quartiles)
+}
