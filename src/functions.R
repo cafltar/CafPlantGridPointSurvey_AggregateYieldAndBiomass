@@ -103,6 +103,11 @@ getOutlierColumn <- function(x, na.rm = T) {
 }
 
 # Takes a vector of continuous data (x) and returns int column with quartile
+# Returns column with rankings:
+#   1 = value is less than or equal to Q1
+#   2 = value is greater than Q1 and less than Q2
+#   3 = value is greater than Q2 and less than Q3
+#   4 = value is greater than Q3
 getQuartileColumn <- function(x, na.rm = T) {
   # -- Method 1
   #quartiles <- as.integer(.bincode(x,
@@ -124,4 +129,34 @@ getQuartileColumn <- function(x, na.rm = T) {
   quartiles[x >= qnt[4]] <- 4
   
   return(quartiles)
+}
+
+
+# Input
+#   sf = Simple feature
+#   varCol = Column names with continuous variable to calculate quartiles and outliers
+#   yearCol = Column name with Year data, to be grouped by
+#   cropCol = Column name with crop name data, to be grouped by and used for point color
+# Output
+#   returns a tmap with:
+#   size = Quartile category; 1 = less than Q1, 2 = greater than Q1 and less than Q2, 3 = greater than Q2 and less than Q3, 4 = greater than Q4
+#   color = Crop type
+#   shape = Outlier (0 = not outlier, 1 = inner fence, 2 = outer fence)
+getMapQuartileOutliers <- function(sf, varCol, yearCol, cropCol) {
+  require(sf)
+  require(tmap)
+
+  var_ <- rlang::sym(varCol)
+  year_ <- rlang::sym(yearCol)
+  crop_ <- rlang::sym(cropCol)
+  
+  map <- sf %>% 
+    group_by(!!year_, !!crop_) %>% 
+    group_map(~mutate(., Quartiles = as.integer(getQuartileColumn(!!var_)))) %>% 
+    group_map(~mutate(., Outliers = as.factor(getOutlierColumn(!!var_)))) %>% 
+    ungroup() %>% 
+    tm_shape() +
+      tm_symbols(col = cropCol, shape = "Outliers", size = "Quartiles")
+  
+  return(map)
 }
