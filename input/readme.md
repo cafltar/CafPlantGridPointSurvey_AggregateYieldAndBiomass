@@ -66,3 +66,8 @@
 * [CAF_NUE_Data_072015.xlsx](CAF_NUE_Data_072015.xlsx)
   * From email "FW: NUE spreadsheet" by Dave Huggins on 01/29/2019 in WSU account
   * Has yield and %N data I should compare with other files.  May have gone through further QC, but not sure
+
+## 03/21/2019
+
+* [CookEastBoundary_20180131.geojson](CookEastBoundary_20180131.geojson)
+  * From CookEastGeospatialBoundary_R project: https://github.com/cafltar/CookEastGeospatialBoundary_R/blob/master/Output/CookEastBoundary_20180131.geojson

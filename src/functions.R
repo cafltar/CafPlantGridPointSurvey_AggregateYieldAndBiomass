@@ -142,21 +142,52 @@ getQuartileColumn <- function(x, na.rm = T) {
 #   size = Quartile category; 1 = less than Q1, 2 = greater than Q1 and less than Q2, 3 = greater than Q2 and less than Q3, 4 = greater than Q4
 #   color = Crop type
 #   shape = Outlier (0 = not outlier, 1 = inner fence, 2 = outer fence)
-getMapQuartileOutliers <- function(sf, varCol, yearCol, cropCol) {
+#   boundary = sf polygon to act as boundary to data
+getMapQuartileOutliers <- function(sf, varCol, yearCol, cropCol, boundary = NULL, labelCol = NULL) {
   require(sf)
   require(tmap)
 
+  # Eval passed arguments
   var_ <- rlang::sym(varCol)
   year_ <- rlang::sym(yearCol)
   crop_ <- rlang::sym(cropCol)
+  #label_ <- rlang::sym(labelCol)
   
-  map <- sf %>% 
+  # Create a boundary map if boundary provided
+  if(!is.null(boundary)) {
+    boundary.map <- tm_shape(boundary) +
+      tm_borders()
+  }
+  
+  # Check that data are available, if not return with boundary or error
+  if(all(is.na(sf %>% select(!!var_) %>% st_drop_geometry()))) {
+    if(!is.null(boundary)) {
+      return(boundary.map)
+    } else {
+      stop("Data in column is NA and no border specified, nothing to return")
+    }
+  }
+  
+  # Add columns for ranking values based on quartiles and outliers
+  data <- sf %>% 
     group_by(!!year_, !!crop_) %>% 
     group_map(~mutate(., Quartiles = as.integer(getQuartileColumn(!!var_)))) %>% 
     group_map(~mutate(., Outliers = as.factor(getOutlierColumn(!!var_)))) %>% 
-    ungroup() %>% 
-    tm_shape() +
+    ungroup()
+  
+  # Map it!
+  if(!is.null(boundary)) {
+    map <- boundary.map +
+    tm_shape(data) +
       tm_symbols(col = cropCol, shape = "Outliers", size = "Quartiles")
+  } else {
+    map <- tm_shape(data) +
+      tm_symbols(col = cropCol, shape = "Outliers", size = "Quartiles")
+  }
+  
+  if(!is.null(labelCol)) {
+    map <- map + tm_text(labelCol, size = 0.6, ymod = 0.5)
+  }
   
   return(map)
 }
