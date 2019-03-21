@@ -98,7 +98,7 @@ get_clean1999_2009 <- function() {
   df.calc <- get_dirty1999_2009()
   
   df.clean <- df.calc %>% 
-    filter(!is.na(ID2), `Crop..3` != "Fallow") %>% 
+    filter(!is.na(ID2), `Crop...3` != "Fallow") %>% 
     mutate(Comments = coalesce(`Grain Harvest Comments`, `Residue Sample Comments`)) %>%
     mutate(HarvestYear = as.integer(Year)) %>%
     replace(. == "winter wheat", "WW") %>%
@@ -115,7 +115,7 @@ get_clean1999_2009 <- function() {
     rename(CropUnger = Crop,
            GrainCarbonUnger = GrainCarbon,
            GrainNitrogenUnger = GrainNitrogen,
-           Crop = Crop..3,
+           Crop = Crop...3,
            Latitude = Y,
            Longitude = X,
            GrainCarbon = GrainCFinal,
@@ -183,10 +183,10 @@ get_clean1999_2009_deprecated <- function() {
   check_yields(df, "09", 2009, "Yield_2009")
   
   # Check for differences between duplicated column names
-  compare_cols(df, "Grain Carbon %..11", "Grain Carbon %..21")
-  compare_cols(df, "Grain Sulfur %..12", "Grain Sulfur %..20")
-  compare_cols(df, "Grain Nitrogen %..13", "Grain Nitrogen %..19")
-  compare_cols(df, "Crop..3", "Crop..22")
+  compare_cols(df, "Grain Carbon %...11", "Grain Carbon %...21")
+  compare_cols(df, "Grain Sulfur %...12", "Grain Sulfur %...20")
+  compare_cols(df, "Grain Nitrogen %...13", "Grain Nitrogen %...19")
+  compare_cols(df, "Crop...3", "Crop...22")
   
   # Check that residue was calculated correctly (11 obs had error)
   residue.check <- df %>%
@@ -215,21 +215,21 @@ get_clean1999_2009_deprecated <- function() {
   df.clean <- df %>%
     mutate(Comments = coalesce(`Grain Harvest Comments`, `Residue Sample Comments`)) %>%
     select(Year,
-           Crop..3, X, Y, ID2,
+           Crop...3, X, Y, ID2,
            `total grain yield dry(grams/M2)`,
-           `Grain Carbon %..11`, `Grain Nitrogen %..13`, `Grain Sulfur %..12`,
+           `Grain Carbon %...11`, `Grain Nitrogen %...13`, `Grain Sulfur %...12`,
            ResidueMassDryPerArea,
            `Residue Carbon %`,`Residue Nitrogen %`, `Residue Sulfur %`,
            Comments) %>%
     rename(HarvestYear = Year,
-           Crop = Crop..3,
+           Crop = Crop...3,
            Latitude = Y,
            Longitude = X,
            ID2 = ID2,
            GrainYieldDryPerArea = `total grain yield dry(grams/M2)`,
-           GrainCarbon = `Grain Carbon %..11`,
-           GrainNitrogen = `Grain Nitrogen %..13`,
-           GrainSulfur = `Grain Sulfur %..12`,
+           GrainCarbon = `Grain Carbon %...11`,
+           GrainNitrogen = `Grain Nitrogen %...13`,
+           GrainSulfur = `Grain Sulfur %...12`,
            ResidueCarbon = `Residue Carbon %`,
            ResidueNitrogen = `Residue Nitrogen %`,
            ResidueSulfur = `Residue Sulfur %`,
@@ -397,7 +397,7 @@ get_clean2012 <- function() {
   df.calcs <- df %>% 
     mutate(GrainYieldDryPerArea = `Grain Weight Dry (g)` / `Area (m2)`) %>% 
     mutate(Comments = case_when((!is.na(df$`Test Weight`) & is.na(as.numeric(df$`Test Weight`))) ~ paste("TestWeight note: ", df$`Test Weight`, sep = ""), TRUE ~ "")) %>% 
-    mutate(Comments = case_when(!is.na(df$..24) ~ paste(Comments, " | Sample note: ", df$..24, sep = ""), TRUE ~ Comments)) %>% 
+    mutate(Comments = case_when(!is.na(df$...24) ~ paste(Comments, " | Sample note: ", df$...24, sep = ""), TRUE ~ Comments)) %>% 
     mutate(HarvestYear = 2012)
   
   # Wet masses are considered dry, per Dave Huggin's decision

@@ -30,8 +30,28 @@ source("../src/cleaningFunctions.R")
 
 ```{r, include=FALSE}
 setwd("../")
-df <- get_clean1999_2016()
+df <- get_clean1999_2016(rm.outliers = F)
 sf <- st_as_sf(df, coords = c("Longitude", "Latitude"), crs = 4326)
+
+df.dirty <- get_dirty1999_2009() %>% 
+  filter(!is.na(ID2), `Crop...3` != "Fallow") %>% 
+  replace(. == "winter wheat", "WW") %>%
+  replace(. == "spring wheat", "SW") %>%
+  replace(. == "spring barley", "SB") %>%
+  replace(. == "spring canola", "SC") %>%
+  replace(. == "spring pea", "SP") %>%
+  replace(. == "winter barley", "WB") %>%
+  replace(. == "winter pea", "WP") %>%
+  replace(. == "winter canola", "WC") %>%
+  replace(. == "Winter Canola", "WC") %>%
+  replace(. == "winter lentil", "WL") %>%
+  replace(. == "Garbonzo Beans", "GB")
+
+sf.dirty <- df.dirty %>% 
+  filter(!is.na(X) & !is.na(Y)) %>% 
+  st_as_sf(coords = c("X", "Y"), crs = 4326)
+
+boundary <- st_read("input/CookEastBoundary_20180131.geojson")
 ```
 
 # Maps by year and crop
@@ -42,8 +62,116 @@ sf %>%
   tm_facets(by="HarvestYear")
 ```
 
+# Quality review of crop type
 
-# Summary by year and crop
+## Maps of years where Ubbie's data did not match Unger's data
+
+* Dots on map are colored based on Unger's data
+* Locations that differ are squares and have a label that corresponds to Ubbie's designation
+
+```{r, fig.width=11, fig.asp=1, out.width="100%"}
+cropError <- sf.dirty %>% 
+  filter(Year %in% c(2001, 2003, 2007, 2008)) %>% 
+  mutate(CropLabelError = (`Crop...3` != Crop)) %>% 
+  select(Year, ID2, `Crop...3`, Crop, CropLabelError) %>% 
+  mutate(Label = case_when(CropLabelError == TRUE ~ paste(`Crop...3`, sep = ",")))
+
+tm_shape(cropError) +
+  tm_dots(col = "Crop", shape = "CropLabelError", size = 0.7) +
+  tm_facets(by = "Year") +
+  tm_text("Label", size = 0.8, ymod = 0.2)
+```
+
+# Quality Review of Grain Nitrogen (%) and Grain Carbon (%)
+
+## Maps of grain N from different sources for HY1999 - HY2009
+
+* GrainNUbbie = Data from Ubbie's file with 0 values set to NULL
+* GrainNUnger = Data from Unger's file with 0 values set to NULL and Excel copy/paste errors set to NULL
+* GrainNFinal = Data after removing extreme outliers from GrainNUbbie and GrainNUnger then averaging if both have values and taking only present if single value
+
+```{r}
+
+columns <- c("GrainNUbbie", "GrainNUnger", "GrainNFinal")
+years <- seq(1999, 2009, 1)
+
+for(y in years) {
+  for(c in columns) {
+    print(sf.dirty %>% 
+      filter(Year == y) %>% 
+      getMapQuartileOutliers(c, "Year", "Crop", boundary, "ID2") +
+      tm_layout(title = paste("HY ", y, ": ", c, sep = "")) +
+      tm_grid(alpha = 0.25, labels.inside.frame = F) +
+      tm_compass())
+  }
+}
+
+```
+
+## Maps of grain C from different sources for HY1999 - HY2009
+
+* GrainCUbbie = Data from Ubbie's file with 0 values set to NULL
+* GrainCUnger = Data from Unger's file with 0 values set to NULL and Excel copy/paste errors set to NULL
+* GrainCFinal = Data after removing extreme outliers from GrainCUbbie and GrainCUnger then averaging if both have values and taking only present if single value
+
+```{r}
+
+columns <- c("GrainCUbbie", "GrainCUnger", "GrainCFinal")
+years <- seq(1999, 2009, 1)
+
+for(y in years) {
+  for(c in columns) {
+    print(sf.dirty %>% 
+      filter(Year == y) %>% 
+      getMapQuartileOutliers(c, "Year", "Crop", boundary, "ID2") +
+      tm_layout(title = paste("HY ", y, ": ", c, sep = "")) +
+      tm_grid(alpha = 0.25, labels.inside.frame = F) +
+      tm_compass())
+  }
+}
+
+```
+
+## Maps of grain N for HY2010 - HY2016
+```{r}
+
+columns <- c("GrainNitrogen")
+years <- seq(2010, 2016, 1)
+
+for(y in years) {
+  for(c in columns) {
+    print(sf %>% 
+      filter(HarvestYear == y) %>% 
+      getMapQuartileOutliers(c, "HarvestYear", "Crop", boundary, "ID2") +
+      tm_layout(title = paste("HY ", y, ": ", c, sep = "")) +
+      tm_grid(alpha = 0.25, labels.inside.frame = F) +
+      tm_compass())
+  }
+}
+
+```
+
+## Maps of grain C for HY2010 - HY2016
+```{r}
+
+columns <- c("GrainCarbon")
+years <- seq(2010, 2016, 1)
+
+for(y in years) {
+  for(c in columns) {
+    print(sf %>% 
+      filter(HarvestYear == y) %>% 
+      getMapQuartileOutliers(c, "HarvestYear", "Crop", boundary, "ID2") +
+      tm_layout(title = paste("HY ", y, ": ", c, sep = "")) +
+      tm_grid(alpha = 0.25, labels.inside.frame = F) +
+      tm_compass())
+  }
+}
+
+```
+
+# Summary by year and crop - Outliers not removed from these values
+
 ```{r}
 p <- df %>% 
   filter(!is.na(GrainYieldDryPerArea)) %>% 
