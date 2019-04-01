@@ -370,7 +370,7 @@ get_clean2012 <- function() {
   if(nrow(df.id2.check) > 0) { warning("Error in ID2, Row2, Col") }
   
   df.calcs <- df %>% 
-    mutate(GrainYieldDryPerArea = `Grain Weight Dry (g)` / `Area (m2)`) %>% 
+    mutate(GrainYieldDryPerArea = `Grain Weight Wet (g)` / `Area (m2)`) %>% 
     mutate(Comments = case_when((!is.na(df$`Test Weight`) & is.na(as.numeric(df$`Test Weight`))) ~ paste("TestWeight note: ", df$`Test Weight`, sep = ""), TRUE ~ "")) %>% 
     mutate(Comments = case_when(!is.na(df$...24) ~ paste(Comments, " | Sample note: ", df$...24, sep = ""), TRUE ~ Comments)) %>% 
     mutate(HarvestYear = 2012)
