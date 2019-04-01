@@ -1,0 +1,72 @@
+---
+title: "Explore 1999-2016 Harvest Data | Carbon"
+always_allow_html: yes
+output:
+  html_document:
+    df_print: paged
+    fig_height: 8
+    fig_width: 11
+  pdf_document: default
+---
+
+```{r setup, include = FALSE, cache = FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+
+library(tidyverse)
+library(sf)
+library(tmap)
+```
+
+```{r}
+source("../src/functions.R")
+source("../src/cleaningFunctions.R")
+```
+
+```{r, include=FALSE}
+setwd("../")
+df <- get_clean1999_2016(rm.outliers = F)
+sf <- st_as_sf(df, coords = c("Longitude", "Latitude"), crs = 4326)
+
+boundary <- st_read("input/CookEastBoundary_20180131.geojson")
+```
+
+## Maps of residue mass for HY1999 - HY2016
+```{r}
+
+columns <- c("ResidueMassDryPerArea")
+years <- seq(1999, 2016, 1)
+
+for(y in years) {
+  for(c in columns) {
+    print(sf %>% 
+      filter(HarvestYear == y) %>% 
+      getMapQuartileOutliers(c, "HarvestYear", "Crop", boundary, "ID2") +
+      tm_layout(title = paste("HY ", y, ": ", c, sep = "")) +
+      tm_grid(alpha = 0.25, labels.inside.frame = F) +
+      tm_compass())
+  }
+}
+
+```
+
+## Maps of residue carbon percent for HY1999 - HY2016
+```{r}
+
+columns <- c("ResidueCarbon")
+years <- seq(1999, 2016, 1)
+
+for(y in years) {
+  for(c in columns) {
+    print(sf %>% 
+      filter(HarvestYear == y) %>% 
+      getMapQuartileOutliers(c, "HarvestYear", "Crop", boundary, "ID2") +
+      tm_layout(title = paste("HY ", y, ": ", c, sep = "")) +
+      tm_grid(alpha = 0.25, labels.inside.frame = F) +
+      tm_compass())
+  }
+}
+
+```
