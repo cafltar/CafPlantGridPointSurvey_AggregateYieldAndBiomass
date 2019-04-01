@@ -30,32 +30,53 @@ get_dirty1999_2009 <- function() {
   df.merged <- df.ubbie %>% 
     mutate(Column = as.integer(Column)) %>% 
     left_join(df.unger, by = c("Year", "Column" , "Row Letter" = "Row2"))
+
+#   This removes outliers first, then averages values if Ubbie and Unger data both exist
+#  df.merged.rm.zeros.outliers <- df.merged %>% 
+#    group_by(Year, Crop) %>% 
+#    mutate(GrainNUbbie = case_when(`Grain Nitrogen %...19` > 0 & `Grain Nitrogen %...19` <= 100 ~ `Grain Nitrogen %...19`),
+#           GrainNUnger = case_when(GrainNitrogen > 0 & GrainNitrogen <= 100 ~ GrainNitrogen,
+#                                   Year == 1999 & Crop == "SW" ~ NA_real_,
+#                                   Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
+#    mutate(GrainNUbbieRmOutlier = removeOutliers(GrainNUbbie),
+#           GrainNUngerRmOutlier = removeOutliers(GrainNUnger)) %>% 
+#    mutate(GrainNFinal = case_when(!is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ (GrainNUbbieRmOutlier + GrainNUngerRmOutlier) / 2,
+#                                   is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ GrainNUngerRmOutlier,
+#                                   !is.na(GrainNUbbieRmOutlier) & is.na(GrainNUngerRmOutlier) ~ GrainNUbbieRmOutlier)) %>% 
+#    mutate(GrainCUbbie = case_when(`Grain Carbon %...21` > 0 & `Grain Carbon %...21` <= 100 ~ `Grain Carbon %...21`),
+#           GrainCUnger = case_when(GrainCarbon > 0 & GrainCarbon <= 100 ~ GrainCarbon,
+#                                   Year == 1999 & Crop == "SW" ~ NA_real_,
+#                                   Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
+#    mutate(GrainCUbbieRmOutlier = removeOutliers(GrainCUbbie),
+#           GrainCUngerRmOutlier = removeOutliers(GrainCUnger)) %>% 
+#    mutate(GrainCFinal = case_when(!is.na(GrainCUbbieRmOutlier) & !is.na(GrainCUngerRmOutlier) ~ (GrainCUbbieRmOutlier + GrainCUngerRmOutlier) / 2,
+#                                   is.na(GrainCUbbieRmOutlier) & !is.na(GrainCUngerRmOutlier) ~ GrainCUngerRmOutlier,
+#                                   !is.na(GrainCUbbieRmOutlier) & is.na(GrainCUngerRmOutlier) ~ GrainCUbbieRmOutlier)) %>% 
+#    mutate(GrainMassUbbie = case_when(`total grain yield dry (grams)` > 0 ~ `total grain yield dry (grams)`)) %>% 
+#    mutate(GrainMassUbbieRmOutlier = removeOutliers(GrainMassUbbie)) %>% 
+#    mutate(GrainMassFinal = GrainMassUbbieRmOutlier) %>% 
+#    ungroup()
   
+# This does not remove outliers before averaging Ubbie's and Unger's values
   df.merged.rm.zeros.outliers <- df.merged %>% 
     group_by(Year, Crop) %>% 
     mutate(GrainNUbbie = case_when(`Grain Nitrogen %...19` > 0 & `Grain Nitrogen %...19` <= 100 ~ `Grain Nitrogen %...19`),
            GrainNUnger = case_when(GrainNitrogen > 0 & GrainNitrogen <= 100 ~ GrainNitrogen,
                                    Year == 1999 & Crop == "SW" ~ NA_real_,
                                    Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
-    mutate(GrainNUbbieRmOutlier = removeOutliers(GrainNUbbie),
-           GrainNUngerRmOutlier = removeOutliers(GrainNUnger)) %>% 
-    mutate(GrainNFinal = case_when(!is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ (GrainNUbbieRmOutlier + GrainNUngerRmOutlier) / 2,
-                                   is.na(GrainNUbbieRmOutlier) & !is.na(GrainNUngerRmOutlier) ~ GrainNUngerRmOutlier,
-                                   !is.na(GrainNUbbieRmOutlier) & is.na(GrainNUngerRmOutlier) ~ GrainNUbbieRmOutlier)) %>% 
+    mutate(GrainNFinal = case_when(!is.na(GrainNUbbie) & !is.na(GrainNUnger) ~ (GrainNUbbie + GrainNUnger) / 2,
+                                   is.na(GrainNUbbie) & !is.na(GrainNUnger) ~ GrainNUnger,
+                                   !is.na(GrainNUbbie) & is.na(GrainNUnger) ~ GrainNUbbie)) %>% 
     mutate(GrainCUbbie = case_when(`Grain Carbon %...21` > 0 & `Grain Carbon %...21` <= 100 ~ `Grain Carbon %...21`),
            GrainCUnger = case_when(GrainCarbon > 0 & GrainCarbon <= 100 ~ GrainCarbon,
                                    Year == 1999 & Crop == "SW" ~ NA_real_,
                                    Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
-    mutate(GrainCUbbieRmOutlier = removeOutliers(GrainCUbbie),
-           GrainCUngerRmOutlier = removeOutliers(GrainCUnger)) %>% 
-    mutate(GrainCFinal = case_when(!is.na(GrainCUbbieRmOutlier) & !is.na(GrainCUngerRmOutlier) ~ (GrainCUbbieRmOutlier + GrainCUngerRmOutlier) / 2,
-                                   is.na(GrainCUbbieRmOutlier) & !is.na(GrainCUngerRmOutlier) ~ GrainCUngerRmOutlier,
-                                   !is.na(GrainCUbbieRmOutlier) & is.na(GrainCUngerRmOutlier) ~ GrainCUbbieRmOutlier)) %>% 
+    mutate(GrainCFinal = case_when(!is.na(GrainCUbbie) & !is.na(GrainCUnger) ~ (GrainCUbbie + GrainCUnger) / 2,
+                                   is.na(GrainCUbbie) & !is.na(GrainCUnger) ~ GrainCUnger,
+                                   !is.na(GrainCUbbie) & is.na(GrainCUnger) ~ GrainCUbbie)) %>% 
     mutate(GrainMassUbbie = case_when(`total grain yield dry (grams)` > 0 ~ `total grain yield dry (grams)`)) %>% 
-    mutate(GrainMassUbbieRmOutlier = removeOutliers(GrainMassUbbie)) %>% 
-    mutate(GrainMassFinal = GrainMassUbbieRmOutlier) %>% 
+    mutate(GrainMassFinal = GrainMassUbbie) %>% 
     ungroup()
-  
   
   # Merge lat/lon data based on col and row2
   df <- append_georef_to_df(df.merged.rm.zeros.outliers, 
