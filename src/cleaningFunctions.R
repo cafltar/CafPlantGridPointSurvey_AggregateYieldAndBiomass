@@ -112,10 +112,11 @@ get_clean1999_2009 <- function() {
     replace(. == "Winter Canola", "WC") %>%
     replace(. == "winter lentil", "WL") %>%
     replace(. == "Garbonzo Beans", "GB") %>%
-    rename(CropUnger = Crop,
+    replace(. == "Alfalfa", "AL") %>% 
+    rename(#CropUnger = Crop,
            GrainCarbonUnger = GrainCarbon,
            GrainNitrogenUnger = GrainNitrogen,
-           Crop = Crop...3,
+           #Crop = Crop...3,
            Latitude = Y,
            Longitude = X,
            GrainCarbon = GrainCFinal,
