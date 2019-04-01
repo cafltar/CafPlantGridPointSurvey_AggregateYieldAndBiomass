@@ -1,0 +1,83 @@
+---
+title: "Explore 1999-2016 Harvest Data"
+always_allow_html: yes
+output:
+  html_document:
+    df_print: paged
+    fig_height: 8
+    fig_width: 11
+  pdf_document: default
+---
+
+```{r setup, include = FALSE, cache = FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+#knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+#knitr::opts_knit$set(root.dir = "C:/Dev/Projects/CafPlantGridPointSurvey/R/AggregateYieldAndBiomass_1999-2016")
+
+library(tidyverse)
+library(plotly)
+library(sf)
+library(tmap)
+```
+
+```{r}
+source("../src/functions.R")
+source("../src/cleaningFunctions.R")
+```
+
+```{r, include=FALSE}
+setwd("../")
+df <- get_clean1999_2016(rm.outliers = F)
+sf <- st_as_sf(df, coords = c("Longitude", "Latitude"), crs = 4326)
+
+df.dirty <- get_dirty1999_2009() %>% 
+  filter(!is.na(ID2), `Crop...3` != "Fallow") %>% 
+  replace(. == "winter wheat", "WW") %>%
+  replace(. == "spring wheat", "SW") %>%
+  replace(. == "spring barley", "SB") %>%
+  replace(. == "spring canola", "SC") %>%
+  replace(. == "spring pea", "SP") %>%
+  replace(. == "winter barley", "WB") %>%
+  replace(. == "winter pea", "WP") %>%
+  replace(. == "winter canola", "WC") %>%
+  replace(. == "Winter Canola", "WC") %>%
+  replace(. == "winter lentil", "WL") %>%
+  replace(. == "Garbonzo Beans", "GB")
+
+sf.dirty <- df.dirty %>% 
+  filter(!is.na(X) & !is.na(Y)) %>% 
+  st_as_sf(coords = c("X", "Y"), crs = 4326)
+
+boundary <- st_read("input/CookEastBoundary_20180131.geojson")
+```
+
+# Maps by year and crop
+```{r, fig.width=11, fig.asp=1, out.width="100%"}
+sf %>% 
+  tm_shape() +
+  tm_dots(size = 0.1, col = "Crop", palette = "Set1") +
+  tm_facets(by="HarvestYear")
+```
+
+# Quality review of crop type
+
+## Maps of years where Ubbie's data did not match Unger's data
+
+* Dots on map are colored based on Unger's data
+* Locations that differ are squares and have a label that corresponds to Ubbie's designation
+
+```{r, fig.width=11, fig.asp=1, out.width="100%"}
+cropError <- sf.dirty %>% 
+  filter(Year %in% c(2001, 2003, 2007, 2008)) %>% 
+  mutate(CropLabelError = (`Crop...3` != Crop)) %>% 
+  select(Year, ID2, `Crop...3`, Crop, CropLabelError) %>% 
+  mutate(Label = case_when(CropLabelError == TRUE ~ paste(`Crop...3`, sep = ",")))
+
+tm_shape(cropError) +
+  tm_dots(col = "Crop", shape = "CropLabelError", size = 0.7) +
+  tm_facets(by = "Year") +
+  tm_text("Label", size = 0.8, ymod = 0.2)
+```
