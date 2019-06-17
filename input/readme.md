@@ -71,3 +71,10 @@
 
 * [CookEastBoundary_20180131.geojson](CookEastBoundary_20180131.geojson)
   * From CookEastGeospatialBoundary_R project: https://github.com/cafltar/CookEastGeospatialBoundary_R/blob/master/Output/CookEastBoundary_20180131.geojson
+
+## 06/14/2019
+
+* [Yields and Residue 2009 120809 (3).xls](Yields%20and%20Residue%202009%20120809%20(3).xls)
+  * From Dave Huggins via email "RE: updated results regarding how to  estimate the residue for the whole field" on 06/14/2019
+  * Used to append residue values
+  * "Attached file has residue that can be calculated. You need to subtract grain from total biomass." - Dave

@@ -66,6 +66,12 @@ get_dirty1999_2009 <- function() {
     mutate(ResidueDry = ResidueWetMass * (1 - ResidueMoistureProportion)) %>%
     mutate(ResidueMassDryPerArea = ResidueDry / `Residue Sample Area (square meters)`)
   
+  # Add missing residue using crop averages of moisture proportion
+  df.calc.gapfilled <- df.calc %>%
+    group_by(Crop) %>% 
+    mutate(AvgResidueMoistureProportionByCrop = mean(ResidueMoistureProportion)) %>% 
+    ungroup()
+  
   return(df.calc)
 }
 get_clean1999_2009 <- function() {
