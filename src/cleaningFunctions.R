@@ -32,7 +32,7 @@ get_dirty1999_2009 <- function() {
     left_join(df.unger, by = c("Year", "Column" , "Row Letter" = "Row2"))
   
   # This does not remove outliers and accepts Ungers %C and %N over Ubbies, and Ubbies grain mass over Unger's
-  df.merged.rm.zeros.outliers <- df.merged %>% 
+  df.merged.rm.zeros <- df.merged %>% 
     group_by(Year, Crop) %>% 
     mutate(GrainNUbbie = case_when(`Grain Nitrogen %...19` > 0 & `Grain Nitrogen %...19` <= 100 ~ `Grain Nitrogen %...19`),
            GrainNUnger = case_when(GrainNitrogen > 0 & GrainNitrogen <= 100 ~ GrainNitrogen,
@@ -49,11 +49,15 @@ get_dirty1999_2009 <- function() {
                                    is.na(GrainCUbbie) & !is.na(GrainCUnger) ~ GrainCUnger,
                                    !is.na(GrainCUbbie) & is.na(GrainCUnger) ~ GrainCUbbie)) %>% 
     mutate(GrainMassUbbie = case_when(`total grain yield dry (grams)` > 0 ~ `total grain yield dry (grams)`)) %>% 
+    mutate(`total area harvested (M2)` = na_if(`total area harvested (M2)`, 0)) %>% 
+    mutate(`Residue plus Grain Wet Weight (grams)` = na_if(`Residue plus Grain Wet Weight (grams)`, 0)) %>% 
+    mutate(`Residue Sub-Sample Dry Weight (grams)` = na_if(`Residue Sub-Sample Dry Weight (grams)`, 0)) %>% 
+    mutate(`Residue Sample Area (square meters)` = na_if(`Residue Sample Area (square meters)`, 0)) %>% 
     mutate(GrainMassFinal = GrainMassUbbie) %>% 
     ungroup()
   
   # Merge lat/lon data based on col and row2
-  df <- append_georef_to_df(df.merged.rm.zeros.outliers, 
+  df <- append_georef_to_df(df.merged.rm.zeros, 
                             "Row Letter", 
                             "Column")
   
@@ -63,15 +67,14 @@ get_dirty1999_2009 <- function() {
     mutate(GrainYieldDryPerArea = GrainMassFinal / `total area harvested (M2)`) %>% 
     mutate(ResidueWetMass = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>%
     mutate(ResidueMoistureProportion = (`Residue Sub-Sample Wet Weight (grams)` - `Residue Sub-Sample Dry Weight (grams)`) / `Residue Sub-Sample Wet Weight (grams)`) %>%
-    mutate(ResidueDry = ResidueWetMass * (1 - ResidueMoistureProportion)) %>%
-    mutate(ResidueMassDryPerArea = ResidueDry / `Residue Sample Area (square meters)`)
-  
-  # Add missing residue using crop averages of moisture proportion
-  df.calc.gapfilled <- df.calc %>%
-    group_by(Crop) %>% 
-    mutate(AvgResidueMoistureProportionByCrop = mean(ResidueMoistureProportion)) %>% 
-    ungroup()
-  
+    # Set negative residue moisture proportions to NA
+    mutate(ResidueMoistureProportion = case_when(ResidueMoistureProportion > 0 ~ ResidueMoistureProportion)) %>%
+    # Set 0 sample areas to NA
+    #mutate(`Residue Sample Area (square meters)` = case_when(`Residue Sample Area (square meters)` > 0 ~ `Residue Sample Area (square meters)`)) %>% 
+    #mutate(`Residue Sample Area (square meters)` = na_if(`Residue Sample Area (square meters)`, 0)) %>% 
+    mutate(ResidueDryMass = ResidueWetMass * (1 - ResidueMoistureProportion)) %>%
+    mutate(ResidueMassDryPerArea = ResidueDryMass / `Residue Sample Area (square meters)`)
+
   return(df.calc)
 }
 get_clean1999_2009 <- function() {
@@ -80,8 +83,11 @@ get_clean1999_2009 <- function() {
   # Remove values with no ID and if fallow
   # Aggregate comments, ename crops for consistency
   # Accept Unger's crop abbreviations over Ubbies (Dave and I reviewed)
+  # Add missing residue using crop averages of moisture proportion
+    # Gap-filling occurs here! Averages ResidueMoistureProportion by crop for all years and uses this value if ResidueMoistureProportion is missing
   df.clean <- df.calc %>% 
-    filter(!is.na(ID2), `Crop...3` != "Fallow") %>% 
+    #filter(!is.na(ID2), `Crop...3` != "Fallow") %>% 
+    filter(!is.na(ID2), Crop != "FALLOW") %>% 
     mutate(Comments = coalesce(`Grain Harvest Comments`, `Residue Sample Comments`)) %>%
     mutate(HarvestYear = as.integer(Year)) %>%
     replace(. == "winter wheat", "WW") %>%
@@ -96,6 +102,13 @@ get_clean1999_2009 <- function() {
     replace(. == "winter lentil", "WL") %>%
     replace(. == "Garbonzo Beans", "GB") %>%
     replace(. == "Alfalfa", "AL") %>% 
+    group_by(Crop) %>% 
+    mutate(AvgResidueMoistureProportionByCrop = mean(ResidueMoistureProportion, na.rm = TRUE)) %>% 
+    ungroup() %>% 
+    mutate(ResidueDryMass = case_when(!is.na(ResidueDryMass) ~ ResidueDryMass,
+                                  is.na(ResidueDryMass) ~ ResidueWetMass * (1 - AvgResidueMoistureProportionByCrop))) %>%
+    mutate(ResidueMassDryPerArea = case_when(!is.na(ResidueMassDryPerArea) ~ ResidueMassDryPerArea,
+                                             is.na(ResidueMassDryPerArea) ~ ResidueDryMass / `Residue Sample Area (square meters)`)) %>% 
     rename(GrainCarbonUnger = GrainCarbon,
            GrainNitrogenUnger = GrainNitrogen,
            Latitude = Y,
@@ -117,6 +130,33 @@ get_clean1999_2009 <- function() {
            ResidueNitrogen,
            Comments) %>% 
     arrange(HarvestYear, ID2)
+  
+  #df.calc %>% 
+  #  filter(!is.na(ID2), Crop != "FALLOW") %>%
+  #  mutate(HarvestYear = as.integer(Year)) %>%
+  #  replace(. == "winter wheat", "WW") %>%
+  #  replace(. == "spring wheat", "SW") %>%
+  #  replace(. == "spring barley", "SB") %>%
+  #  replace(. == "spring canola", "SC") %>%
+  #  replace(. == "spring pea", "SP") %>%
+  #  replace(. == "winter barley", "WB") %>%
+  #  replace(. == "winter pea", "WP") %>%
+  #  replace(. == "winter canola", "WC") %>%
+  #  replace(. == "Winter Canola", "WC") %>%
+  #  replace(. == "winter lentil", "WL") %>%
+  #  replace(. == "Garbonzo Beans", "GB") %>%
+  #  replace(. == "Alfalfa", "AL") %>%
+  #  group_by(Crop) %>% 
+  #  mutate(AvgResidueMoistureProportionByCrop = mean(ResidueMoistureProportion, na.rm = TRUE)) %>% 
+  #  mutate(SdResidueMoistureProportionByCrop = sd(ResidueMoistureProportion, na.rm = TRUE)) %>%
+  #  ungroup() %>%
+  #  group_by(Crop, Year) %>% 
+  #  mutate(AvgResidueMoistureProportionByCropYear = mean(ResidueMoistureProportion, na.rm = TRUE)) %>% 
+  #  mutate(SdResidueMoistureProportionByCropYear = sd(ResidueMoistureProportion, na.rm = TRUE)) %>%
+  #  ungroup() %>% 
+  #  select(HarvestYear, Crop, AvgResidueMoistureProportionByCrop, SdResidueMoistureProportionByCrop, AvgResidueMoistureProportionByCropYear, SdResidueMoistureProportionByCropYear) %>% 
+  #  distinct() %>% 
+  #  write_csv("Working/checkResidueGapFill2009_20190617.csv")
   
   return(df.clean)
   
