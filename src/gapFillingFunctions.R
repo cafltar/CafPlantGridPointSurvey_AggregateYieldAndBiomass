@@ -1,21 +1,23 @@
-gapFillResidueVariables <- function(df) {
-  #require(broom)
-  #library(tidyverse)
-  require(purrr)
-  
+estimateResidueMassDryXByResidueMoistureProportion <- function(df) {
   # Calculate average moisture proportion of residue by crop and use it to calculate the dry mass of residue for missing values
   df.gapFill <- df %>% 
     group_by(Crop) %>% 
     mutate(AvgResidueMoistureProportionByCrop = mean(ResidueMoistureProportion, na.rm = TRUE)) %>% 
     ungroup() %>% 
     mutate(ResidueMassDry = case_when(!is.na(ResidueMassDry) ~ ResidueMassDry,
-                                    is.na(ResidueMassDry) ~ ResidueMassWet * (1 - AvgResidueMoistureProportionByCrop))) %>%
+                                      is.na(ResidueMassDry) ~ ResidueMassWet * (1 - AvgResidueMoistureProportionByCrop))) %>%
     mutate(ResidueMassDryPerArea = case_when(!is.na(ResidueMassDryPerArea) ~ ResidueMassDryPerArea,
-                                            is.na(ResidueMassDryPerArea) ~ ResidueMassDry / ResidueSampleArea)) %>% 
+                                             is.na(ResidueMassDryPerArea) ~ ResidueMassDry / ResidueSampleArea)) %>% 
     select(-AvgResidueMoistureProportionByCrop)
   
+  return(df.gapFill)
+}
+
+estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
+  require(purrr)
+  
   # Create a linear model that relates grain yield to dry residue mass. Model is by crop by year.
-  model <- df.gapFill %>% 
+  model <- df %>% 
     filter(Crop != "AL", !is.na(Crop),
            !is.na(GrainYieldDryPerArea),
            !is.na(ResidueMassDryPerArea)) %>% 
@@ -31,13 +33,13 @@ gapFillResidueVariables <- function(df) {
            XEstimate = GrainYieldDryPerArea)
   
   # Calculate dry residue mass of missing values using linear model
-  df <- df.gapFill %>% 
+  df.gapFill <- df %>% 
     full_join(model, by = c("HarvestYear", "Crop")) %>% 
     mutate(ResidueMassDryPerArea = case_when(is.na(ResidueMassDryPerArea) ~ InterceptEstimate + XEstimate * GrainYieldDryPerArea,
                      TRUE ~ ResidueMassDryPerArea)) %>% 
-    select(-InterceptEstimate, -XEstimate)
+    select(-InterceptEstimate, -XEstimate) 
   
-  return(df)
+  return(df.gapFill)
 }
 
 #http://stat545.com/block023_dplyr-do.html
