@@ -1,7 +1,10 @@
 source("src/functions.R")
 source("src/cleaningFunctions.R")
+source("src/gapFillingFunctions.R")
 
 df1999_2016 <- get_clean1999_2016(FALSE)
+df1999_2016GapFilled <- gapFillResidueVariables(df1999_2016) %>% 
+  select(-GrainSampleArea, -ResidueSampleArea, -ResidueMassWet, -ResidueMassDry, -ResidueMoistureProportion)
 
 varNames <- c("HarvestYear",	
               "Crop",	
@@ -49,7 +52,7 @@ varDesc <- c("Year sample was collected",
              "Dry grain yield on a per area basis. Sample dried in greenhouse or oven, threshed, then weighed",
              "Percent carbon of dry grain mass",
              "Percent nitrogen of dry gain mass",
-             "Residue mass on a per area basis. Residue = (biomass - grain mass) / area",
+             "Residue mass on a per area basis. Residue = (biomass - grain mass) / area. Some values calculated from a model.",
              "Percent carbon of dry residue mass",
              "Percent nitrogen of dry residue mass",
              "Comments, aggregated from various columns. '|' or ',' separates source",
@@ -86,4 +89,5 @@ data.frame(varNames, varUnits, varDesc, varTypes) %>%
          "DataType" = varTypes) %>% 
   write_csv_gridPointSurvey("1999-2016_DataDictionary")
 
-write_csv_gridPointSurvey(df1999_2016, "1999-2016")
+write_csv_gridPointSurvey(df1999_2016GapFilled, "1999-2016")
+
