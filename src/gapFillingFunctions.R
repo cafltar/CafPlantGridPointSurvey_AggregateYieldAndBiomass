@@ -15,29 +15,30 @@ estimateResidueMassDryXByResidueMoistureProportion <- function(df) {
 
 estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
   require(purrr)
+  require(broom)
   
   # Create a linear model that relates grain yield to dry residue mass. Model is by crop by year.
   model <- df %>% 
     filter(Crop != "AL", !is.na(Crop),
            !is.na(GrainYieldDryPerArea),
            !is.na(ResidueMassDryPerArea)) %>% 
-    nest(-Crop, -HarvestYear) %>% 
+    nest(-Crop) %>% #, -HarvestYear
     mutate(
       fit = map(data, ~ lm(ResidueMassDryPerArea ~ GrainYieldDryPerArea, data = .x)),
       tidied = map(fit, tidy)
     ) %>% 
     unnest(tidied) %>% 
-    select(Crop, HarvestYear, term, estimate) %>% 
+    select(Crop, term, estimate) %>% #HarvestYear, 
     spread(term, estimate) %>% 
     rename(InterceptEstimate = `(Intercept)`,
            XEstimate = GrainYieldDryPerArea)
   
   # Calculate dry residue mass of missing values using linear model
   df.gapFill <- df %>% 
-    full_join(model, by = c("HarvestYear", "Crop")) %>% 
+    full_join(model, by = c("Crop")) %>% #"HarvestYear", 
     mutate(ResidueMassDryPerArea = case_when(is.na(ResidueMassDryPerArea) ~ InterceptEstimate + XEstimate * GrainYieldDryPerArea,
-                     TRUE ~ ResidueMassDryPerArea)) %>% 
-    select(-InterceptEstimate, -XEstimate) 
+                     TRUE ~ ResidueMassDryPerArea))
+     
   
   return(df.gapFill)
 }

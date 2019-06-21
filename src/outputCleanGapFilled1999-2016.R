@@ -5,8 +5,8 @@ source("src/gapFillingFunctions.R")
 df1999_2016 <- get_clean1999_2016(FALSE)
 dfGapFillByMoistureProportion <- estimateResidueMassDryXByResidueMoistureProportion(df1999_2016)
 dfGapFillByGrainMass <- estimateResidueMassDryPerAreaByGrainYieldDryPerArea(dfGapFillByMoistureProportion)
-df1999_2016GapFilled <- dfGapFillByGrainMass %>% 
-  select(-GrainSampleArea, -ResidueSampleArea, -ResidueMassWet, -ResidueMassDry, -ResidueMoistureProportion)
+df1999_2016GapFilled <- dfGapFillByGrainMass #%>% 
+  #select(-GrainSampleArea, -ResidueSampleArea, -ResidueMassWet, -ResidueMassDry, -ResidueMoistureProportion, -InterceptEstimate, -XEstimate)
 
 varNames <- c("HarvestYear",	
               "Crop",	

@@ -78,3 +78,22 @@
   * From Dave Huggins via email "RE: updated results regarding how to  estimate the residue for the whole field" on 06/14/2019
   * Used to append residue values
   * "Attached file has residue that can be calculated. You need to subtract grain from total biomass." - Dave
+
+## 06/21/2019
+
+* [GPHY14_GB20141221.xlsx](GPHY14_GB20141221.xlsx)
+  * From Dave Huggins via WSU email "2014 yields" on 06/20/2019
+  * May have values that are not included in HY2014GB_aggregate_all_data_171122.csv
+* [GPHY14SB.xlsx](GPHY14SB.xlsx)
+  * From Dave Huggins via WSU email "2014 yields" on 06/20/2019
+  * May have values that are not included in HY2014GB_aggregate_all_data_171122.csv
+* [GPHY14SB_20190621.xlsx](GPHY14SB_20190621.xlsx)
+  * Bryan Carlson edited to move non numeric comments out of numeric columns and into comments column
+* [Cook Farm GP HY2014 Field B C4 WW.xlsx](Cook%20Farm%20GP%20HY2014%20Field%20B%20C4%20WW.xlsx)
+  * From Dave Huggins via WSU email "2014 yields" on 06/20/2019
+  * May have values that are not included in HY2014GB_aggregate_all_data_171122.csv
+* [Cook Farm GP HY2014 Field B C4 WW_20190621.xlsx](Cook%20Farm%20GP%20HY2014%20Field%20B%20C4%20WW_20190621.xlsx)
+  * Bryan Carlson edited to move non numeric comments out of numeric columns and into comments column 
+* [CFGPSW_HY2014_9.4.2014.xlsx](CFGPSW_HY2014_9.4.2014.xlsx)
+  * From Dave Huggins via WSU email "2014 yields" on 06/20/2019
+  * May have values that are not included in HY2014GB_aggregate_all_data_171122.csv
