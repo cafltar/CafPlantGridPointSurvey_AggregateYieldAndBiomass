@@ -608,125 +608,6 @@ get_clean2013 <- function() {
            ResidueNitrogen,
            Comments)
 }
-get_clean2014 <- function() {
-  require(tidyverse)
-  source("src/functions.R")
-  
-  # Read in the data, do some cleaning as we go
-  gb.cols <- c(rep("skip", 4),
-               "numeric",
-               "text",
-               rep("skip",2),
-               "text",
-               rep("skip", 2),
-               "numeric",
-               rep("skip", 2),
-               "numeric",
-               rep("skip", 6),
-               "text")
-  gb.names <- c("Column",
-                "Row2",
-                "SampleId",
-                "BiomassDry",
-                "GrainMassDry",
-                "Comments")
-  df.gb <- read_excel("input/GPHY14_GB20141221.xlsx",
-                    sheet = "Sheet1",
-                    skip = 9,
-                    col_types = gb.cols,
-                    col_names = gb.names)
-  
-  sb.cols <- c(rep("skip", 4),
-               "numeric",
-               "text",
-               rep("skip",2),
-               "text",
-               rep("skip", 2),
-               "numeric",
-               "numeric",
-               rep("skip", 6),
-               rep("numeric", 4),
-               "text")
-  sb.names <- c("Column",
-                "Row2",
-                "SampleId",
-                "GrainMassDry",
-                "BiomassDry",
-                "GrainProtein",
-                "GrainMoisture",
-                "GrainStarch",
-                "GrainTestWeight",
-                "Comments")
-  df.sb <- read_excel("input/GPHY14SB_20190621.xlsx",
-                      skip = 8,
-                      col_types = sb.cols,
-                      col_names = sb.names)
-  
-  ww.cols <- c("text",
-               "skip",
-               "numeric",
-               "numeric",
-               rep("skip", 9),
-               "text")
-  ww.names <- c("SampleId",
-                "GrainMassDry",
-                "BiomassDry",
-                "Comments")
-  df.ww <- read_excel("input/Cook Farm GP HY2014 Field B C4 WW_20190621.xlsx",
-                      skip = 8,
-                      col_types = ww.cols,
-                      col_names = ww.names) %>% 
-    mutate(SampleSep = SampleId) %>% 
-    separate(SampleSep, sep = "_", into = c("SamplePrefix", "ID", "ColRow2", "IsRes")) %>% 
-    separate(ColRow2, sep = "-", into = c("Column", "Row2")) %>% 
-    mutate(Column = as.numeric(Column)) %>% 
-    select(-SamplePrefix, -ID, -IsRes)
-  
-  sw.cols <- c(rep("skip", 4),
-               "text",
-               "numeric",
-               rep("skip", 2),
-               "text",
-               "skip",
-               rep("numeric", 2),
-               rep("skip", 11),
-               "text")
-  sw.names <- c("Row2",
-                "Column",
-                "Sample",
-                "GrainMassDry",
-                "BiomassDry",
-                "Comments")
-  df.sw <- read_excel("input/CFGPSW_HY2014_9.4.2014.xlsx",
-                      skip = 8,
-                      col_types = sw.cols,
-                      col_names = sw.names) %>% 
-    mutate(SampleId = paste(Sample, paste(Column, Row2, sep = "-"), sep = "_"))
-  
-  # Append rows from all dataframes
-  df.bind <- bind_rows(df.gb, df.sb, df.sw, df.ww) %>% 
-    arrange(SampleId)
-  
-  # Some WW samples have a observation for residue (_RES) samples and one for grain, these need to be combined
-  df.coalesce <- df.bind %>% 
-    mutate(SampleId = str_replace(SampleId, "_RES", "")) %>% 
-    group_by(SampleId) %>% 
-    fill(everything(), .direction = "down") %>% 
-    fill(everything(), .direction = "up") %>% 
-    slice(1)
-  
-  df <- append_georef_to_df(df.coalesce, "Row2", "Column")
-  
-  #df.nir <- get_clean2014_prioritizeNirData()
-  
-  #df.merge <- df.nir %>% 
-  #  left_join(df, by = "ID2")
-  
-  # Note: manually compared following values from two dataframes
-  #  * Longitude, Latitude, 
-  #  * GrainProtein: df.merge %>% filter(!is.na(GrainProtein.y)) %>% filter(GrainProtein.y != GrainProtein.x)
-  #  * 
-}
 get_clean2014_prioritizeNirData <- function() {
   require(tidyverse)
   
@@ -873,6 +754,200 @@ get_clean2014_prioritizeNirData <- function() {
            ResidueSampleArea,
            ResidueMassDryPerArea,
            Comments)
+}
+get_clean2014 <- function() {
+  require(tidyverse)
+  require(readxl)
+  source("src/functions.R")
+  
+  # Read in the data, do some cleaning as we go
+  gb.cols <- c(rep("skip", 4),
+               "numeric",
+               "text",
+               rep("skip",2),
+               "text",
+               rep("skip", 2),
+               "numeric",
+               rep("skip", 2),
+               "numeric",
+               rep("skip", 6),
+               "text")
+  gb.names <- c("Column",
+                "Row2",
+                "SampleID",
+                "BiomassDry",
+                "GrainMassDry",
+                "Comments")
+  df.gb <- read_excel("input/GPHY14_GB20141221.xlsx",
+                      sheet = "Sheet1",
+                      skip = 9,
+                      col_types = gb.cols,
+                      col_names = gb.names) %>% 
+    mutate(Crop = "GB",
+           HarvestYear = 2014)
+  
+  sb.cols <- c(rep("skip", 4),
+               "numeric",
+               "text",
+               rep("skip",2),
+               "text",
+               rep("skip", 2),
+               "numeric",
+               "numeric",
+               rep("skip", 6),
+               rep("numeric", 4),
+               "text")
+  sb.names <- c("Column",
+                "Row2",
+                "SampleID",
+                "GrainMassDry",
+                "BiomassDry",
+                "GrainProtein",
+                "GrainMoisture",
+                "GrainStarch",
+                "GrainTestWeight",
+                "Comments")
+  df.sb <- read_excel("input/GPHY14SB_20190621.xlsx",
+                      skip = 8,
+                      col_types = sb.cols,
+                      col_names = sb.names) %>% 
+    mutate(Crop = "SB",
+           HarvestYear = 2014)
+  
+  ww.cols <- c("text",
+               "skip",
+               "numeric",
+               "numeric",
+               rep("skip", 9),
+               "text")
+  ww.names <- c("SampleID",
+                "GrainMassDry",
+                "BiomassDry",
+                "Comments")
+  df.ww <- read_excel("input/Cook Farm GP HY2014 Field B C4 WW_20190621.xlsx",
+                      skip = 8,
+                      col_types = ww.cols,
+                      col_names = ww.names) %>% 
+    mutate(SampleSep = SampleID) %>% 
+    separate(SampleSep, sep = "_", into = c("SamplePrefix", "ID", "ColRow2", "IsRes")) %>% 
+    separate(ColRow2, sep = "-", into = c("Column", "Row2")) %>% 
+    mutate(Column = as.numeric(Column)) %>% 
+    select(-SamplePrefix, -ID, -IsRes) %>% 
+    mutate(Crop = "WW",
+           HarvestYear = 2014)
+  
+  sw.cols <- c(rep("skip", 4),
+               "text",
+               "numeric",
+               rep("skip", 2),
+               "text",
+               "skip",
+               rep("numeric", 2),
+               rep("skip", 11),
+               "text")
+  sw.names <- c("Row2",
+                "Column",
+                "Sample",
+                "GrainMassDry",
+                "BiomassDry",
+                "Comments")
+  df.sw <- read_excel("input/CFGPSW_HY2014_9.4.2014.xlsx",
+                      skip = 8,
+                      col_types = sw.cols,
+                      col_names = sw.names) %>% 
+    mutate(SampleID = paste(Sample, paste(Column, Row2, sep = "-"), sep = "_")) %>% 
+    mutate(Crop = "SW",
+           HarvestYear = 2014)
+  
+  # Append rows from all dataframes
+  df.bind <- bind_rows(df.gb, df.sb, df.sw, df.ww) %>% 
+    # NOTE: The actual area harvested was not recorded for 2014. It is likely that confusion over SOP caused area to be 1 m x 2 m or 2 m2 (harvesting within area inside pvc pipes instead of four rows of 2 m lenght - as was previous methods).  After mapping yields and comparing between years, Dave Huggins decided that 2014 was likely harvested at 2 m2. See notes in "CookEastPlantHandHarvest" OneNote (Bryan's WSU account)
+    mutate(ResidueSampleArea = 2,
+           GrainSampleArea = 2) %>% 
+    arrange(SampleID)
+  
+  # Some WW samples have a observation for residue (_RES) samples and one for grain, these need to be combined
+  df.coalesce <- df.bind %>% 
+    mutate(SampleID = str_replace(SampleID, "_RES", "")) %>% 
+    group_by(SampleID) %>% 
+    fill(everything(), .direction = "down") %>% 
+    fill(everything(), .direction = "up") %>% 
+    slice(1)
+  
+  df <- append_georef_to_df(df.coalesce, "Row2", "Column") %>% 
+    rename(Latitude = Y,
+           Longitude = X)
+  
+  df.nir <- get_clean2014_prioritizeNirData()
+  
+  df.merge.test <- df.nir %>% 
+    left_join(df, by = "ID2")
+  
+  # Note: manually compared following values from two dataframes
+  #   * Longitude: 0 rows
+  #     * df.merge.test %>% filter(Longitude.x != Longitude.y)
+  #   * Latitude: 0 rows
+  #     * df.merge.test %>% filter(Latitude.x != Latitude.y)
+  #   * GrainProtein: 0 rows
+  #     * df.merge.test %>% filter(!is.na(GrainProtein.y)) %>% filter(GrainProtein.y != GrainProtein.x)
+  #   * Crop: 0 rows
+  #     * df.merge.test %>% filter(Crop.x != Crop.y)
+  #   * SampleID: 118 rows [using SampleID (from get_clean2014())]
+  #     * df.merge.test %>% filter(toupper(SampleID.x) != toupper(SampleID.y)) %>% select(ID2, SampleID.x, SampleID.y) %>% tibble()
+  #   * GrainProtein 0 rows
+  #     * df.merge.test %>% filter(!is.na(GrainProtein.y)) %>% filter(GrainProtein.x != GrainProtein.y)
+  #   * GrainMoisture: 0 rows
+  #     * df.merge.test %>% filter(!is.na(GrainMoisture.y)) %>% filter(GrainMoisture.x != GrainMoisture.y)
+  
+  df.calc <- df %>% 
+    mutate(GrainYieldDryPerArea = GrainMassDry / GrainSampleArea,
+           ResidueMassDry = BiomassDry - GrainMassDry,
+           ResidueMassDryPerArea = ResidueMassDry / ResidueSampleArea)
+  
+  # Merge nir data
+  df.merge <- df.nir %>% 
+    mutate(ResidueMassDry = ResidueMassDryPerArea * ResidueSampleArea) %>% 
+    select(ID2, 
+           GrainProtein, 
+           GrainMoisture, 
+           GrainStarch, 
+           GrainWGlutDM, 
+           ResidueMassDry,
+           ResidueMassDryPerArea,
+           Comments) %>% 
+    left_join(df.calc, by = "ID2")
+  
+  # .x suffix = NIR data, .y suffix = Huggin's approved data
+  # Accept Residue data from Huggin's above NIR's
+  # Accept NAIR's grain protein, moisture, startch, gluten
+  # Merge comments
+  df.clean <- df.merge %>%
+    mutate(GrainProtein = GrainProtein.x,
+           GrainMoisture = GrainMoisture.x,
+           GrainStarch = GrainStarch.x,
+           ResidueMassDry = case_when(!is.na(ResidueMassDry.y) ~ ResidueMassDry.y,
+                                      TRUE ~ ResidueMassDry.x),
+           ResidueMassDryPerArea = case_when(!is.na(ResidueMassDryPerArea.y) ~ ResidueMassDryPerArea.y,
+                                             TRUE ~ ResidueMassDryPerArea.x),
+           Comments = paste(Comments.x, Comments.y, sep = " | ")) %>% 
+    select(HarvestYear,
+           Crop,
+           SampleID,
+           Longitude,
+           Latitude,
+           ID2,
+           GrainSampleArea,
+           GrainMassDry,
+           GrainYieldDryPerArea,
+           GrainProtein,
+           GrainMoisture,
+           GrainStarch,
+           GrainWGlutDM,
+           ResidueSampleArea,
+           ResidueMassDry,
+           ResidueMassDryPerArea,
+           Comments)
+
 }
 get_clean2015 <- function() {
   require(tidyverse)
