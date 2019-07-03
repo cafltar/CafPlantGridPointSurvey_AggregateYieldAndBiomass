@@ -97,3 +97,9 @@
 * [CFGPSW_HY2014_9.4.2014.xlsx](CFGPSW_HY2014_9.4.2014.xlsx)
   * From Dave Huggins via WSU email "2014 yields" on 06/20/2019
   * May have values that are not included in HY2014GB_aggregate_all_data_171122.csv
+
+## 07/03/2019
+
+* [HY1999-2016_20190701_NOGapfill.xlsx](HY1999-2016_20190701_NOGapfill.xlsx)
+  * From Qiuping Peng (Ellen) via email "Re: Meet today to discuss harvest data" on 07/03/2019
+  * Data have binary flag on whether or not a crop was present - this will help us determine if yield (and thus residue) should be estimated. A null value for yield but a 1 in crop planted, we assume data/sample lost.

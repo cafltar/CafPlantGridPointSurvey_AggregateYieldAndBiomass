@@ -115,19 +115,21 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
 
 estimateYieldByAvgYieldAndRelativeYield <- function(df) {
   # Load data for relative yields
-  df.ry <- read_xlsx("input/StripbyStripAvg2.xlsx",
+  df.relYields <- read_xlsx("input/StripbyStripAvg2.xlsx",
                      sheet = "NEW_RY") %>% 
     select(UID, Field, Strip, `11Years Avg_Strip`) %>% 
     rename(RelativeYield = `11Years Avg_Strip`,
            ID2 = UID)
   # Load data to assess whether or not yield should be estimated
+  df.cropPresent <- read_xlsx("input/HY1999-2016_20190701_NOGapfill.xlsx",
+                             sheet = "HY1999-2016_20190701_NOGapfill") %>% 
+    select(HarvestYear, ID2, Cropwaspresentcode) %>% 
+    rename(CropExists = Cropwaspresentcode)
   
   # Merge datasets
   df.merge <- df %>% 
-    left_join(df.ry, by = "ID2") %>% 
-    # ========= TEMP
-    mutate(CropExists = 1)
-    # ////////////// temp
+    left_join(df.relYields, by = "ID2") %>% 
+    left_join(df.cropPresent, by = c("HarvestYear", "ID2"))
   
   # Calculate avg yield by crop and year
   # If yield is null and crop exists, estimate: YieldAvg * RelativeYield
@@ -135,11 +137,8 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
     group_by(HarvestYear, Crop) %>% 
     mutate(GrainYieldDryPerAreaAvg = mean(GrainYieldDryPerArea, na.rm = T)) %>% 
     ungroup() %>% 
-    mutate(GrainYieldDryPerAreaModel = case_when((is.na(GrainYieldDryPerArea) & CropExists == 1) ~ GrainYieldDryPerAreaAvg * RelativeYield,
+    mutate(GrainYieldDryPerArea = case_when((is.na(GrainYieldDryPerArea) & CropExists == 1) ~ GrainYieldDryPerAreaAvg * RelativeYield,
                                             TRUE ~ GrainYieldDryPerArea))
-  
-  # =========== TEMP
-  df.gapFill %>% filter(is.na(GrainYieldDryPerArea)) %>% select(ID2, Crop, GrainYieldDryPerAreaAvg, RelativeYield, GrainYieldDryPerArea, GrainYieldDryPerAreaModel) %>% print(n = 50)
 }
 
 #http://stat545.com/block023_dplyr-do.html
