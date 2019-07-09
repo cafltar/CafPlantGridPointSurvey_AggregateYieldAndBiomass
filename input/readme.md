@@ -103,3 +103,11 @@
 * [HY1999-2016_20190701_NOGapfill.xlsx](HY1999-2016_20190701_NOGapfill.xlsx)
   * From Qiuping Peng (Ellen) via email "Re: Meet today to discuss harvest data" on 07/03/2019
   * Data have binary flag on whether or not a crop was present - this will help us determine if yield (and thus residue) should be estimated. A null value for yield but a 1 in crop planted, we assume data/sample lost.
+
+## 07/09/2019
+
+* [HY1999-2016_20190708_NOGapfill with updated cropexistcode.xlsx](HY1999-2016_20190708_NOGapfill%20with%20updated%20cropexistcode.xlsx)
+  * From Qiuping Peng (Ellen) via email "Updated Crop present code" on 07/08/2019
+  * Updated version of HY1999-2016_20190701_NOGapfill.xlsx
+  * "After discussion with Dr. Huggins, I updated the crop present code, see the attached excel file.  The new code is in column: updateCropwaspresentcode" - Ellen
+  

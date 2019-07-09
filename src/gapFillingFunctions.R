@@ -121,25 +121,41 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
     rename(RelativeYield = `11Years Avg_Strip`,
            ID2 = UID)
   # Load data to assess whether or not yield should be estimated
-  df.cropPresent <- read_xlsx("input/HY1999-2016_20190701_NOGapfill.xlsx",
-                             sheet = "HY1999-2016_20190701_NOGapfill") %>% 
-    select(HarvestYear, ID2, Cropwaspresentcode) %>% 
-    rename(CropExists = Cropwaspresentcode)
+  df.cropPresent <- read_xlsx("input/HY1999-2016_20190708_NOGapfill with updated cropexistcode.xlsx",
+                             sheet = "HY1999-2016_20190708_NOGap") %>% 
+    select(HarvestYear, ID2, updateCropwaspresentcode) %>% 
+    rename(CropExists = updateCropwaspresentcode)
   
   # Merge datasets
   df.merge <- df %>% 
     left_join(df.relYields, by = "ID2") %>% 
     left_join(df.cropPresent, by = c("HarvestYear", "ID2"))
   
-  # Calculate avg yield by crop and year
-  # If yield is null and crop exists, estimate: YieldAvg * RelativeYield
-  df.gapFill <- df.merge %>% 
+  # Calculate average yield
+  # First calc by crop and year
+  # Second calc by crop (all years) if first fails
+  # Third, In 2001, assume WC had same avg yield as SC
+  sc.2001.avg.yield <- df.merge %>% 
+    filter(HarvestYear == 2001, Crop == "SC") %>% 
+    group_by(HarvestYear, Crop) %>% 
+    summarize(avg = mean(GrainYieldDryPerArea, na.rm = T)) %>% 
+    .$avg
+  df.calc <- df.merge %>% 
     group_by(HarvestYear, Crop) %>% 
     mutate(GrainYieldDryPerAreaAvg = mean(GrainYieldDryPerArea, na.rm = T)) %>% 
     ungroup() %>% 
+    group_by(Crop) %>% 
+    mutate(GrainYieldDryPerAreaAvg = case_when(is.na(GrainYieldDryPerAreaAvg) ~ mean(GrainYieldDryPerArea, na.rm = T),
+                                               TRUE ~ GrainYieldDryPerAreaAvg)) %>% 
+    ungroup() %>% 
+    mutate(GrainYieldDryPerAreaAvg = case_when(HarvestYear == 2001 & Crop == "WC" ~ sc.2001.avg.yield,
+                                               TRUE ~ GrainYieldDryPerAreaAvg))
+  
+  # If yield is null and crop exists, estimate: YieldAvg * RelativeYield
+  df.gapFill <- df.calc %>% 
     mutate(GrainYieldDryPerArea = case_when((is.na(GrainYieldDryPerArea) & CropExists == 1) ~ GrainYieldDryPerAreaAvg * RelativeYield,
                                             TRUE ~ GrainYieldDryPerArea))
-}
+  }
 
 #http://stat545.com/block023_dplyr-do.html
 le_lin_fit <- function(dat) {
