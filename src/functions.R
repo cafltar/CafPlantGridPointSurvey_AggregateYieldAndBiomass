@@ -1,13 +1,14 @@
 require(sf)
 
-write_csv_gridPointSurvey <- function(df, harvest.year) {
+write_csv_gridPointSurvey <- function(df, harvest.year, output.folder = "working") {
   date.today <- format(Sys.Date(), "%Y%m%d")
-  file.path <- paste("working/HY", 
-                      harvest.year,
-                      "_",
-                      date.today,
-                      ".csv",
-                      sep = "")
+  file.path <- file.path(output.folder,
+                         paste("HY",
+                               harvest.year,
+                               "_",
+                               date.today,
+                               ".csv",
+                               sep = ""))
   write_csv(df, file.path, na = "")
 }
 
