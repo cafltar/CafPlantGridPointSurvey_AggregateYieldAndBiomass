@@ -134,7 +134,6 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
   # Calculate average yield
   # First calc by crop and year
   # Second calc by crop (all years) if first fails
-  # Third, In 2001, assume WC had same avg yield as SC
   sc.2001.avg.yield <- df.merge %>% 
     filter(HarvestYear == 2001, Crop == "SC") %>% 
     group_by(HarvestYear, Crop) %>% 
@@ -147,9 +146,9 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
     group_by(Crop) %>% 
     mutate(GrainYieldDryPerAreaAvg = case_when(is.na(GrainYieldDryPerAreaAvg) ~ mean(GrainYieldDryPerArea, na.rm = T),
                                                TRUE ~ GrainYieldDryPerAreaAvg)) %>% 
-    ungroup() %>% 
-    mutate(GrainYieldDryPerAreaAvg = case_when(HarvestYear == 2001 & Crop == "WC" ~ sc.2001.avg.yield,
-                                               TRUE ~ GrainYieldDryPerAreaAvg))
+    ungroup() #%>% 
+    #mutate(GrainYieldDryPerAreaAvg = case_when(HarvestYear == 2001 & Crop == "WC" ~ sc.2001.avg.yield,
+    #                                           TRUE ~ GrainYieldDryPerAreaAvg))
   
   # If yield is null and crop exists, estimate: YieldAvg * RelativeYield
   df.gapFill <- df.calc %>% 
