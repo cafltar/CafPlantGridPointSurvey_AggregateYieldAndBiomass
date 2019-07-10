@@ -98,14 +98,16 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
   
   # Decide whether to accept regression equation from Crop or CropYear
   #   If AdjRSquared of Cropyear is NULL, choose other
-  #   If CropYear has df.residual < 4 and R2 < 0.5 choose Crop
+  #   Assuming at least n = 10 for good regression, so DfResidual < 9, choose all-years
   model <- df.merge %>% 
     mutate(InterceptEstimate = case_when(is.na(AdjRSquared.cropyear) ~ InterceptEstimate.crop,
-                                         (DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ InterceptEstimate.crop,
+                                         DfResidual.cropyear < 9 ~ InterceptEstimate.crop,
+                                         #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ InterceptEstimate.crop,
                                          TRUE ~ InterceptEstimate.cropyear),
            XEstimate = case_when(is.na(AdjRSquared.cropyear) ~ XEstimate.crop,
-                                 (DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ XEstimate.crop,
-                                         TRUE ~ XEstimate.cropyear))
+                                 DfResidual.cropyear < 9 ~ XEstimate.crop,
+                                 #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ XEstimate.crop,
+                                 TRUE ~ XEstimate.cropyear))
   #TEMP ============
   model %>% filter(Crop == "WC") %>% select(HarvestYear, Crop, InterceptEstimate, XEstimate)
   
