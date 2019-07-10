@@ -39,7 +39,6 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
            !is.na(GrainYieldDryPerArea),
            !is.na(ResidueMassDryPerArea))
   
-  
   modelByCropYear <- df.clean %>% 
     nest(-HarvestYear, -Crop) %>%
     mutate(
@@ -61,8 +60,12 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
     rename(InterceptEstimate.cropyear = `(Intercept)`,
            XEstimate.cropyear = GrainYieldDryPerArea)
   
-  df.cropyear <- summaryByCropYear %>% 
-    left_join(regressionByCropYear, by = c("HarvestYear", "Crop"))
+  # Join data, use df to retain NaN and NA values
+  df.cropyear <- df %>% 
+    select(HarvestYear, Crop) %>% 
+    left_join(summaryByCropYear, by = c("HarvestYear", "Crop")) %>% 
+    left_join(regressionByCropYear, by = c("HarvestYear", "Crop")) %>% 
+    unique()
   
   
   # This should be a function since I'm copy/pasting
@@ -101,8 +104,10 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
                                          (DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ InterceptEstimate.crop,
                                          TRUE ~ InterceptEstimate.cropyear),
            XEstimate = case_when(is.na(AdjRSquared.cropyear) ~ XEstimate.crop,
-                                         (DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ XEstimate.crop,
+                                 (DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ XEstimate.crop,
                                          TRUE ~ XEstimate.cropyear))
+  #TEMP ============
+  model %>% filter(Crop == "WC") %>% select(HarvestYear, Crop, InterceptEstimate, XEstimate)
   
   # Calculate dry residue mass of missing values using linear model
   df.gapFill <- df %>% 
