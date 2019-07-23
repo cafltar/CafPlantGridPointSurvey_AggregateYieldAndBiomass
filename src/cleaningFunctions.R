@@ -863,6 +863,11 @@ get_clean2015 <- function() {
   
   # Fill area values and calc missing
   df.calc <- df2015 %>% 
+    # Ellen mapped data, ID2 of 258 is within SC strip
+    mutate(Crop = case_when(ID2 == 258 ~ "SC",
+                            TRUE ~ Crop)) %>% 
+    # SC was harvested using 1 m x 2 m pipes as guide due to difficulties seeing drill rows
+    # All others were harvested at 4 rows of 1 m length
     mutate(GrainSampleArea = case_when(Crop == "SC" ~ 2,
                                        TRUE ~ 2.4384),
            ResidueSampleArea = GrainSampleArea) %>% 

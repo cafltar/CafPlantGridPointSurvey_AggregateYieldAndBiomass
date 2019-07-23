@@ -39,7 +39,6 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
            !is.na(GrainYieldDryPerArea),
            !is.na(ResidueMassDryPerArea))
   
-  
   modelByCropYear <- df.clean %>% 
     nest(-HarvestYear, -Crop) %>%
     mutate(
@@ -61,8 +60,12 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
     rename(InterceptEstimate.cropyear = `(Intercept)`,
            XEstimate.cropyear = GrainYieldDryPerArea)
   
-  df.cropyear <- summaryByCropYear %>% 
-    left_join(regressionByCropYear, by = c("HarvestYear", "Crop"))
+  # Join data, use df to retain NaN and NA values
+  df.cropyear <- df %>% 
+    select(HarvestYear, Crop) %>% 
+    left_join(summaryByCropYear, by = c("HarvestYear", "Crop")) %>% 
+    left_join(regressionByCropYear, by = c("HarvestYear", "Crop")) %>% 
+    unique()
   
   
   # This should be a function since I'm copy/pasting
@@ -95,14 +98,18 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
   
   # Decide whether to accept regression equation from Crop or CropYear
   #   If AdjRSquared of Cropyear is NULL, choose other
-  #   If CropYear has df.residual < 4 and R2 < 0.5 choose Crop
+  #   Assuming at least n = 10 for good regression, so DfResidual < 9, choose all-years
   model <- df.merge %>% 
     mutate(InterceptEstimate = case_when(is.na(AdjRSquared.cropyear) ~ InterceptEstimate.crop,
-                                         (DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ InterceptEstimate.crop,
+                                         DfResidual.cropyear < 9 ~ InterceptEstimate.crop,
+                                         #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ InterceptEstimate.crop,
                                          TRUE ~ InterceptEstimate.cropyear),
            XEstimate = case_when(is.na(AdjRSquared.cropyear) ~ XEstimate.crop,
-                                         (DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ XEstimate.crop,
-                                         TRUE ~ XEstimate.cropyear))
+                                 DfResidual.cropyear < 9 ~ XEstimate.crop,
+                                 #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ XEstimate.crop,
+                                 TRUE ~ XEstimate.cropyear))
+  #TEMP ============
+  model %>% filter(Crop == "WC") %>% select(HarvestYear, Crop, InterceptEstimate, XEstimate)
   
   # Calculate dry residue mass of missing values using linear model
   df.gapFill <- df %>% 
@@ -121,25 +128,40 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
     rename(RelativeYield = `11Years Avg_Strip`,
            ID2 = UID)
   # Load data to assess whether or not yield should be estimated
-  df.cropPresent <- read_xlsx("input/HY1999-2016_20190701_NOGapfill.xlsx",
-                             sheet = "HY1999-2016_20190701_NOGapfill") %>% 
-    select(HarvestYear, ID2, Cropwaspresentcode) %>% 
-    rename(CropExists = Cropwaspresentcode)
+  df.cropPresent <- read_xlsx("input/HY1999-2016_20190708_NOGapfill with updated cropexistcode.xlsx",
+                             sheet = "HY1999-2016_20190708_NOGap") %>% 
+    select(HarvestYear, ID2, updateCropwaspresentcode) %>% 
+    rename(CropExists = updateCropwaspresentcode)
   
   # Merge datasets
   df.merge <- df %>% 
     left_join(df.relYields, by = "ID2") %>% 
     left_join(df.cropPresent, by = c("HarvestYear", "ID2"))
   
-  # Calculate avg yield by crop and year
-  # If yield is null and crop exists, estimate: YieldAvg * RelativeYield
-  df.gapFill <- df.merge %>% 
+  # Calculate average yield
+  # First calc by crop and year
+  # Second calc by crop (all years) if first fails
+  sc.2001.avg.yield <- df.merge %>% 
+    filter(HarvestYear == 2001, Crop == "SC") %>% 
+    group_by(HarvestYear, Crop) %>% 
+    summarize(avg = mean(GrainYieldDryPerArea, na.rm = T)) %>% 
+    .$avg
+  df.calc <- df.merge %>% 
     group_by(HarvestYear, Crop) %>% 
     mutate(GrainYieldDryPerAreaAvg = mean(GrainYieldDryPerArea, na.rm = T)) %>% 
     ungroup() %>% 
+    group_by(Crop) %>% 
+    mutate(GrainYieldDryPerAreaAvg = case_when(is.na(GrainYieldDryPerAreaAvg) ~ mean(GrainYieldDryPerArea, na.rm = T),
+                                               TRUE ~ GrainYieldDryPerAreaAvg)) %>% 
+    ungroup() #%>% 
+    #mutate(GrainYieldDryPerAreaAvg = case_when(HarvestYear == 2001 & Crop == "WC" ~ sc.2001.avg.yield,
+    #                                           TRUE ~ GrainYieldDryPerAreaAvg))
+  
+  # If yield is null and crop exists, estimate: YieldAvg * RelativeYield
+  df.gapFill <- df.calc %>% 
     mutate(GrainYieldDryPerArea = case_when((is.na(GrainYieldDryPerArea) & CropExists == 1) ~ GrainYieldDryPerAreaAvg * RelativeYield,
                                             TRUE ~ GrainYieldDryPerArea))
-}
+  }
 
 #http://stat545.com/block023_dplyr-do.html
 le_lin_fit <- function(dat) {

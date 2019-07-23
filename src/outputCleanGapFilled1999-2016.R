@@ -90,7 +90,7 @@ data.frame(varNames, varUnits, varDesc, varTypes) %>%
          "Units" = varUnits,
          "Description" = varDesc,
          "DataType" = varTypes) %>% 
-  write_csv_gridPointSurvey("1999-2016_DataDictionary")
+  write_csv_gridPointSurvey("1999-2016_DataDictionary", "output")
 
-write_csv_gridPointSurvey(df1999_2016GapFilled, "1999-2016")
+write_csv_gridPointSurvey(df1999_2016GapFilled, "1999-2016", "output")
 
