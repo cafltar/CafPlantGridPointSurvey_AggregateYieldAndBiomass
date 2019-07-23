@@ -1,5 +1,9 @@
 estimateResidueMassDryXByResidueMoistureProportion <- function(df) {
   # Calculate average moisture proportion of residue by crop and use it to calculate the dry mass of residue for missing values
+  #
+  # Args:
+  #   df: dataframe containing harvest data as generated from get_clean1999_2016()
+  
   df.gapFill <- df %>% 
     group_by(Crop) %>% 
     mutate(AvgResidueMoistureProportionByCrop = mean(ResidueMoistureProportion, na.rm = TRUE)) %>% 
@@ -14,24 +18,16 @@ estimateResidueMassDryXByResidueMoistureProportion <- function(df) {
 }
 
 estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
+  # Create a linear model that relates grain yield to dry residue mass. Two linear models are calculated:
+  #   1: using data from all years of a single crop
+  #   2: using data from single crop in a single year
+  # Option 1 is used if available data for option 2 is n < 10.
+  #
+  # Args:
+  #   df: dataframe containing harvest data as generated from get_clean1999_2016()
+  
   require(purrr)
   require(broom)
-  
-  # Create a linear model that relates grain yield to dry residue mass. Model is by crop by year.
-  #model <- df %>% 
-  #  filter(Crop != "AL", !is.na(Crop),
-  #         !is.na(GrainYieldDryPerArea),
-  #         !is.na(ResidueMassDryPerArea)) %>% 
-  #  nest(-HarvestYear, -Crop) %>%
-  #  mutate(
-  #    fit = map(data, ~ lm(ResidueMassDryPerArea ~ GrainYieldDryPerArea, data = .x)),
-  #    tidied = map(fit, tidy)
-  #  ) %>% 
-  #  unnest(tidied) %>% 
-  #  select(HarvestYear, Crop, term, estimate) %>% 
-  #  spread(term, estimate) %>% 
-  #  rename(InterceptEstimate = `(Intercept)`,
-  #         XEstimate = GrainYieldDryPerArea)
   
   # Remove AL (alfalfa) since we don't actually have data
   df.clean <- df %>% 
@@ -66,7 +62,6 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
     left_join(summaryByCropYear, by = c("HarvestYear", "Crop")) %>% 
     left_join(regressionByCropYear, by = c("HarvestYear", "Crop")) %>% 
     unique()
-  
   
   # This should be a function since I'm copy/pasting
   modelByCrop <- df.clean %>% 
@@ -108,8 +103,6 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
                                  DfResidual.cropyear < 9 ~ XEstimate.crop,
                                  #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ XEstimate.crop,
                                  TRUE ~ XEstimate.cropyear))
-  #TEMP ============
-  model %>% filter(Crop == "WC") %>% select(HarvestYear, Crop, InterceptEstimate, XEstimate)
   
   # Calculate dry residue mass of missing values using linear model
   df.gapFill <- df %>% 
@@ -121,6 +114,16 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
 }
 
 estimateYieldByAvgYieldAndRelativeYield <- function(df) {
+  # Estimates yield value by calculating two forms of average yield,
+  #   1: by crop & year
+  #   2: by crop (all years)
+  # then using that average to multiple by 11-year average relative yield at that sample's location
+  # 
+  # Option 2 is used only if Option 1 cannot be calculated
+  #
+  # Args:
+  #   df: dataframe containing harvest data as generated from get_clean1999_2016()
+  
   # Load data for relative yields
   df.relYields <- read_xlsx("input/StripbyStripAvg2.xlsx",
                      sheet = "NEW_RY") %>% 
@@ -153,9 +156,7 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
     group_by(Crop) %>% 
     mutate(GrainYieldDryPerAreaAvg = case_when(is.na(GrainYieldDryPerAreaAvg) ~ mean(GrainYieldDryPerArea, na.rm = T),
                                                TRUE ~ GrainYieldDryPerAreaAvg)) %>% 
-    ungroup() #%>% 
-    #mutate(GrainYieldDryPerAreaAvg = case_when(HarvestYear == 2001 & Crop == "WC" ~ sc.2001.avg.yield,
-    #                                           TRUE ~ GrainYieldDryPerAreaAvg))
+    ungroup()
   
   # If yield is null and crop exists, estimate: YieldAvg * RelativeYield
   df.gapFill <- df.calc %>% 
@@ -163,13 +164,9 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
                                             TRUE ~ GrainYieldDryPerArea))
   }
 
-#http://stat545.com/block023_dplyr-do.html
-le_lin_fit <- function(dat) {
-  the_fit <- lm(ResidueMassDryPerArea ~ GrainYieldDryPerArea, dat)
-  setNames(data.frame(t(coef(the_fit))), c("intercept", "slope"))
-}
-
 writeGapFillResidueStatistics <- function(df) {
+  # A one off function that writes some parameters used for gap filling
+  
   df %>% 
     filter(!is.na(ResidueMoistureProportion)) %>% 
     group_by(Crop) %>% 
