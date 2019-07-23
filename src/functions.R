@@ -1,6 +1,13 @@
 require(sf)
 
 write_csv_gridPointSurvey <- function(df, harvest.year, output.folder = "working") {
+  # Writes a csv file in defined folder in format of "HY{year}_{current date}.csv", sets NAs to blank
+  #
+  # Args:
+  #   df: dataframe to be written as csv
+  #   harvest.year: String of year(s) of data (e.g. "2007" or "1999-2009")
+  #   output.folder: String of folder to write the file to
+  
   date.today <- format(Sys.Date(), "%Y%m%d")
   file.path <- file.path(output.folder,
                          paste("HY",
@@ -13,12 +20,28 @@ write_csv_gridPointSurvey <- function(df, harvest.year, output.folder = "working
 }
 
 compare_cols <- function(df.in, column1, column2) {
+  # Compares two columns, stops if columns don't match
+  #
+  # Args:
+  #   df.in: dataframe with columns to compare
+  #   column1: column to compare with column2
+  #   column2: column to compare with column1
+  
   foo <- NULL
   compare <- df.in[column1] == df.in[column2]
   if(nrow(compare) < nrow(df.in[column1])) { stop("Columns do not match") }
 }
 
 append_georef_to_df <- function(df, row.name, col.name) {
+  # Reads geojson file with CAF georeference points, merges with df based on columns with row2 and column designations
+  #
+  # Args:
+  #   df: dataframe with CAF row2 and column values
+  #   row.name: column name with CAF row2 values
+  #   col.name: column name with CAF column values
+  
+  require(sf)
+  
   georef <- st_read("input/CookEast_GeoreferencePoints_171127.json") %>% 
     select(-Strip, -Field) %>% 
     mutate(Row2 = as.character(Row2),
@@ -36,6 +59,8 @@ append_georef_to_df <- function(df, row.name, col.name) {
 }
 
 check_yields <- function(df.in, sheet.name, year, yield.column) {
+  # Compares yield values in df.in with yield values in a dataset cleaned by Kadar
+  
   yield.check <- read_excel("input/StripbyStripAvg2.xlsx", sheet = sheet.name) %>% 
     select(2, yield.column) %>% 
     rename("ID2" = 1, "Yield" = 2)
@@ -49,6 +74,8 @@ check_yields <- function(df.in, sheet.name, year, yield.column) {
 }
 
 getUngerDF <- function(worksheet) {
+  # Reads and formats data from an excel file produced by Rachel Unger
+  
   df <- read_xlsx(
     "input/CAF N data set.xlsx",
     sheet = worksheet,
@@ -79,6 +106,12 @@ getUngerDF <- function(worksheet) {
 }
 
 removeOutliers <- function(x, na.rm = TRUE) {
+  # Calculates extreme outlier and sets any to NA
+  #
+  # Args:
+  #   x: dataframe with numeric values to have extreme outliers scrubbed
+  #   na.rm: if TRUE, ignores NA values with calculating quantile
+  
   qnt <- quantile(x, probs=c(0.25, 0.75), na.rm = na.rm)
   H <- 3 * IQR(x, na.rm = na.rm)
   y <- x
@@ -87,10 +120,15 @@ removeOutliers <- function(x, na.rm = TRUE) {
   return(y)
 }
 
-# Takes a vector of continuous data (x) and returns an int column with;
-#   1 = outside upper/lower inner fence
-#   2 = outside upper/lower outer fence
 getOutlierColumn <- function(x, na.rm = T) {
+  # Takes a vector of continuous data (x) and returns an int column with;
+  #   1 = outside upper/lower inner fence
+  #   2 = outside upper/lower outer fence
+  #
+  # Args:
+  #   x: vector with continues data
+  #   na.rm: if TRUE, ignores NA values when calculating quantile
+  
   qnt <- quantile(x, probs=c(0.25, 0.75), na.rm = na.rm)
   H <- 1.5 * IQR(x, na.rm = na.rm)
   HExtreme <- 3 * IQR(x, na.rm = na.rm)
@@ -103,24 +141,14 @@ getOutlierColumn <- function(x, na.rm = T) {
   return(outlier)
 }
 
-# Takes a vector of continuous data (x) and returns int column with quartile
-# Returns column with rankings:
-#   1 = value is less than or equal to Q1
-#   2 = value is greater than Q1 and less than Q2
-#   3 = value is greater than Q2 and less than Q3
-#   4 = value is greater than Q3
 getQuartileColumn <- function(x, na.rm = T) {
-  # -- Method 1
-  #quartiles <- as.integer(.bincode(x,
-  #                         breaks = quantile(x,
-  #                                           probs = seq(0,1,0.25),
-  #                                           na.rm = na.rm),
-  #                         include.lowest = T))
+  # Takes a vector of continuous data (x) and returns int column with quartile
+  # Returns column with rankings:
+  #   1 = value is less than or equal to Q1
+  #   2 = value is greater than Q1 and less than Q2
+  #   3 = value is greater than Q2 and less than Q3
+  #   4 = value is greater than Q3
   
-  # -- Method 2
-  #quartiles <- ntile(x, 4)
-  
-  # -- Method 3
   qnt <- quantile(x, probs=seq(0,1,0.25), na.rm = na.rm)
   quartiles <- rep(NA, length(x))
   
@@ -133,18 +161,21 @@ getQuartileColumn <- function(x, na.rm = T) {
 }
 
 
-# Input
-#   sf = Simple feature
-#   varCol = Column names with continuous variable to calculate quartiles and outliers
-#   yearCol = Column name with Year data, to be grouped by
-#   cropCol = Column name with crop name data, to be grouped by and used for point color
-# Output
-#   returns a tmap with:
-#   size = Quartile category; 1 = less than Q1, 2 = greater than Q1 and less than Q2, 3 = greater than Q2 and less than Q3, 4 = greater than Q4
-#   color = Crop type
-#   shape = Outlier (0 = not outlier, 1 = inner fence, 2 = outer fence)
-#   boundary = sf polygon to act as boundary to data
 getMapQuartileOutliers <- function(sf, varCol, yearCol, cropCol, boundary = NULL, labelCol = NULL) {
+  # Creates a map of crop variable emphisizing quartile category and crop type
+  #
+  # Args:
+  #   sf: Simple feature
+  #   varCol: Column names with continuous variable to calculate quartiles and outliers
+  #   yearCol: Column name with Year data, to be grouped by
+  #   cropCol: Column name with crop name data, to be grouped by and used for point color
+  # Output
+  #   returns a tmap with:
+  #   size = Quartile category; 1 = less than Q1, 2 = greater than Q1 and less than Q2, 3 = greater than Q2 and less than Q3, 4 = greater than Q4
+  #   color = Crop type
+  #   shape = Outlier (0 = not outlier, 1 = inner fence, 2 = outer fence)
+  #   boundary = sf polygon to act as boundary to data
+  
   require(sf)
   require(tmap)
 
