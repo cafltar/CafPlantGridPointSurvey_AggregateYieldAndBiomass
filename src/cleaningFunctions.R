@@ -1,4 +1,5 @@
-get_dirty1999_2009 <- function() {
+get_clean1999_2009 <- function() {
+  # Loads legecy data from one or more datasets and outputs cleaned dataframe
   # Note that quality/verification checks are scrubbed out of this function. See "checkUnger1999-2009.R" for such tests.
   
   require(tidyverse)
@@ -7,7 +8,7 @@ get_dirty1999_2009 <- function() {
   
   source("src/functions.R")
   
-  # Load data
+  # Load data, set nulls and filter for only samples from georef points
   df.ubbie <- read_excel(
     "input/Cook Farm All years all points.xlsx",
     na = c("-99999", "-77777")) %>% 
@@ -31,6 +32,7 @@ get_dirty1999_2009 <- function() {
     mutate(Column = as.integer(Column)) %>% 
     left_join(df.unger, by = c("Year", "Column" , "Row Letter" = "Row2"))
   
+  # Set variables to best available data given various conflicting datasets
   # This does not remove outliers and accepts Ungers %C and %N over Ubbies, and Ubbies grain mass over Unger's
   df.merged.rm.zeros <- df.merged %>% 
     group_by(Year, Crop) %>% 
@@ -71,18 +73,11 @@ get_dirty1999_2009 <- function() {
     mutate(ResidueMassDry = ResidueMassWet * (1 - ResidueMoistureProportion)) %>%
     mutate(ResidueMassDryPerArea = ResidueMassDry / `Residue Sample Area (square meters)`)
 
-  return(df.calc)
-}
-get_clean1999_2009 <- function() {
-  df.calc <- get_dirty1999_2009()
-  
   # Remove values with no ID and if fallow
-  # Aggregate comments, ename crops for consistency
+  # Aggregate comments, rename crops for consistency
   # Accept Unger's crop abbreviations over Ubbies (Dave and I reviewed)
   # Add missing residue using crop averages of moisture proportion
-    # Gap-filling occurs here! Averages ResidueMoistureProportion by crop for all years and uses this value if ResidueMoistureProportion is missing
   df.clean <- df.calc %>% 
-    #filter(!is.na(ID2), `Crop...3` != "Fallow") %>% 
     filter(!is.na(ID2), Crop != "FALLOW") %>% 
     mutate(Comments = coalesce(`Grain Harvest Comments`, `Residue Sample Comments`)) %>%
     mutate(HarvestYear = as.integer(Year)) %>%
@@ -127,153 +122,19 @@ get_clean1999_2009 <- function() {
            Comments) %>% 
     arrange(HarvestYear, ID2)
   
-  #df.calc %>% 
-  #  filter(!is.na(ID2), Crop != "FALLOW") %>%
-  #  mutate(HarvestYear = as.integer(Year)) %>%
-  #  replace(. == "winter wheat", "WW") %>%
-  #  replace(. == "spring wheat", "SW") %>%
-  #  replace(. == "spring barley", "SB") %>%
-  #  replace(. == "spring canola", "SC") %>%
-  #  replace(. == "spring pea", "SP") %>%
-  #  replace(. == "winter barley", "WB") %>%
-  #  replace(. == "winter pea", "WP") %>%
-  #  replace(. == "winter canola", "WC") %>%
-  #  replace(. == "Winter Canola", "WC") %>%
-  #  replace(. == "winter lentil", "WL") %>%
-  #  replace(. == "Garbonzo Beans", "GB") %>%
-  #  replace(. == "Alfalfa", "AL") %>%
-  #  group_by(Crop) %>% 
-  #  mutate(AvgResidueMoistureProportionByCrop = mean(ResidueMoistureProportion, na.rm = TRUE)) %>% 
-  #  mutate(SdResidueMoistureProportionByCrop = sd(ResidueMoistureProportion, na.rm = TRUE)) %>%
-  #  ungroup() %>%
-  #  group_by(Crop, Year) %>% 
-  #  mutate(AvgResidueMoistureProportionByCropYear = mean(ResidueMoistureProportion, na.rm = TRUE)) %>% 
-  #  mutate(SdResidueMoistureProportionByCropYear = sd(ResidueMoistureProportion, na.rm = TRUE)) %>%
-  #  ungroup() %>% 
-  #  select(HarvestYear, Crop, AvgResidueMoistureProportionByCrop, SdResidueMoistureProportionByCrop, AvgResidueMoistureProportionByCropYear, SdResidueMoistureProportionByCropYear) %>% 
-  #  distinct() %>% 
-  #  write_csv("Working/checkResidueGapFill2009_20190617.csv")
-  
   return(df.clean)
-  
 }
-get_clean1999_2009_deprecated <- function() {
-  require(tidyverse)
-  require(readxl)
-  require(sf)
-  
-  source("src/functions.R")
-  
-  # Load data
-  legacy <- read_excel(
-    "input/Cook Farm All years all points.xlsx",
-    na = c("-99999", "-77777"))
-  
-  
-  # Keep only values from grid point project
-  legacy <- legacy %>% filter(Project == "grid points" | Project == "Grid Points")
-  
-  # Merge the data based on col and row2
-  df <- append_georef_to_df(legacy, "Row Letter", "Column")
-  
-  # Check that merged ID2 matches with Sample Location ID (it does)
-  id.errors <- df %>%
-    mutate(`Sample Location ID` = as.numeric(`Sample Location ID`)) %>%
-    mutate(`ID2` = as.numeric(`ID2`)) %>%
-    filter(`Sample Location ID` != `ID2`) %>%
-    select(`Sample Location ID`, `ID2`)
-  if(nrow(id.errors) > 0) { warning("Merge check failed") }
-  
-  # Remove ID2 values with NA (fields north of current CookEast used to be sampled)
-  df <- df %>% filter(!is.na(ID2))
-  
-  # Compare yields with those that Kadar used for relative yield project (which is last known (to me) yield data that Dave looked at)
-  check_yields(df, "99", 1999, "Yield _1999")
-  check_yields(df, "00", 2000, "Yield _2000")
-  check_yields(df, "01", 2001, "Yield _2001")
-  check_yields(df, "02", 2002, "Yield _2002")
-  check_yields(df, "03", 2003, "Yield_2003")
-  check_yields(df, "04", 2004, "Yield_2004")
-  check_yields(df, "05", 2005, "Yield_2005")
-  check_yields(df, "06", 2006, "Yield_2006")
-  check_yields(df, "07", 2007, "Yield_2007")
-  check_yields(df, "08", 2008, "Yield_2008")
-  check_yields(df, "09", 2009, "Yield_2009")
-  
-  # Check for differences between duplicated column names
-  compare_cols(df, "Grain Carbon %...11", "Grain Carbon %...21")
-  compare_cols(df, "Grain Sulfur %...12", "Grain Sulfur %...20")
-  compare_cols(df, "Grain Nitrogen %...13", "Grain Nitrogen %...19")
-  compare_cols(df, "Crop...3", "Crop...22")
-  
-  # Check that residue was calculated correctly (11 obs had error)
-  residue.check <- df %>%
-    select(Year,
-           ID2,
-           `Residue plus Grain Wet Weight (grams)`,
-           `Residue sample Grain Wet Weight (grams)`,
-           `Total Residue Wet Weight (grams)`,
-           `Non-Residue Grain Wet Weight (grams)`) %>%
-    mutate(ResidueWetWeightCalc = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>%
-    filter(abs(ResidueWetWeightCalc - `Total Residue Wet Weight (grams)`) > 0.01)
-  if(nrow(residue.check) > 0) { warning("Residue column is not trustworthy; review dataframe 'residue.check'") }
-  
-  # No need to check yield, the calculation is in the excel sheet and passes muster
-  
-  # Calculate residue values, don't use supplied since it seems to have errors
-  # Also calc HI for review
-  df <- df %>%
-    mutate(ResidueMassWet = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>%
-    mutate(ResidueMoistureProportion = (`Residue Sub-Sample Wet Weight (grams)` - `Residue Sub-Sample Dry Weight (grams)`) / `Residue Sub-Sample Wet Weight (grams)`) %>%
-    mutate(ResidueDry = ResidueMassWet * (1 - ResidueMoistureProportion)) %>%
-    mutate(ResidueMassDryPerArea = ResidueDry / `Residue Sample Area (square meters)`) %>%
-    mutate(HarvestIndex = `total grain yield dry(grams/M2)` / (ResidueMassDryPerArea + `total grain yield dry(grams/M2)`))
-  
-  # TODO: Need to rename columns, finalize ones to include
-  df.clean <- df %>%
-    mutate(Comments = coalesce(`Grain Harvest Comments`, `Residue Sample Comments`)) %>%
-    select(Year,
-           Crop...3, X, Y, ID2,
-           `total grain yield dry(grams/M2)`,
-           `Grain Carbon %...11`, `Grain Nitrogen %...13`, `Grain Sulfur %...12`,
-           ResidueMassDryPerArea,
-           `Residue Carbon %`,`Residue Nitrogen %`, `Residue Sulfur %`,
-           Comments) %>%
-    rename(HarvestYear = Year,
-           Crop = Crop...3,
-           Latitude = Y,
-           Longitude = X,
-           ID2 = ID2,
-           GrainYieldDryPerArea = `total grain yield dry(grams/M2)`,
-           GrainCarbon = `Grain Carbon %...11`,
-           GrainNitrogen = `Grain Nitrogen %...13`,
-           GrainSulfur = `Grain Sulfur %...12`,
-           ResidueCarbon = `Residue Carbon %`,
-           ResidueNitrogen = `Residue Nitrogen %`,
-           ResidueSulfur = `Residue Sulfur %`,
-           Comments = Comments) %>%
-    replace(. == "winter wheat", "WW") %>%
-    replace(. == "spring wheat", "SW") %>%
-    replace(. == "spring barley", "SB") %>%
-    replace(. == "spring canola", "SC") %>%
-    replace(. == "spring pea", "SP") %>%
-    replace(. == "winter barley", "WB") %>%
-    replace(. == "winter pea", "WP") %>%
-    replace(. == "winter canola", "WC") %>%
-    replace(. == "Winter Canola", "WC") %>%
-    replace(. == "winter lentil", "WL") %>%
-    replace(. == "Garbonzo Beans", "GB") %>%
-    mutate(HarvestYear = as.integer(HarvestYear)) %>%
-    filter(!is.na(ID2), Crop != "Fallow") %>%
-    arrange(HarvestYear, ID2)
-}
+
 get_clean2010 <- function() {
+  # Loads legecy data from one or more datasets and outputs cleaned dataframe
+  
   require(tidyverse)
   require(readxl)
   require(sf)
   
   source("src/functions.R")
   
+  # Read data, harmonize barcode labels to be uppercase
   df2010 <- read_excel("input/Grid Points Yields and Residue 2010.xls") %>% 
     mutate(`Bag Barcode` = toupper(`Bag Barcode`))
   df.res <- read_excel("input/Yields and Residue 2010 Final.xls", 
@@ -284,25 +145,26 @@ get_clean2010 <- function() {
     mutate(`Bag Barcode` = toupper(`Bag Barcode`))
   
   # Check that grain mass match
-  df.grain.check <- df2010 %>% 
-    full_join(df.res, by = c("Bag Barcode", 
-                             "Farm", 
-                             "Year", 
-                             "Project", 
-                             "Grain Type")) %>% 
-    filter(`Total Grain Dry (g).x` != `Total Grain Dry (g).y`)
-  if(nrow(df.grain.check) > 0) { warning("Grain masses don't match; review grain.check") }
+  #df.grain.check <- df2010 %>% 
+  #  full_join(df.res, by = c("Bag Barcode", 
+  #                           "Farm", 
+  #                           "Year", 
+  #                           "Project", 
+  #                           "Grain Type")) %>% 
+  #  filter(`Total Grain Dry (g).x` != `Total Grain Dry (g).y`)
+  #if(nrow(df.grain.check) > 0) { warning("Grain masses don't match; review grain.check") }
   
   # Merge the georef data based on col and row2
   df <- append_georef_to_df(df2010, "Row", "Column")
   
   # Check that ID2 values are ok after merging with row2 and col (it's not)
-  df.id2.check <- df %>% 
-    filter(df$UID != df$ID2)
-  if(nrow(df.id2.check) > 0) { warning("Error in ID2, Row2, Col") }
+  #df.id2.check <- df %>% 
+  #  filter(df$UID != df$ID2)
+  #if(nrow(df.id2.check) > 0) { warning("Error in ID2, Row2, Col") }
   
   # There are values where ID2, Row2, and Col do not mesh, after review, choose ID2, not UID
   
+  # Calculate some missing values and trim columns
   df.res.slim <- df.res %>% 
     filter(!is.na(`Residue Sub Wet (g)`),
            !is.na(`Total Biomass Wet (g)`),
@@ -320,6 +182,7 @@ get_clean2010 <- function() {
     mutate(ResidueMassDryPerArea = ResidueMassDry / `Area (m2)`) %>%
     mutate(HarvestIndex = GrainYieldDryPerArea / (ResidueMassDryPerArea + GrainYieldDryPerArea))
   
+  # Rename columns to standard and drop unneeded columns
   df.clean <- df.merge %>% 
     rename("HarvestYear" = Year,
            "Crop" = `Grain Type`,
@@ -344,14 +207,20 @@ get_clean2010 <- function() {
            Comments) %>% 
     filter(!is.na(ID2)) %>% 
     arrange(HarvestYear, ID2)
+  
+  return(df.clean)
 }
+
 get_clean2011 <- function() {
+  # Loads legecy data from one or more datasets and outputs cleaned dataframe
+  
   require(tidyverse)
   require(readxl)
   require(sf)
   
   source("src/functions.R")
   
+  # Read data, filter out NAs, make SampleID to uppercase, arrange values
   df2011 <- read_excel("input/Yields and Residue HY2011 112311.xls", 
                        "Grid Point Yields Only") %>% 
     filter(!is.na(UID) | (!is.na(Row) & !is.na(Column))) %>% 
@@ -362,22 +231,22 @@ get_clean2011 <- function() {
   df <- append_georef_to_df(df2011, "Row", "Column")
   
   # Check that ID2 values are ok after merging with row2 and col (it's not)
-  df.id2.check <- df %>% 
-    filter(df$UID != df$ID2)
-  if(nrow(df.id2.check) > 0) { warning("Error in ID2, Row2, Col") }
+  #df.id2.check <- df %>% 
+  #  filter(df$UID != df$ID2)
+  #if(nrow(df.id2.check) > 0) { warning("Error in ID2, Row2, Col") }
   
   # There are values where ID2, Row2, and Col do not mesh, after review, chose ID2, not UID
   
+  # Calc missing values
   df.calcs <- df %>% 
     mutate(Comments = case_when(is.na(as.numeric(df$`Total Residue and Grain Wet (g)`)) ~ paste("Residue note: ", df$`Total Residue and Grain Wet (g)`, sep = ""), TRUE ~ "")) %>% 
     mutate(Comments = case_when(is.na(as.numeric(df$`Total Grain Wet (g)`)) ~ paste(Comments, " | Grain note: ", df$`Total Grain Wet (g)`, sep = ""), TRUE ~ Comments)) %>% 
     mutate(BiomassWet = as.numeric(`Total Residue and Grain Wet (g)`)) %>% 
     mutate(GrainMassWet = as.numeric(`Total Grain Wet (g)`)) %>% 
     mutate(ResidueMassWet = BiomassWet - GrainMassWet) %>% 
-    #mutate(ResidueMassWetPerArea = ResidueMassWet / `Area (m2)`) %>% 
     mutate(GrainYieldWetPerArea = GrainMassWet / `Area (m2)`)
   
-  # TODO: Figure out if "wet" here means dry, or if there are missing data somewhere...
+  # Rename columns to standard, drop unwanted columns
   df.clean <- df.calcs %>% 
     rename(HarvestYear = Year,
            Crop = `Current Crop`,
@@ -398,30 +267,36 @@ get_clean2011 <- function() {
            ResidueSampleArea,
            ResidueMassWet,
            Comments)
+  
+  return(df.clean)
 }
+
 get_clean2012 <- function() {
+  # Loads legecy data from one or more datasets and outputs cleaned dataframe
+  
   require(tidyverse)
   require(readxl)
   require(sf)
   
   source("src/functions.R")
   
+  # Read data, filter out NAs, make SampleID to uppercase, arrange values 
   df2012 <- read_excel("input/Yields and Residue 2012 011513.xlsx", 
                        "Grid Points",
                        skip = 1) %>% 
     filter(!is.na(ID2) | (!is.na(ROW2) & !is.na(COLUMN))) %>% 
     mutate(SampleID = toupper(Barcode)) %>% 
-    
     arrange(ID2)
   
   # Merge the georef data based on col and row2
   df <- append_georef_to_df(df2012, "ROW2", "COLUMN")
   
   # Check that ID2 values are ok after merging with row2 and col
-  df.id2.check <- df %>% 
-    filter(ID2.x != ID2.y)
-  if(nrow(df.id2.check) > 0) { warning("Error in ID2, Row2, Col") }
+  #df.id2.check <- df %>% 
+  #  filter(ID2.x != ID2.y)
+  #if(nrow(df.id2.check) > 0) { warning("Error in ID2, Row2, Col") }
   
+  # Calc missing values
   df.calcs <- df %>% 
     # Consider wet grain mass equal to wet grain mass (so sayish David Huggins)
     mutate(GrainYieldDryPerArea = `Grain Weight Wet (g)` / `Area (m2)`) %>% 
@@ -430,6 +305,7 @@ get_clean2012 <- function() {
     mutate(HarvestYear = 2012) %>% 
     mutate(ResidueMassWet = `Total Biomass Wet (g)` - `Grain Weight Wet (g)`)
   
+  # Clean and output
   df.clean <- df.calcs %>% 
     rename(Longitude = X,
            Latitude = Y,
@@ -456,8 +332,13 @@ get_clean2012 <- function() {
            ResidueMassWet,
            Comments) %>% 
     replace(. == "SL", "GB")
+  
+  return(df.clean)
 }
+
 get_clean2013 <- function() {
+  # Loads legecy data from one or more datasets and outputs cleaned dataframe
+  
   require(tidyverse)
   require(readxl)
   require(sf)
@@ -551,6 +432,7 @@ get_clean2013 <- function() {
            ResidueNitrogen,
            ResidueCarbon)
   
+  # Combine residue data
   dfResidue <- bind_rows(dfResidue1, dfResidue2, dfResidue3, dfResidue4) %>% 
     distinct() %>% 
     arrange(SampleID)
@@ -578,6 +460,7 @@ get_clean2013 <- function() {
     mutate(GrainYieldDryPerArea = GrainWeightWet / Area,
            ResidueMassDryPerArea = ResidueMassDry / Area)
   
+  # Clean
   df.clean <- df.calcs %>% 
     filter(!is.na(SampleID)) %>% 
     rename(HarvestYear = Year,
@@ -607,8 +490,14 @@ get_clean2013 <- function() {
            ResidueCarbon,
            ResidueNitrogen,
            Comments)
+  
+  return(df.clean)
 }
+
 get_clean2014_prioritizeNirData <- function() {
+  # Loads legecy data from one or more datasets and outputs cleaned dataframe
+  # Cleaning step that prioritizes yield data accompanied with NIR data (and thus grain moisture content). The other 2014 function accepts a dataset Dr. Dave Huggins said is better quality.
+  
   require(tidyverse)
   
   source("src/functions.R")
@@ -754,12 +643,18 @@ get_clean2014_prioritizeNirData <- function() {
            ResidueSampleArea,
            ResidueMassDryPerArea,
            Comments)
+  
+  return(df.clean)
 }
+
 get_clean2014 <- function() {
+  # Loads legecy data from one or more datasets and outputs cleaned dataframe
+  
   require(tidyverse)
   require(readxl)
   source("src/functions.R")
   
+  # Data are from various files, specific to crop, provided by Dr. Huggins.
   # Read in the data, do some cleaning as we go
   gb.cols <- c(rep("skip", 4),
                "numeric",
@@ -874,14 +769,21 @@ get_clean2014 <- function() {
     fill(everything(), .direction = "up") %>% 
     slice(1)
   
+  # Add georef data
   df <- append_georef_to_df(df.coalesce, "Row2", "Column") %>% 
     rename(Latitude = Y,
            Longitude = X)
   
+  df.calc <- df %>% 
+    mutate(GrainYieldDryPerArea = GrainMassDry / GrainSampleArea,
+           ResidueMassDry = BiomassDry - GrainMassDry,
+           ResidueMassDryPerArea = ResidueMassDry / ResidueSampleArea)
+  
+  # Load alternate dataset that prioritized yield values accompanied with NIR data
   df.nir <- get_clean2014_prioritizeNirData()
   
-  df.merge.test <- df.nir %>% 
-    left_join(df, by = "ID2")
+  #df.merge.test <- df.nir %>% 
+  #  left_join(df, by = "ID2")
   
   # Note: manually compared following values from two dataframes
   #   * Longitude: 0 rows
@@ -899,12 +801,7 @@ get_clean2014 <- function() {
   #   * GrainMoisture: 0 rows
   #     * df.merge.test %>% filter(!is.na(GrainMoisture.y)) %>% filter(GrainMoisture.x != GrainMoisture.y)
   
-  df.calc <- df %>% 
-    mutate(GrainYieldDryPerArea = GrainMassDry / GrainSampleArea,
-           ResidueMassDry = BiomassDry - GrainMassDry,
-           ResidueMassDryPerArea = ResidueMassDry / ResidueSampleArea)
-  
-  # Merge nir data
+  # NIR dataset has some values missing from this dataset, so merge then select best values
   df.merge <- df.nir %>% 
     mutate(ResidueMassDry = ResidueMassDryPerArea * ResidueSampleArea) %>% 
     select(ID2, 
@@ -948,17 +845,23 @@ get_clean2014 <- function() {
            ResidueMassDryPerArea,
            Comments)
 
+  return(df.clean)
 }
+
 get_clean2015 <- function() {
+  # Loads legecy data from one or more datasets and outputs cleaned dataframe
+  
   require(tidyverse)
   require(readxl)
   require(sf)
   
   source("src/functions.R")
   
+  # Read data. This dataset was manually cleaned previously using Excel.
   df2015 <- read_excel("input/HY2015GP_171018.xlsx", 
                        "Clean")
   
+  # Fill area values and calc missing
   df.calc <- df2015 %>% 
     mutate(GrainSampleArea = case_when(Crop == "SC" ~ 2,
                                        TRUE ~ 2.4384),
@@ -966,6 +869,7 @@ get_clean2015 <- function() {
     mutate(GrainYieldDryPerArea = `GrainNetWt (g)` / GrainSampleArea,
            ResidueMassDryPerArea = (`NetWt (g)` - `GrainNetWt (g)`) / ResidueSampleArea)
   
+  # Rename and select columns
   df.clean <- df.calc %>% 
     rename(SampleID = Barcode,
            GrainOilDM = `Oil (DM)`,
@@ -990,18 +894,25 @@ get_clean2015 <- function() {
            ResidueSampleArea,
            ResidueMassDryPerArea,
            Comments)
+  
+  return(df.clean)
 }
+
 get_clean2016 <- function() {
+  # Loads legecy data from one or more datasets and outputs cleaned dataframe
+  
   require(tidyverse)
   require(readxl)
   require(sf)
   
   source("src/functions.R")
   
+  # Read data. This dataset was manually cleaned previously using Excel.
   df2016 <- read_excel("input/HY2016GP_171019.xlsx", 
                        "Clean") %>% 
     filter(!is.na(ID2))
   
+  # Fill area values and calc missing
   df.calc <- df2016 %>% 
     mutate(GrainSampleArea = case_when(Crop == "SC" ~ 2,
                                        TRUE ~ 2.4384),
@@ -1010,6 +921,7 @@ get_clean2016 <- function() {
            ResidueMassDryPerArea = (`NetWt (g)` - `GrainNetWt (g)`) / ResidueSampleArea,
            Longitude = as.numeric(Longitude))
   
+  # Rename and select columns
   df.clean <- df.calc %>% 
     rename(SampleID = Barcode,
            GrainOilDM = `Oil (DM)`,
@@ -1034,9 +946,16 @@ get_clean2016 <- function() {
            ResidueSampleArea,
            ResidueMassDryPerArea,
            Comments)
+  
+  return(df.clean)
 }
 
 get_clean1999_2016 <- function(rm.outliers = F) {
+  # Gets all data and combines. Alternatively removes extreme outliers.
+  #
+  # Args:
+  #   rm.outliers: if TRUE, removes extreme outliers from subset of columns
+  
   df1999_2009 <- get_clean1999_2009()
   df2010 <- get_clean2010()
   df2011 <- get_clean2011()
@@ -1056,7 +975,7 @@ get_clean1999_2016 <- function(rm.outliers = F) {
                   df2016)
   
   if(rm.outliers == T) {
-    df.clean <- df %>% 
+    df.rm.outliers <- df %>% 
       group_by(HarvestYear, Crop) %>% 
       mutate(GrainYieldDryPerArea = removeOutliers(GrainYieldDryPerArea),
              GrainCarbon = removeOutliers(GrainCarbon),
@@ -1070,7 +989,7 @@ get_clean1999_2016 <- function(rm.outliers = F) {
              GrainWGlutDM = removeOutliers(GrainWGlutDM),
              GrainOilDM = removeOutliers(GrainOilDM))
     
-    return(df.clean)
+    return(df.rm.outliers)
   } else {
     return(df);
   }
