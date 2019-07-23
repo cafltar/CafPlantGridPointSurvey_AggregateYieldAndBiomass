@@ -2,12 +2,49 @@ source("src/functions.R")
 source("src/cleaningFunctions.R")
 source("src/gapFillingFunctions.R")
 
-df1999_2016 <- get_clean1999_2016(FALSE)
-dfGapFillByMoistureProportion <- estimateResidueMassDryXByResidueMoistureProportion(df1999_2016)
+# Get cleaned data, keep all extreme outliers
+df <- get_clean1999_2016(FALSE)
+
+# Fill missing dry values by estimating from wet values
+dfGapFillByMoistureProportion <- estimateResidueMassDryXByResidueMoistureProportion(df)
+
+# Fill missing yield values
 dfGapFillYield <- estimateYieldByAvgYieldAndRelativeYield(dfGapFillByMoistureProportion)
+
+# Fill missing residue values
 dfGapFillByGrainMass <- estimateResidueMassDryPerAreaByGrainYieldDryPerArea(dfGapFillYield)
-df1999_2016GapFilled <- dfGapFillByGrainMass #%>% 
-  #select(-GrainSampleArea, -ResidueSampleArea, -ResidueMassWet, -ResidueMassDry, -ResidueMoistureProportion, -InterceptEstimate, -XEstimate)
+
+# Clean up columns
+dfClean <- df %>% 
+  select(-GrainSampleArea,
+         -ResidueSampleArea,
+         -ResidueMassWet,
+         -ResidueMassDry,
+         -ResidueMoistureProportion,
+         -GrainMassDry)
+dfCleanGapFilled <- dfGapFillByGrainMass %>% 
+  select(-GrainMassDry,
+         -GrainSampleArea, 
+         -ResidueSampleArea, 
+         -ResidueMassWet, 
+         -ResidueMassDry, 
+         -ResidueMoistureProportion, 
+         -InterceptEstimate, 
+         -XEstimate,
+         -Field,
+         -Strip,
+         -RelativeYield,
+         -CropExists,
+         -GrainYieldDryPerAreaAvg,
+         -AdjRSquared.cropyear,
+         -DfResidual.cropyear,
+         -XEstimate.cropyear,
+         -InterceptEstimate.cropyear,
+         -InterceptEstimate.crop,
+         -AdjRSquared.crop,
+         -DfResidual.crop,
+         -InterceptEstimate.crop,
+         -XEstimate.crop)
 
 varNames <- c("HarvestYear",	
               "Crop",	
@@ -52,10 +89,10 @@ varDesc <- c("Year sample was collected",
              "Longitude of georeference point near where sample was collected",
              "Latitude of georeference point near where sample was collected",
              "Number ID of georeference point near sample collection",
-             "Dry grain yield on a per area basis. Sample dried in greenhouse or oven, threshed, then weighed",
+             "Dry grain yield on a per area basis. Sample dried in greenhouse or oven, threshed, then weighed. Some values estimated in modeled dataset.",
              "Percent carbon of dry grain mass",
              "Percent nitrogen of dry gain mass",
-             "Residue mass on a per area basis. Residue = (biomass - grain mass) / area. Some values calculated from a model.",
+             "Residue mass on a per area basis. Residue = (biomass - grain mass) / area. Some values estimated in modeled dataset.",
              "Percent carbon of dry residue mass",
              "Percent nitrogen of dry residue mass",
              "Comments, aggregated from various columns. '|' or ',' separates source",
@@ -85,12 +122,15 @@ varTypes <- c("Int",
               "Double",
               "Double")
 
-data.frame(varNames, varUnits, varDesc, varTypes) %>% 
+dictionary <- data.frame(varNames, varUnits, varDesc, varTypes) %>% 
   rename("FieldName" = varNames,
          "Units" = varUnits,
          "Description" = varDesc,
-         "DataType" = varTypes) %>% 
-  write_csv_gridPointSurvey("1999-2016_DataDictionary", "output")
+         "DataType" = varTypes)
 
-write_csv_gridPointSurvey(df1999_2016GapFilled, "1999-2016", "output")
+# Write dataset with only calculated values
+write_csv_gridPointSurvey(dfClean, dictionary, "1999-2016", "output", 1, 2)
+
+# Write dataset with gap-filled (modeled) values
+write_csv_gridPointSurvey(dfCleanGapFilled, dictionary, "1999-2016", "output", 1, 3)
 
