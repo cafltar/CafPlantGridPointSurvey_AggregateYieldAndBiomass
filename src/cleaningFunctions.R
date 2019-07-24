@@ -1,3 +1,80 @@
+get_dirty1999_2009 <- function() {
+  # WARNING: This function is depricated and only here to run legacy code
+  #
+  # Note that quality/verification checks are scrubbed out of this function. See "checkUnger1999-2009.R" for such tests.
+  require(tidyverse)
+  require(readxl)
+  require(sf)
+  
+  source("src/functions.R")
+  
+  # Load data
+  df.ubbie <- read_excel(
+    "input/Cook Farm All years all points.xlsx",
+    na = c("-99999", "-77777")) %>% 
+    filter(Project == "grid points" | Project == "Grid Points")
+  
+  # Get all data from Unger, merge together
+  df.unger <- bind_rows(
+    getUngerDF("1999"),
+    getUngerDF("2000"),
+    getUngerDF("2001"),
+    getUngerDF("2002"),
+    getUngerDF("2003"),
+    getUngerDF("2004"),
+    getUngerDF("2005"),
+    getUngerDF("2006"),
+    getUngerDF("2007"),
+    getUngerDF("2008"),
+    getUngerDF("2009"))
+  
+  df.merged <- df.ubbie %>% 
+    mutate(Column = as.integer(Column)) %>% 
+    left_join(df.unger, by = c("Year", "Column" , "Row Letter" = "Row2"))
+  
+  # This does not remove outliers and accepts Ungers %C and %N over Ubbies, and Ubbies grain mass over Unger's
+  df.merged.rm.zeros <- df.merged %>% 
+    group_by(Year, Crop) %>% 
+    mutate(GrainNUbbie = case_when(`Grain Nitrogen %...19` > 0 & `Grain Nitrogen %...19` <= 100 ~ `Grain Nitrogen %...19`),
+           GrainNUnger = case_when(GrainNitrogen > 0 & GrainNitrogen <= 100 ~ GrainNitrogen,
+                                   Year == 1999 & Crop == "SW" ~ NA_real_,
+                                   Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
+    mutate(GrainNFinal = case_when(!is.na(GrainNUbbie) & !is.na(GrainNUnger) ~ GrainNUnger,
+                                   is.na(GrainNUbbie) & !is.na(GrainNUnger) ~ GrainNUnger,
+                                   !is.na(GrainNUbbie) & is.na(GrainNUnger) ~ GrainNUbbie)) %>% 
+    mutate(GrainCUbbie = case_when(`Grain Carbon %...21` > 0 & `Grain Carbon %...21` <= 100 ~ `Grain Carbon %...21`),
+           GrainCUnger = case_when(GrainCarbon > 0 & GrainCarbon <= 100 ~ GrainCarbon,
+                                   Year == 1999 & Crop == "SW" ~ NA_real_,
+                                   Year == 2001 & Crop == "WW" ~ NA_real_)) %>% 
+    mutate(GrainCFinal = case_when(!is.na(GrainCUbbie) & !is.na(GrainCUnger) ~ GrainCUnger,
+                                   is.na(GrainCUbbie) & !is.na(GrainCUnger) ~ GrainCUnger,
+                                   !is.na(GrainCUbbie) & is.na(GrainCUnger) ~ GrainCUbbie)) %>% 
+    mutate(GrainMassUbbie = case_when(`total grain yield dry (grams)` > 0 ~ `total grain yield dry (grams)`)) %>% 
+    mutate(`total area harvested (M2)` = na_if(`total area harvested (M2)`, 0)) %>% 
+    mutate(`Residue plus Grain Wet Weight (grams)` = na_if(`Residue plus Grain Wet Weight (grams)`, 0)) %>% 
+    mutate(`Residue Sub-Sample Dry Weight (grams)` = na_if(`Residue Sub-Sample Dry Weight (grams)`, 0)) %>% 
+    mutate(`Residue Sub-Sample Wet Weight (grams)` = na_if(`Residue Sub-Sample Wet Weight (grams)`, 0)) %>% 
+    mutate(`Residue Sample Area (square meters)` = na_if(`Residue Sample Area (square meters)`, 0)) %>% 
+    mutate(GrainMassFinal = GrainMassUbbie) %>% 
+    ungroup()
+  
+  # Merge lat/lon data based on col and row2
+  df <- append_georef_to_df(df.merged.rm.zeros, 
+                            "Row Letter", 
+                            "Column")
+  
+  # Remove ID2 values with NA (fields north of current CookEast used to be sampled)
+  # Calculate residue values, don't use supplied since it seems to have errors
+  df.calc <- df %>%
+    mutate(GrainYieldDryPerArea = GrainMassFinal / `total area harvested (M2)`) %>% 
+    mutate(ResidueMassWet = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>%
+    mutate(ResidueMoistureProportion = (`Residue Sub-Sample Wet Weight (grams)` - `Residue Sub-Sample Dry Weight (grams)`) / `Residue Sub-Sample Wet Weight (grams)`) %>%
+    mutate(ResidueMassDry = ResidueMassWet * (1 - ResidueMoistureProportion)) %>%
+    mutate(ResidueMassDryPerArea = ResidueMassDry / `Residue Sample Area (square meters)`)
+  
+  return(df.calc)
+}
+
 get_clean1999_2009 <- function() {
   # Loads legecy data from one or more datasets and outputs cleaned dataframe
   # Note that quality/verification checks are scrubbed out of this function. See "checkUnger1999-2009.R" for such tests.
