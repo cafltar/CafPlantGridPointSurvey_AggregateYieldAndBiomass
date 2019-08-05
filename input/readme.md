@@ -110,4 +110,9 @@
   * From Qiuping Peng (Ellen) via email "Updated Crop present code" on 07/08/2019
   * Updated version of HY1999-2016_20190701_NOGapfill.xlsx
   * "After discussion with Dr. Huggins, I updated the crop present code, see the attached excel file.  The new code is in column: updateCropwaspresentcode" - Ellen
-  
+
+## 07/25/2019
+
+* [CookEastStrips](CookEastStrips)
+  * From Google Drive, Bryan Carlson's account, Archive/NasRm243_160615_oldDataBackup\DataDriveBackup\Projects\Back-Up\SD Cards 122712\1\Grid_Sampling\Polygons\Field_Plans
+  * Has field strips that were used historically at Cook East as rotation treatments

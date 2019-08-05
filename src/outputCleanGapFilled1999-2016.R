@@ -1,21 +1,26 @@
 source("src/functions.R")
 source("src/cleaningFunctions.R")
 source("src/gapFillingFunctions.R")
+source("src/qualityControlChecks.R")
 
 # Get cleaned data, keep all extreme outliers
 df <- get_clean1999_2016(FALSE)
 
 # Fill missing dry values by estimating from wet values
-dfGapFillByMoistureProportion <- estimateResidueMassDryXByResidueMoistureProportion(df)
+dfConvertWetToDryByMoistureProportion <- estimateResidueMassDryXByResidueMoistureProportion(df)
+
+# Some values were found to be outliers, remove them here
+df.rm.outliers <- remove_calculated_values_manually(dfConvertWetToDryByMoistureProportion)
 
 # Fill missing yield values
-dfGapFillYield <- estimateYieldByAvgYieldAndRelativeYield(dfGapFillByMoistureProportion)
+dfGapFillYield <- estimateYieldByAvgYieldAndRelativeYield(df.rm.outliers)
 
 # Fill missing residue values
 dfGapFillByGrainMass <- estimateResidueMassDryPerAreaByGrainYieldDryPerArea(dfGapFillYield)
 
 # Clean up columns
-dfClean <- df %>% 
+# Note that even though we calculate a parameter to convert wet residue mass to dry this is not considered a "modeled" result since this is similar to what is done in the lab, thus meets criteria for a "calculated" result so is included in the "Processing Level 2" dataset
+dfClean <- dfConvertWetToDryByMoistureProportion %>% 
   select(-GrainSampleArea,
          -ResidueSampleArea,
          -ResidueMassWet,
@@ -132,5 +137,5 @@ dictionary <- data.frame(varNames, varUnits, varDesc, varTypes) %>%
 write_csv_gridPointSurvey(dfClean, dictionary, "1999-2016", "output", 1, 2)
 
 # Write dataset with gap-filled (modeled) values
-write_csv_gridPointSurvey(dfCleanGapFilled, dictionary, "1999-2016", "output", 1, 3)
+write_csv_gridPointSurvey(dfCleanGapFilled, dictionary, "1999-2016", "output", 2, 3)
 

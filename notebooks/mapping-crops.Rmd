@@ -1,0 +1,109 @@
+---
+title: "Map Crop Data"
+always_allow_html: yes
+output:
+  html_document
+---
+
+```{r setup, include = FALSE, cache = FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+#knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+#knitr::opts_knit$set(root.dir = "C:/Dev/Projects/CafPlantGridPointSurvey/R/AggregateYieldAndBiomass_1999-2016")
+
+library(tidyverse)
+library(plotly)
+library(sf)
+library(tmap)
+```
+
+```{r}
+source("../src/functions.R")
+```
+
+```{r, include=FALSE}
+# read data
+df.yields <- read_csv("../output/HY1999-2016_20190723_Q01P02.csv") %>% 
+  filter(!is.na(GrainYieldDryPerArea))
+
+boundary <- st_read("../input/CookEastBoundary_20180131.geojson")
+
+strips <- st_read("../input/CookEastStrips/Field_Plan_Final.shp") %>% 
+  st_transform(crs = 4326) %>% 
+  st_intersection(boundary)
+
+# Create simple feature from dataframe
+sf <- df.yields %>% 
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
+
+# Draw Cook East field boundary
+tm.border <- tm_shape(boundary) +
+  tm_borders()
+tm.border.strips <- tm.border +
+  tm_shape(strips) +
+  tm_borders()
+```
+
+```{r, out.width = "1500px"}
+# Map crops, facet by year
+#tmap_mode("plot")
+#tm.border.strips +
+#tm_shape(sf) +
+#  tm_dots(size = 0.2, col = "Crop", palette = "Set1") +
+#  tm_facets(by="HarvestYear", free.coords = F)
+```
+
+```{r}
+# Map crops by each year, make interactive
+tmap_mode("view")
+years <- seq(1999, 2009, 1)
+
+for(y in years) {
+  f <- sf %>% filter(HarvestYear == y) %>% 
+    select(ID2, Crop)
+  
+  print(tm.border.strips +
+        tm_shape(f) +
+          tm_bubbles(size = 0.2, 
+                  col = "Crop", 
+                  popup.vars = c("ID2" = "ID2",
+                                 "Crop" = "Crop"),
+                  palette = "Set1",
+                  border.col = "black") +
+        tm_layout(title = paste("HY ", y, sep = "")))
+}
+```
+
+
+```{r}
+# Map crops by each year, make interactive
+#tmap_mode("view")
+#years <- seq(1999, 2001, 1)
+#
+#Crops <- unique(sf$Crop)
+#Crops <- sort(Crops)
+#
+#Color <- rainbow(length(Crops))
+#crop.col <- data.frame(Crops, Color)
+#
+#print(crop.col)
+#
+#for(y in years) {
+#  f <- sf %>% filter(HarvestYear == y) %>% 
+#    select(ID2, Crop) %>% 
+#    left_join(crop.col, by = c("Crop" = "Crops"))
+#  
+#  print(tm.border.strips +
+#        tm_shape(f) +
+#          tm_dots(size = 0.2, 
+#                     #col = "Crop", 
+#                  col = as.character("Color"), 
+#                     popup.vars = c("ID2" = "ID2",
+#                                    "Crop" = "Crop",
+#                                    "Color" = "Color"),
+#                  labels = c(Crop)) +
+#        tm_layout(title = paste("HY ", y, sep = "")))
+#}
+```
