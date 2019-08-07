@@ -96,11 +96,11 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
   #   Assuming at least n = 10 for good regression, so DfResidual < 9, choose all-years
   model <- df.merge %>% 
     mutate(InterceptEstimate = case_when(is.na(AdjRSquared.cropyear) ~ InterceptEstimate.crop,
-                                         DfResidual.cropyear < 9 ~ InterceptEstimate.crop,
+                                         #DfResidual.cropyear < 9 ~ InterceptEstimate.crop,
                                          #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ InterceptEstimate.crop,
                                          TRUE ~ InterceptEstimate.cropyear),
            XEstimate = case_when(is.na(AdjRSquared.cropyear) ~ XEstimate.crop,
-                                 DfResidual.cropyear < 9 ~ XEstimate.crop,
+                                 #DfResidual.cropyear < 9 ~ XEstimate.crop,
                                  #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ XEstimate.crop,
                                  TRUE ~ XEstimate.cropyear))
   
