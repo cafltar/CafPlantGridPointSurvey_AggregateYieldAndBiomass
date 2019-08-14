@@ -1,6 +1,8 @@
 remove_calculated_values_manually <- function(x) {
   # Manually removes calculated values deemed erroneous via the following method:
   
+  # TODO: Add methods, cite methods document
+  
   # Args:
   #   x = dataframe with calculated values, as produced by get_clean1999_2016() or estimateResidueMassDryXByResidueMoistureProportion()
   
