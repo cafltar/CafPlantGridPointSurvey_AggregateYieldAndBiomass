@@ -136,8 +136,19 @@ get_clean1999_2009 <- function() {
     mutate(GrainMassFinal = GrainMassUbbie) %>% 
     ungroup()
   
+  
+  df.fixed.points <- df.merged.rm.zeros %>% 
+    mutate(`Row Letter` = case_when(Year == 2008 & `Sample Location ID` == 338 ~ "H",
+                                    Year == 2008 & `Sample Location ID` == 192 ~ NA_character_,
+                                    TRUE ~ `Row Letter`),
+           Column = case_when((Year == 2008 & `Sample Location ID` == 338) ~ as.integer(23),
+                                (Year == 2008 & `Sample Location ID` == 192) ~ NA_integer_,
+                                TRUE ~ as.integer(Column)),
+           `Strip` = case_when(Year == 2008 & `Sample Location ID` == 338 ~ 2,
+                               TRUE ~ as.numeric(`Strip`)))
+  
   # Merge lat/lon data based on col and row2
-  df <- append_georef_to_df(df.merged.rm.zeros, 
+  df <- append_georef_to_df(df.fixed.points, 
                             "Row Letter", 
                             "Column")
   
