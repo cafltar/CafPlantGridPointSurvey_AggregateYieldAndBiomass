@@ -56,7 +56,9 @@ boundary <- st_read("input/CookEastBoundary_20180131.geojson")
 
 # Maps by year and crop
 ```{r, fig.width=11, fig.asp=1, out.width="100%"}
+tmap_mode("plot")
 sf %>% 
+  filter(!is.na(GrainYieldDryPerArea)) %>% 
   tm_shape() +
   tm_dots(size = 0.1, col = "Crop", palette = "Set1") +
   tm_facets(by="HarvestYear")

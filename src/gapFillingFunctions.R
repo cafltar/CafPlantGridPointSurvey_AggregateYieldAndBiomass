@@ -28,6 +28,7 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
   
   require(purrr)
   require(broom)
+  require(tidyverse)
   
   # Remove AL (alfalfa) since we don't actually have data
   df.clean <- df %>% 
@@ -45,70 +46,97 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
     mutate(summaries = map(fit, broom::glance)) %>% 
     unnest(summaries) %>% 
     select(HarvestYear, Crop, adj.r.squared, df.residual) %>% 
-    rename(AdjRSquared.cropyear = adj.r.squared,
-           DfResidual.cropyear = df.residual)
+    rename(AdjRSquared = adj.r.squared,
+           DfResidual = df.residual)
   
   regressionByCropYear <- modelByCropYear %>% 
     mutate(tidied = map(fit, tidy)) %>% 
     unnest(tidied) %>% 
     select(HarvestYear, Crop, term, estimate) %>% 
     spread(term, estimate) %>% 
-    rename(InterceptEstimate.cropyear = `(Intercept)`,
-           XEstimate.cropyear = GrainYieldDryPerArea)
+    rename(InterceptEstimate = `(Intercept)`,
+           XEstimate = GrainYieldDryPerArea)
   
   # Join data, use df to retain NaN and NA values
-  df.cropyear <- df %>% 
+  df.linear <- df %>% 
     select(HarvestYear, Crop) %>% 
     left_join(summaryByCropYear, by = c("HarvestYear", "Crop")) %>% 
     left_join(regressionByCropYear, by = c("HarvestYear", "Crop")) %>% 
     unique()
   
+  # Calculate average harvest index
+  # Hardcoded min/max range of accepted HI values, as determined by Qiuping Peng using HI values from this dataset (after cleaning outliers) and from literature values
+  hi.bounds <- read_csv("input/crop-harvest-index-bounds.csv")
+  df.hi <- df %>% 
+    mutate(HarvestIndex = GrainYieldDryPerArea / (GrainYieldDryPerArea + ResidueMassDryPerArea)) %>% 
+    left_join(hi.bounds, by = ("Crop")) %>% 
+    group_by(HarvestYear, Crop) %>% 
+    mutate(HarvestIndexAvg = mean(HarvestIndex, na.rm = TRUE)) %>% 
+    ungroup() %>% 
+    group_by(Crop) %>% 
+    mutate(HarvestIndexAvg = case_when(is.na(HarvestIndexAvg) ~ mean(HarvestIndex, na.rm = TRUE),
+                                 TRUE ~ HarvestIndexAvg)) %>% 
+    ungroup()
+  
   # This should be a function since I'm copy/pasting
-  modelByCrop <- df.clean %>% 
-    nest(-Crop) %>%
-    mutate(
-      fit = map(data, ~ lm(ResidueMassDryPerArea ~ GrainYieldDryPerArea, data = .x))
-    )
-  
-  summaryByCrop <- modelByCrop %>% 
-    mutate(summaries = map(fit, broom::glance)) %>% 
-    unnest(summaries) %>% 
-    select(Crop, adj.r.squared, df.residual) %>% 
-    rename(AdjRSquared.crop = adj.r.squared,
-           DfResidual.crop = df.residual)
-  
-  regressionByCrop <- modelByCrop %>% 
-    mutate(tidied = map(fit, tidy)) %>% 
-    unnest(tidied) %>% 
-    select(Crop, term, estimate) %>% 
-    spread(term, estimate) %>% 
-    rename(InterceptEstimate.crop = `(Intercept)`,
-           XEstimate.crop = GrainYieldDryPerArea)
+  #modelByCrop <- df.clean %>% 
+  #  nest(-Crop) %>%
+  #  mutate(
+  #    fit = map(data, ~ lm(ResidueMassDryPerArea ~ GrainYieldDryPerArea, data = .x))
+  #  )
+  #
+  #summaryByCrop <- modelByCrop %>% 
+  #  mutate(summaries = map(fit, broom::glance)) %>% 
+  #  unnest(summaries) %>% 
+  #  select(Crop, adj.r.squared, df.residual) %>% 
+  #  rename(AdjRSquared.crop = adj.r.squared,
+  #         DfResidual.crop = df.residual)
+  #
+  #regressionByCrop <- modelByCrop %>% 
+  #  mutate(tidied = map(fit, tidy)) %>% 
+  #  unnest(tidied) %>% 
+  #  select(Crop, term, estimate) %>% 
+  #  spread(term, estimate) %>% 
+  #  rename(InterceptEstimate.crop = `(Intercept)`,
+  #         XEstimate.crop = GrainYieldDryPerArea)
 
-  df.crop <- summaryByCrop %>% 
-    left_join(regressionByCrop, by = c("Crop"))
-  
-  df.merge <- df.cropyear %>% 
-    left_join(df.crop, by = c("Crop"))
+  #df.crop <- summaryByCrop %>% 
+  #  left_join(regressionByCrop, by = c("Crop"))
+  #
+  #df.merge <- df.cropyear %>% 
+  #  left_join(df.crop, by = c("Crop"))
   
   # Decide whether to accept regression equation from Crop or CropYear
   #   If AdjRSquared of Cropyear is NULL, choose other
   #   Assuming at least n = 10 for good regression, so DfResidual < 9, choose all-years
-  model <- df.merge %>% 
-    mutate(InterceptEstimate = case_when(is.na(AdjRSquared.cropyear) ~ InterceptEstimate.crop,
-                                         #DfResidual.cropyear < 9 ~ InterceptEstimate.crop,
-                                         #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ InterceptEstimate.crop,
-                                         TRUE ~ InterceptEstimate.cropyear),
-           XEstimate = case_when(is.na(AdjRSquared.cropyear) ~ XEstimate.crop,
-                                 #DfResidual.cropyear < 9 ~ XEstimate.crop,
-                                 #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ XEstimate.crop,
-                                 TRUE ~ XEstimate.cropyear))
+  #model <- df.merge %>% 
+  #  mutate(InterceptEstimate = case_when(is.na(AdjRSquared.cropyear) ~ InterceptEstimate.crop#,
+  #                                       #DfResidual.cropyear < 9 ~ InterceptEstimate.crop,
+  #                                       #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ InterceptEstimate.crop,
+  #                                       TRUE ~ InterceptEstimate.cropyear),
+  #         XEstimate = case_when(is.na(AdjRSquared.cropyear) ~ XEstimate.crop#,
+  #                               #DfResidual.cropyear < 9 ~ XEstimate.crop,
+  #                               #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ XEstimate.crop,
+  #                               TRUE ~ XEstimate.cropyear))
   
   # Calculate dry residue mass of missing values using linear model
-  df.gapFill <- df %>% 
-    full_join(model, by = c("HarvestYear","Crop")) %>%
-    mutate(ResidueMassDryPerArea = case_when(is.na(ResidueMassDryPerArea) ~ InterceptEstimate + XEstimate * GrainYieldDryPerArea,
-                     TRUE ~ ResidueMassDryPerArea))
+  #df.gapFill <- df %>% 
+  #  full_join(model, by = c("HarvestYear","Crop")) %>%
+  #  mutate(ResidueMassDryPerArea = case_when(is.na(ResidueMassDryPerArea) ~ InterceptEstimate + XEstimate * GrainYieldDryPerArea,
+  #                   TRUE ~ ResidueMassDryPerArea))
+  
+  df.estResidue <- df.hi %>% 
+    full_join(df.linear, by = c("HarvestYear","Crop")) %>%
+    mutate(ResidueMassDryPerArea.linear = case_when(is.na(ResidueMassDryPerArea) ~ InterceptEstimate + XEstimate * GrainYieldDryPerArea)) %>% 
+    mutate(HarvestIndex.linear = case_when(!is.na(ResidueMassDryPerArea.linear) ~ GrainYieldDryPerArea / (GrainYieldDryPerArea + ResidueMassDryPerArea.linear))) %>% 
+    mutate(ResidueMassDryPerArea.HI = case_when(((HarvestIndex.linear < HIMin) | (HarvestIndex.linear > HIMax)) ~ (GrainYieldDryPerArea/HarvestIndexAvg) - GrainYieldDryPerArea,
+                                                is.na(HarvestIndex.linear) & is.na(ResidueMassDryPerArea) ~ (GrainYieldDryPerArea/HarvestIndexAvg) - GrainYieldDryPerArea))
+  
+  # TODO: Add processing flags here -- all estimated values should be P03
+  df.gapFill <- df.estResidue %>% 
+    mutate(ResidueMassDryPerArea = case_when(!is.na(ResidueMassDryPerArea) ~ ResidueMassDryPerArea,
+                                             is.na(ResidueMassDryPerArea) & is.na(ResidueMassDryPerArea.HI) ~ ResidueMassDryPerArea.linear,
+                                             is.na(ResidueMassDryPerArea) & !is.na(ResidueMassDryPerArea.HI) ~ ResidueMassDryPerArea.HI))
      
   return(df.gapFill)
 }

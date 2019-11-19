@@ -40,7 +40,7 @@
   * From: [G:\Team Drives\CafPlantGridPointSurvey\1999-2016\Received\FromBackups\2010]
   * Has some grain NIR data, but may be sampled separately from grid points (it's listed under a different project name, "VRF")
 
-## 01/31/209
+## 01/31/2019
 
 * [Cook FarmHY13_GP_GB_Res_STJohnHY13WW_Res.xlsx](Cook%20FarmHY13_GP_GB_Res_STJohnHY13WW_Res.xlsx)
   * From: G:\My Drive\Projects\CookEastPlantHandHarvest\1999-2016\Received\FromBackups\2013\Cook FarmHY13_GP_GB_Res_STJohnHY13WW_Res.xlsx
@@ -116,3 +116,9 @@
 * [CookEastStrips](CookEastStrips)
   * From Google Drive, Bryan Carlson's account, Archive/NasRm243_160615_oldDataBackup\DataDriveBackup\Projects\Back-Up\SD Cards 122712\1\Grid_Sampling\Polygons\Field_Plans
   * Has field strips that were used historically at Cook East as rotation treatments
+
+## 11/18/2019
+
+* [crop-harvest-index-bounds.csv](crop-harvest-index-bounds.csv)
+  * File created from figure in attachement "Crop data organization workflow0815 summary_updated.pptx" by Qiuping Peng, sent via ARS email "Re: Harvest data" on 11/15/2019
+  * "Notes: When our min > Minfrom literature, I chose the literature value, or else, chose our min. When our Max > Maxreported from literature, We chose our max. If our Max<Maxreported, we chose literature value. This just to get wider bound." - Qiuping Peng
