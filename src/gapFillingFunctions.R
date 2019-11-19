@@ -188,7 +188,11 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
   
   df.result <- df.gapFill %>% 
     mutate(GrainYieldDryPerArea_P = case_when(!is.na(GrainYieldDryPerArea) ~ 2,
-                                              is.na(GrainYieldDryPerArea) & !is.na(GrainYieldDryPerArea_P3) ~ 3))
+                                              is.na(GrainYieldDryPerArea) & !is.na(GrainYieldDryPerArea_P3) ~ 3)) %>% 
+    select(-GrainYieldDryPerArea) %>% 
+    rename(GrainYieldDryPerArea = GrainYieldDryPerArea_P3)
+  
+  
   }
 
 writeGapFillResidueStatistics <- function(df) {
