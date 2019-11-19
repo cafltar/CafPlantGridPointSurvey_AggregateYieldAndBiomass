@@ -137,6 +137,7 @@ get_clean1999_2009 <- function() {
     ungroup()
   
   
+  # After reviewing raw dataset, found that harvest data was assigned to wrong georef point, reassigned here
   df.fixed.points <- df.merged.rm.zeros %>% 
     mutate(`Row Letter` = case_when(Year == 2008 & `Sample Location ID` == 338 ~ "H",
                                     Year == 2008 & `Sample Location ID` == 192 ~ NA_character_,

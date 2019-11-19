@@ -4,7 +4,7 @@ write_csv_gridPointSurvey <- function(df,
                                       dictionary,
                                       harvest.year, 
                                       output.folder = "working",
-                                      quality.level = NA,
+                                      accuracy.level = NA,
                                       processing.level = NA) {
   # Writes a csv files for data and data dictionary in defined folder in format of "HY{year}_{current date}_{dictionary or quality & processing code}.csv", sets NAs to blank
   #
@@ -13,15 +13,15 @@ write_csv_gridPointSurvey <- function(df,
   #   dictionary: dataframe with data dictionary
   #   harvest.year: String of year(s) of data (e.g. "2007" or "1999-2009")
   #   output.folder: String of folder to write the file to
-  #   quality.level: Number for data quality code (1-5)
+  #   accuracy.level: Number for data quality code (1-6)
   #   processing.level: Number for data processing code (1-3)
   
   # TODO: Add some error checking to see if all columns in df are defined in dictionary
   
   date.today <- format(Sys.Date(), "%Y%m%d")
-  data.code <- if(!is.na(quality.level) && !is.na(processing.level)) {
-    paste("Q", sprintf("%02d", quality.level), 
-          "P", sprintf("%02d", processing.level), 
+  data.code <- if(!is.na(accuracy.level) && !is.na(processing.level)) {
+    paste("P", sprintf("%01d", processing.level),
+          "A", sprintf("%01d", accuracy.level), 
           sep = "")
   } else {
     NA
@@ -39,6 +39,7 @@ write_csv_gridPointSurvey <- function(df,
                     sep = "")
   
   file.name.dict <- paste(file.name.base,
+                          if(!is.na(data.code)) {paste("_", data.code, sep = "")} else {""},
                           "_Dictionary.csv",
                           sep = "")
   

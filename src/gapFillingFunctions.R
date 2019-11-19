@@ -18,13 +18,13 @@ estimateResidueMassDryXByResidueMoistureProportion <- function(df) {
 }
 
 estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
-  # Create a linear model that relates grain yield to dry residue mass. Two linear models are calculated:
-  #   1: using data from all years of a single crop
-  #   2: using data from single crop in a single year
-  # Option 1 is used if available data for option 2 is n < 10.
-  #
+  # Create a linear model that relates grain yield to dry residue mass for a given crop in a given year.
+  # 
   # Args:
   #   df: dataframe containing harvest data as generated from get_clean1999_2016()
+  #
+  # Results:
+  #   DataFrame with gap-filled values and new column "ResidueMassDryPerArea_P" that indicates whether original data (2) or gap-filled (3)
   
   require(purrr)
   require(broom)
@@ -78,67 +78,28 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
                                  TRUE ~ HarvestIndexAvg)) %>% 
     ungroup()
   
-  # This should be a function since I'm copy/pasting
-  #modelByCrop <- df.clean %>% 
-  #  nest(-Crop) %>%
-  #  mutate(
-  #    fit = map(data, ~ lm(ResidueMassDryPerArea ~ GrainYieldDryPerArea, data = .x))
-  #  )
-  #
-  #summaryByCrop <- modelByCrop %>% 
-  #  mutate(summaries = map(fit, broom::glance)) %>% 
-  #  unnest(summaries) %>% 
-  #  select(Crop, adj.r.squared, df.residual) %>% 
-  #  rename(AdjRSquared.crop = adj.r.squared,
-  #         DfResidual.crop = df.residual)
-  #
-  #regressionByCrop <- modelByCrop %>% 
-  #  mutate(tidied = map(fit, tidy)) %>% 
-  #  unnest(tidied) %>% 
-  #  select(Crop, term, estimate) %>% 
-  #  spread(term, estimate) %>% 
-  #  rename(InterceptEstimate.crop = `(Intercept)`,
-  #         XEstimate.crop = GrainYieldDryPerArea)
-
-  #df.crop <- summaryByCrop %>% 
-  #  left_join(regressionByCrop, by = c("Crop"))
-  #
-  #df.merge <- df.cropyear %>% 
-  #  left_join(df.crop, by = c("Crop"))
-  
-  # Decide whether to accept regression equation from Crop or CropYear
-  #   If AdjRSquared of Cropyear is NULL, choose other
-  #   Assuming at least n = 10 for good regression, so DfResidual < 9, choose all-years
-  #model <- df.merge %>% 
-  #  mutate(InterceptEstimate = case_when(is.na(AdjRSquared.cropyear) ~ InterceptEstimate.crop#,
-  #                                       #DfResidual.cropyear < 9 ~ InterceptEstimate.crop,
-  #                                       #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ InterceptEstimate.crop,
-  #                                       TRUE ~ InterceptEstimate.cropyear),
-  #         XEstimate = case_when(is.na(AdjRSquared.cropyear) ~ XEstimate.crop#,
-  #                               #DfResidual.cropyear < 9 ~ XEstimate.crop,
-  #                               #(DfResidual.cropyear < 4) & (AdjRSquared.cropyear < 0.5) ~ XEstimate.crop,
-  #                               TRUE ~ XEstimate.cropyear))
-  
-  # Calculate dry residue mass of missing values using linear model
-  #df.gapFill <- df %>% 
-  #  full_join(model, by = c("HarvestYear","Crop")) %>%
-  #  mutate(ResidueMassDryPerArea = case_when(is.na(ResidueMassDryPerArea) ~ InterceptEstimate + XEstimate * GrainYieldDryPerArea,
-  #                   TRUE ~ ResidueMassDryPerArea))
-  
+  # Estimate those values!
+  #   1. Use linear model
+  #   2. Calculate harvest index using residue estimated by linear model
+  #   3. Check that harvest index is within bounds
+  #   4. Calculate residue from average HI if outside of bounds
   df.estResidue <- df.hi %>% 
     full_join(df.linear, by = c("HarvestYear","Crop")) %>%
     mutate(ResidueMassDryPerArea.linear = case_when(is.na(ResidueMassDryPerArea) ~ InterceptEstimate + XEstimate * GrainYieldDryPerArea)) %>% 
     mutate(HarvestIndex.linear = case_when(!is.na(ResidueMassDryPerArea.linear) ~ GrainYieldDryPerArea / (GrainYieldDryPerArea + ResidueMassDryPerArea.linear))) %>% 
-    mutate(ResidueMassDryPerArea.HI = case_when(((HarvestIndex.linear < HIMin) | (HarvestIndex.linear > HIMax)) ~ (GrainYieldDryPerArea/HarvestIndexAvg) - GrainYieldDryPerArea,
+    mutate(ResidueMassDryPerArea.HI = case_when(((HarvestIndex.linear <= HIMin) | (HarvestIndex.linear >= HIMax)) ~ (GrainYieldDryPerArea/HarvestIndexAvg) - GrainYieldDryPerArea,
                                                 is.na(HarvestIndex.linear) & is.na(ResidueMassDryPerArea) ~ (GrainYieldDryPerArea/HarvestIndexAvg) - GrainYieldDryPerArea))
   
-  # TODO: Add processing flags here -- all estimated values should be P03
   df.gapFill <- df.estResidue %>% 
+    mutate(ResidueMassDryPerArea_P = case_when(!is.na(ResidueMassDryPerArea) ~ 2,
+                                               is.na(ResidueMassDryPerArea) & (!is.na(ResidueMassDryPerArea.HI) | !is.na(ResidueMassDryPerArea.linear)) ~ 3))
+  
+  df.result <- df.gapFill %>% 
     mutate(ResidueMassDryPerArea = case_when(!is.na(ResidueMassDryPerArea) ~ ResidueMassDryPerArea,
-                                             is.na(ResidueMassDryPerArea) & is.na(ResidueMassDryPerArea.HI) ~ ResidueMassDryPerArea.linear,
-                                             is.na(ResidueMassDryPerArea) & !is.na(ResidueMassDryPerArea.HI) ~ ResidueMassDryPerArea.HI))
-     
-  return(df.gapFill)
+                                             is.na(ResidueMassDryPerArea) & !is.na(ResidueMassDryPerArea.HI) ~ ResidueMassDryPerArea.HI,
+                                             is.na(ResidueMassDryPerArea) & is.na(ResidueMassDryPerArea.HI) & !is.na(ResidueMassDryPerArea.linear) ~ ResidueMassDryPerArea.linear))
+  
+  return(df.result)
 }
 
 estimateYieldByAvgYieldAndRelativeYield <- function(df) {
@@ -151,6 +112,9 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
   #
   # Args:
   #   df: dataframe containing harvest data as generated from get_clean1999_2016()
+  #
+  # Returns:
+  #   dataframe with gap-filled values and new column "GrainYieldDryPerArea_P" that indicates whether original data (2) or gap-filled (3)
   
   # Load data for relative yields
   df.relYields <- read_xlsx("input/StripbyStripAvg2.xlsx",
@@ -192,8 +156,8 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
     select(-GrainYieldDryPerArea) %>% 
     rename(GrainYieldDryPerArea = GrainYieldDryPerArea_P3)
   
-  
-  }
+  return(df.result)
+}
 
 writeGapFillResidueStatistics <- function(df) {
   # A one off function that writes some parameters used for gap filling
