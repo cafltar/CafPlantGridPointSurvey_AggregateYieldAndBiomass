@@ -1,8 +1,9 @@
 ---
 title: "Map Crop Data"
-always_allow_html: yes
 output:
-  html_document
+  pdf_document: default
+  html_document: default
+always_allow_html: yes
 ---
 
 ```{r setup, include = FALSE, cache = FALSE}
@@ -25,14 +26,15 @@ source("../src/functions.R")
 
 ```{r, include=FALSE}
 # read data
-df.yields <- read_csv("../output/HY1999-2016_20190723_Q01P02.csv") %>% 
+df.yields <- read_csv("../output/HY1999-2016_20191119_P3A3.csv") %>% 
   filter(!is.na(GrainYieldDryPerArea))
 
 boundary <- st_read("../input/CookEastBoundary_20180131.geojson")
 
 strips <- st_read("../input/CookEastStrips/Field_Plan_Final.shp") %>% 
   st_transform(crs = 4326) %>% 
-  st_intersection(boundary)
+  st_intersection(boundary) %>% 
+  mutate(FieldStrip = paste(Field, Strip, sep = ""))
 
 # Create simple feature from dataframe
 sf <- df.yields %>% 
@@ -46,6 +48,11 @@ tm.border.strips <- tm.border +
   tm_borders()
 ```
 
+```{r}
+tm.border.strips +
+  tm_text("FieldStrip")
+```
+
 ```{r, out.width = "1500px"}
 # Map crops, facet by year
 #tmap_mode("plot")
@@ -57,7 +64,7 @@ tm.border.strips <- tm.border +
 
 ```{r}
 # Map crops by each year, make interactive
-tmap_mode("view")
+#tmap_mode("view")
 years <- seq(1999, 2009, 1)
 
 for(y in years) {
