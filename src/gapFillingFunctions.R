@@ -87,7 +87,7 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
     full_join(df.linear, by = c("HarvestYear","Crop")) %>%
     mutate(ResidueMassDryPerArea.linear = case_when(is.na(ResidueMassDryPerArea) ~ InterceptEstimate + XEstimate * GrainYieldDryPerArea)) %>% 
     mutate(HarvestIndex.linear = case_when(!is.na(ResidueMassDryPerArea.linear) ~ GrainYieldDryPerArea / (GrainYieldDryPerArea + ResidueMassDryPerArea.linear))) %>% 
-    mutate(ResidueMassDryPerArea.HI = case_when(((HarvestIndex.linear <= HIMin) | (HarvestIndex.linear >= HIMax)) ~ (GrainYieldDryPerArea/HarvestIndexAvg) - GrainYieldDryPerArea,
+    mutate(ResidueMassDryPerArea.HI = case_when(((HarvestIndex.linear < HIMin) | (HarvestIndex.linear > HIMax)) ~ (GrainYieldDryPerArea/HarvestIndexAvg) - GrainYieldDryPerArea,
                                                 is.na(HarvestIndex.linear) & is.na(ResidueMassDryPerArea) ~ (GrainYieldDryPerArea/HarvestIndexAvg) - GrainYieldDryPerArea))
   
   df.gapFill <- df.estResidue %>% 
