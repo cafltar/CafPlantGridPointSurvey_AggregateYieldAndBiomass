@@ -26,7 +26,7 @@ source("../src/functions.R")
 
 ```{r, include=FALSE}
 # read data
-df.yields <- read_csv("../output/HY1999-2016_20191119_P3A3.csv") %>% 
+df.yields <- read_csv("../output/HY1999-2016_20191120_P3A3.csv") %>% 
   filter(!is.na(GrainYieldDryPerArea))
 
 boundary <- st_read("../input/CookEastBoundary_20180131.geojson")
@@ -65,7 +65,7 @@ tm.border.strips +
 ```{r}
 # Map crops by each year, make interactive
 #tmap_mode("view")
-years <- seq(1999, 2009, 1)
+years <- seq(1999, 2016, 1)
 
 for(y in years) {
   f <- sf %>% filter(HarvestYear == y) %>% 
