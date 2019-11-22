@@ -392,7 +392,8 @@ get_clean2012 <- function() {
     mutate(Comments = case_when((!is.na(df$`Test Weight`) & is.na(as.numeric(df$`Test Weight`))) ~ paste("TestWeight note: ", df$`Test Weight`, sep = ""), TRUE ~ "")) %>% 
     mutate(Comments = case_when(!is.na(df$...24) ~ paste(Comments, " | Sample note: ", df$...24, sep = ""), TRUE ~ Comments)) %>% 
     mutate(HarvestYear = 2012) %>% 
-    mutate(ResidueMassWet = `Total Biomass Wet (g)` - `Grain Weight Wet (g)`)
+    mutate(ResidueMassWet = `Total Biomass Wet (g)` - `Grain Weight Wet (g)`) %>% 
+    mutate(GrainTestWeight = as.numeric(`Test Weight`))
   
   # Clean and output
   df.clean <- df.calcs %>% 
@@ -558,7 +559,8 @@ get_clean2013 <- function() {
            GrainStarch = Starch,
            GrainWGlutDM = WGlutDM,
            Comments = Notes,
-           GrainSampleArea = Area) %>% 
+           GrainSampleArea = Area,
+           GrainTestWeight = TestWeight) %>% 
     mutate(ResidueSampleArea = GrainSampleArea) %>% 
     select(HarvestYear,
            Crop,
@@ -574,6 +576,7 @@ get_clean2013 <- function() {
            GrainMoisture,
            GrainStarch,
            GrainWGlutDM,
+           GrainTestWeight,
            ResidueSampleArea,
            ResidueMassDryPerArea,
            ResidueCarbon,
@@ -716,7 +719,8 @@ get_clean2014_prioritizeNirData <- function() {
            "GrainStarch" = starch,
            "GrainWGlutDM" = gluten,
            "Longitude" = X,
-           "Latitude" = Y) %>% 
+           "Latitude" = Y,
+           GrainTestWeight = testWeight) %>% 
     select(HarvestYear,
            Crop,
            SampleID,
@@ -729,6 +733,7 @@ get_clean2014_prioritizeNirData <- function() {
            GrainMoisture,
            GrainStarch,
            GrainWGlutDM,
+           GrainTestWeight,
            ResidueSampleArea,
            ResidueMassDryPerArea,
            Comments)
@@ -897,7 +902,8 @@ get_clean2014 <- function() {
            GrainProtein, 
            GrainMoisture, 
            GrainStarch, 
-           GrainWGlutDM, 
+           GrainWGlutDM,
+           GrainTestWeight,
            ResidueMassDry,
            ResidueMassDryPerArea,
            Comments) %>% 
@@ -905,12 +911,13 @@ get_clean2014 <- function() {
   
   # .x suffix = NIR data, .y suffix = Huggin's approved data
   # Accept Residue data from Huggin's above NIR's
-  # Accept NAIR's grain protein, moisture, startch, gluten
+  # Accept NAIR's grain protein, moisture, startch, gluten, test weight
   # Merge comments
   df.clean <- df.merge %>%
     mutate(GrainProtein = GrainProtein.x,
            GrainMoisture = GrainMoisture.x,
            GrainStarch = GrainStarch.x,
+           GrainTestWeight = GrainTestWeight.x,
            ResidueMassDry = case_when(!is.na(ResidueMassDry.y) ~ ResidueMassDry.y,
                                       TRUE ~ ResidueMassDry.x),
            ResidueMassDryPerArea = case_when(!is.na(ResidueMassDryPerArea.y) ~ ResidueMassDryPerArea.y,
@@ -929,6 +936,7 @@ get_clean2014 <- function() {
            GrainMoisture,
            GrainStarch,
            GrainWGlutDM,
+           GrainTestWeight,
            ResidueSampleArea,
            ResidueMassDry,
            ResidueMassDryPerArea,
@@ -971,6 +979,7 @@ get_clean2015 <- function() {
            GrainMoisture = `Moisture (%)`,
            GrainStarch = `Starch (%)`,
            GrainWGlutDM = WGlutDM,
+           GrainTestWeight = `TestWeight (g)`,
            Comments = Notes) %>% 
     select(HarvestYear,
            Crop,
@@ -985,6 +994,7 @@ get_clean2015 <- function() {
            GrainMoisture,
            GrainStarch,
            GrainWGlutDM,
+           GrainTestWeight,
            ResidueSampleArea,
            ResidueMassDryPerArea,
            Comments)
@@ -1023,6 +1033,7 @@ get_clean2016 <- function() {
            GrainMoisture = `Moisture (%)`,
            GrainStarch = `Starch (%)`,
            GrainWGlutDM = WGlutDM,
+           GrainTestWeight = `TestWeight (g)`,
            Comments = NotesValue) %>% 
     select(HarvestYear,
            Crop,
@@ -1037,6 +1048,7 @@ get_clean2016 <- function() {
            GrainMoisture,
            GrainStarch,
            GrainWGlutDM,
+           GrainTestWeight,
            ResidueSampleArea,
            ResidueMassDryPerArea,
            Comments)
