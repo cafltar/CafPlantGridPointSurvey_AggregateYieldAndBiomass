@@ -25,10 +25,11 @@ dfGapFillYield <- estimateYieldByAvgYieldAndRelativeYield(dfConvertWetToDryByMoi
 # Processing level = 3 (modeled), accuracy = 3 (bounds check on derived variable (harvest index))
 dfGapFillByGrainMass <- estimateResidueMassDryPerAreaByGrainYieldDryPerArea(dfGapFillYield)
 
-# ==== Clean up for output ====
+# ==== Output ====
 # Clean up columns
 # Note that even though we calculate a parameter to convert wet residue mass to dry this is not considered a "modeled" result since this is similar to what is done in the lab, thus meets criteria for a "calculated" result so is included in the "Processing Level 2" dataset
-dfClean <- dfConvertWetToDryByMoistureProportion %>% 
+dfClean_P2 <- dfConvertWetToDryByMoistureProportion %>% 
+  mutate(ResidueMassDryPerArea = ResidueMassDryPerArea_P2) %>% 
   select(HarvestYear,
          ID2,
          Longitude,
@@ -48,7 +49,9 @@ dfClean <- dfConvertWetToDryByMoistureProportion %>%
          ResidueCarbon,
          ResidueNitrogen,
          Comments)
-dfCleanGapFilled <- dfGapFillByGrainMass %>% 
+dfClean_P3 <- dfGapFillByGrainMass %>% 
+  mutate(ResidueMassDryPerArea = ResidueMassDryPerArea_P3,
+         GrainYieldDryPerArea = GrainYieldDryPerArea_P3) %>% 
   select(HarvestYear,
          ID2,
          Longitude,
@@ -257,8 +260,11 @@ dictionary.P3 <- data.frame(varNames.P3, varUnits.P3, varDesc.P3, varTypes.P3) %
          "DataType" = varTypes.P3)
 
 # Write dataset with only calculated values
-write_csv_gridPointSurvey(dfClean, dictionary.P2, "1999-2016", "output", 4, 2)
+write_csv_gridPointSurvey(dfClean_P2, dictionary.P2, "1999-2016", "output", 4, 2)
 
 # Write dataset with gap-filled (modeled) values
-write_csv_gridPointSurvey(dfCleanGapFilled, dictionary.P3, "1999-2016", "output", 3, 3)
+write_csv_gridPointSurvey(dfClean_P3, dictionary.P3, "1999-2016", "output", 3, 3)
+
+# Dump all data, with intermediate calculations
+write_csv_gridPointSurvey(dfGapFillByGrainMass, NULL, "1999-2016", "output", 3, 3, "IntermediateValues")
 

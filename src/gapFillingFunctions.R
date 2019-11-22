@@ -8,11 +8,10 @@ estimateResidueMassDryXByResidueMoistureProportion <- function(df) {
     group_by(Crop) %>% 
     mutate(AvgResidueMoistureProportionByCrop = mean(ResidueMoistureProportion, na.rm = TRUE)) %>% 
     ungroup() %>% 
-    mutate(ResidueMassDry = case_when(!is.na(ResidueMassDry) ~ ResidueMassDry,
+    mutate(ResidueMassDry_P2 = case_when(!is.na(ResidueMassDry) ~ ResidueMassDry,
                                       is.na(ResidueMassDry) ~ ResidueMassWet * (1 - AvgResidueMoistureProportionByCrop))) %>%
-    mutate(ResidueMassDryPerArea = case_when(!is.na(ResidueMassDryPerArea) ~ ResidueMassDryPerArea,
-                                             is.na(ResidueMassDryPerArea) ~ ResidueMassDry / ResidueSampleArea)) %>% 
-    select(-AvgResidueMoistureProportionByCrop)
+    mutate(ResidueMassDryPerArea_P2 = case_when(!is.na(ResidueMassDryPerArea) ~ ResidueMassDryPerArea,
+                                             is.na(ResidueMassDryPerArea) ~ ResidueMassDry_P2 / ResidueSampleArea))
   
   return(df.gapFill)
 }
@@ -33,13 +32,13 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
   # Remove AL (alfalfa) since we don't actually have data
   df.clean <- df %>% 
     filter(Crop != "AL", !is.na(Crop),
-           !is.na(GrainYieldDryPerArea),
-           !is.na(ResidueMassDryPerArea))
+           !is.na(GrainYieldDryPerArea_P3),
+           !is.na(ResidueMassDryPerArea_P2))
   
   modelByCropYear <- df.clean %>% 
     nest(-HarvestYear, -Crop) %>%
     mutate(
-      fit = map(data, ~ lm(ResidueMassDryPerArea ~ GrainYieldDryPerArea, data = .x))
+      fit = map(data, ~ lm(ResidueMassDryPerArea_P2 ~ GrainYieldDryPerArea_P3, data = .x))
     )
   
   summaryByCropYear <- modelByCropYear %>% 
@@ -55,7 +54,7 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
     select(HarvestYear, Crop, term, estimate) %>% 
     spread(term, estimate) %>% 
     rename(InterceptEstimate = `(Intercept)`,
-           XEstimate = GrainYieldDryPerArea)
+           XEstimate = GrainYieldDryPerArea_P3)
   
   # Join data, use df to retain NaN and NA values
   df.linear <- df %>% 
@@ -68,7 +67,7 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
   # Hardcoded min/max range of accepted HI values, as determined by Qiuping Peng using HI values from this dataset (after cleaning outliers) and from literature values
   hi.bounds <- read_csv("input/crop-harvest-index-bounds.csv")
   df.hi <- df %>% 
-    mutate(HarvestIndex = GrainYieldDryPerArea / (GrainYieldDryPerArea + ResidueMassDryPerArea)) %>% 
+    mutate(HarvestIndex = GrainYieldDryPerArea_P3 / (GrainYieldDryPerArea_P3 + ResidueMassDryPerArea_P2)) %>% 
     left_join(hi.bounds, by = ("Crop")) %>% 
     group_by(HarvestYear, Crop) %>% 
     mutate(HarvestIndexAvg = mean(HarvestIndex, na.rm = TRUE)) %>% 
@@ -85,19 +84,19 @@ estimateResidueMassDryPerAreaByGrainYieldDryPerArea <- function(df) {
   #   4. Calculate residue from average HI if outside of bounds
   df.estResidue <- df.hi %>% 
     full_join(df.linear, by = c("HarvestYear","Crop")) %>%
-    mutate(ResidueMassDryPerArea.linear = case_when(is.na(ResidueMassDryPerArea) ~ InterceptEstimate + XEstimate * GrainYieldDryPerArea)) %>% 
-    mutate(HarvestIndex.linear = case_when(!is.na(ResidueMassDryPerArea.linear) ~ GrainYieldDryPerArea / (GrainYieldDryPerArea + ResidueMassDryPerArea.linear))) %>% 
-    mutate(ResidueMassDryPerArea.HI = case_when(((HarvestIndex.linear < HIMin) | (HarvestIndex.linear > HIMax)) ~ (GrainYieldDryPerArea/HarvestIndexAvg) - GrainYieldDryPerArea,
-                                                is.na(HarvestIndex.linear) & is.na(ResidueMassDryPerArea) ~ (GrainYieldDryPerArea/HarvestIndexAvg) - GrainYieldDryPerArea))
+    mutate(ResidueMassDryPerArea.linear = case_when(is.na(ResidueMassDryPerArea_P2) ~ InterceptEstimate + XEstimate * GrainYieldDryPerArea_P3)) %>% 
+    mutate(HarvestIndex.linear = case_when(!is.na(ResidueMassDryPerArea.linear) ~ GrainYieldDryPerArea_P3 / (GrainYieldDryPerArea_P3 + ResidueMassDryPerArea.linear))) %>% 
+    mutate(ResidueMassDryPerArea.HI = case_when(((HarvestIndex.linear < HIMin) | (HarvestIndex.linear > HIMax)) ~ (GrainYieldDryPerArea_P3/HarvestIndexAvg) - GrainYieldDryPerArea_P3,
+                                                is.na(HarvestIndex.linear) & is.na(ResidueMassDryPerArea_P2) ~ (GrainYieldDryPerArea_P3/HarvestIndexAvg) - GrainYieldDryPerArea_P3))
   
   df.gapFill <- df.estResidue %>% 
-    mutate(ResidueMassDryPerArea_P = case_when(!is.na(ResidueMassDryPerArea) ~ 2,
-                                               is.na(ResidueMassDryPerArea) & (!is.na(ResidueMassDryPerArea.HI) | !is.na(ResidueMassDryPerArea.linear)) ~ 3))
+    mutate(ResidueMassDryPerArea_P = case_when(!is.na(ResidueMassDryPerArea_P2) ~ 2,
+                                               is.na(ResidueMassDryPerArea_P2) & (!is.na(ResidueMassDryPerArea.HI) | !is.na(ResidueMassDryPerArea.linear)) ~ 3))
   
   df.result <- df.gapFill %>% 
-    mutate(ResidueMassDryPerArea = case_when(!is.na(ResidueMassDryPerArea) ~ ResidueMassDryPerArea,
-                                             is.na(ResidueMassDryPerArea) & !is.na(ResidueMassDryPerArea.HI) ~ ResidueMassDryPerArea.HI,
-                                             is.na(ResidueMassDryPerArea) & is.na(ResidueMassDryPerArea.HI) & !is.na(ResidueMassDryPerArea.linear) ~ ResidueMassDryPerArea.linear))
+    mutate(ResidueMassDryPerArea_P3 = case_when(!is.na(ResidueMassDryPerArea_P2) ~ ResidueMassDryPerArea_P2,
+                                             is.na(ResidueMassDryPerArea_P2) & !is.na(ResidueMassDryPerArea.HI) ~ ResidueMassDryPerArea.HI,
+                                             is.na(ResidueMassDryPerArea_P2) & is.na(ResidueMassDryPerArea.HI) & !is.na(ResidueMassDryPerArea.linear) ~ ResidueMassDryPerArea.linear))
   
   return(df.result)
 }
@@ -152,9 +151,7 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
   
   df.result <- df.gapFill %>% 
     mutate(GrainYieldDryPerArea_P = case_when(!is.na(GrainYieldDryPerArea) ~ 2,
-                                              is.na(GrainYieldDryPerArea) & !is.na(GrainYieldDryPerArea_P3) ~ 3)) %>% 
-    select(-GrainYieldDryPerArea) %>% 
-    rename(GrainYieldDryPerArea = GrainYieldDryPerArea_P3)
+                                              is.na(GrainYieldDryPerArea) & !is.na(GrainYieldDryPerArea_P3) ~ 3))
   
   return(df.result)
 }

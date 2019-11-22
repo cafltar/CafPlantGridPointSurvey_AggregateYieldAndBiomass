@@ -5,7 +5,8 @@ write_csv_gridPointSurvey <- function(df,
                                       harvest.year, 
                                       output.folder = "working",
                                       accuracy.level = NA,
-                                      processing.level = NA) {
+                                      processing.level = NA,
+                                      suffix = NA) {
   # Writes a csv files for data and data dictionary in defined folder in format of "HY{year}_{current date}_{dictionary or quality & processing code}.csv", sets NAs to blank
   #
   # Args:
@@ -15,6 +16,7 @@ write_csv_gridPointSurvey <- function(df,
   #   output.folder: String of folder to write the file to
   #   accuracy.level: Number for data quality code (1-6)
   #   processing.level: Number for data processing code (1-3)
+  #   suffix: Any additional name specification
   
   # TODO: Add some error checking to see if all columns in df are defined in dictionary
   
@@ -35,16 +37,21 @@ write_csv_gridPointSurvey <- function(df,
   
   file.name.data <- paste(file.name.base,
                     if(!is.na(data.code)) {paste("_", data.code, sep = "")} else {""},
+                    if(!is.na(suffix)) {paste("_", suffix, sep = "")} else {""},
                     ".csv",
                     sep = "")
   
-  file.name.dict <- paste(file.name.base,
-                          if(!is.na(data.code)) {paste("_", data.code, sep = "")} else {""},
-                          "_Dictionary.csv",
-                          sep = "")
-  
   write_csv(df, file.path(output.folder, file.name.data), na = "")
-  write_csv(dictionary, file.path(output.folder, file.name.dict), na = "")
+  
+  if(!is.null(dictionary))
+  {
+    file.name.dict <- paste(file.name.base,
+                            if(!is.na(data.code)) {paste("_", data.code, sep = "")} else {""},
+                            if(!is.na(suffix)) {paste("_", suffix, sep = "")} else {""},
+                            "_Dictionary.csv",
+                            sep = "")
+    write_csv(dictionary, file.path(output.folder, file.name.dict), na = "")
+  }
 }
 
 compare_cols <- function(df.in, column1, column2) {
