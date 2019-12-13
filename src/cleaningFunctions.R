@@ -153,23 +153,9 @@ get_clean1999_2009 <- function() {
                             "Row Letter", 
                             "Column")
   
-  # Remove ID2 values with NA (fields north of current CookEast used to be sampled)
-  # Calculate residue values, don't use supplied since it seems to have errors
-  df.calc <- df %>%
-    mutate(GrainYieldDryPerArea = GrainMassFinal / `total area harvested (M2)`) %>% 
-    mutate(ResidueMassWet = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>%
-    mutate(ResidueMoistureProportion = (`Residue Sub-Sample Wet Weight (grams)` - `Residue Sub-Sample Dry Weight (grams)`) / `Residue Sub-Sample Wet Weight (grams)`) %>%
-    mutate(ResidueMassDry = ResidueMassWet * (1 - ResidueMoistureProportion)) %>%
-    mutate(ResidueMassDryPerArea = ResidueMassDry / `Residue Sample Area (square meters)`)
-
-  # Remove values with no ID and if fallow
-  # Aggregate comments, rename crops for consistency
-  # Accept Unger's crop abbreviations over Ubbies (Dave and I reviewed)
-  # Add missing residue using crop averages of moisture proportion
-  df.clean <- df.calc %>% 
-    filter(!is.na(ID2), Crop != "FALLOW") %>% 
-    mutate(Comments = coalesce(`Grain Harvest Comments`, `Residue Sample Comments`)) %>%
-    mutate(HarvestYear = as.integer(Year)) %>%
+  # Convert all crop designations to standards, remove measurements outside of CE
+  df.standard.crop.abbriv <- df %>% 
+    filter(!is.na(ID2), Crop != "FALLOW") %>%
     replace(. == "winter wheat", "WW") %>%
     replace(. == "spring wheat", "SW") %>%
     replace(. == "spring barley", "SB") %>%
@@ -181,7 +167,31 @@ get_clean1999_2009 <- function() {
     replace(. == "Winter Canola", "WC") %>%
     replace(. == "winter lentil", "WL") %>%
     replace(. == "Garbonzo Beans", "GB") %>%
-    replace(. == "Alfalfa", "AL") %>% 
+    replace(. == "Alfalfa", "AL")
+  
+  # After reviewing crop management files, found that WC failed in 2001, 2004, and 2008 and was planted as SC, reassigned here
+  df.wc.to.sc <- df.standard.crop.abbriv %>% 
+    mutate(Crop = case_when(Year == 2001 & Field == "A" & Strip == 3 ~ "SC",
+                            Year == 2004 & Field == "A" & Strip == 3 ~ "SC",
+                            Year == 2008 & Field == "A" & Strip == 4 ~ "SC",
+                            TRUE ~ Crop))
+  
+  # Remove ID2 values with NA (fields north of current CookEast used to be sampled)
+  # Calculate residue values, don't use supplied since it seems to have errors
+  df.calc <- df.wc.to.sc %>%
+    mutate(GrainYieldDryPerArea = GrainMassFinal / `total area harvested (M2)`) %>% 
+    mutate(ResidueMassWet = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>%
+    mutate(ResidueMoistureProportion = (`Residue Sub-Sample Wet Weight (grams)` - `Residue Sub-Sample Dry Weight (grams)`) / `Residue Sub-Sample Wet Weight (grams)`) %>%
+    mutate(ResidueMassDry = ResidueMassWet * (1 - ResidueMoistureProportion)) %>%
+    mutate(ResidueMassDryPerArea = ResidueMassDry / `Residue Sample Area (square meters)`)
+
+  # Remove values with no ID and if fallow
+  # Aggregate comments, rename crops for consistency
+  # Accept Unger's crop abbreviations over Ubbies (Dave and I reviewed)
+  # Add missing residue using crop averages of moisture proportion
+  df.clean <- df.calc %>% 
+    mutate(Comments = coalesce(`Grain Harvest Comments`, `Residue Sample Comments`)) %>%
+    mutate(HarvestYear = as.integer(Year)) %>%
     rename(GrainCarbonUnger = GrainCarbon,
            GrainNitrogenUnger = GrainNitrogen,
            Latitude = Y,
