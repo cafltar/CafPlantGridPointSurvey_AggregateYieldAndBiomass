@@ -179,8 +179,7 @@ get_clean1999_2009 <- function() {
   # Converting A3 to SC converts a mis-planted SP sample, so reassignign it here
   # Also note that there's a misplanted SW in C1 (ID2 = 110), WB in A2 (ID2 = 394), SP in A4 (398), WB in A2 (419) see comments for details
   df.fix.planting.mistakes <- df.wc.to.sc %>% 
-    mutate(Crop = case_when(Year == 2001 & ID2 == 227 ~ "SP",
-                            Year == 2001 & ID2 == 176 ~ "WP",
+    mutate(Crop = case_when(Year == 2001 & ID2 == 227 ~ "WP",
                             TRUE ~ Crop))
   
   # Remove ID2 values with NA (fields north of current CookEast used to be sampled)

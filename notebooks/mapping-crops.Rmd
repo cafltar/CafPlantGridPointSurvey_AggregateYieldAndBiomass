@@ -26,7 +26,7 @@ source("../src/functions.R")
 
 ```{r, include=FALSE}
 # read data
-df.yields <- read_csv("../output/HY1999-2016_20191120_P3A3.csv") %>% 
+df.yields <- read_csv("../output/HY1999-2016_20191212_P3A3.csv") %>% 
   filter(!is.na(GrainYieldDryPerArea))
 
 boundary <- st_read("../input/CookEastBoundary_20180131.geojson")
