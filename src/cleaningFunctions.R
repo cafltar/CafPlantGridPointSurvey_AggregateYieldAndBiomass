@@ -176,9 +176,16 @@ get_clean1999_2009 <- function() {
                             Year == 2008 & Field == "A" & Strip == 4 ~ "SC",
                             TRUE ~ Crop))
   
+  # Converting A3 to SC converts a mis-planted SP sample, so reassignign it here
+  # Also note that there's a misplanted SW in C1 (ID2 = 110), WB in A2 (ID2 = 394), SP in A4 (398), WB in A2 (419) see comments for details
+  df.fix.planting.mistakes <- df.wc.to.sc %>% 
+    mutate(Crop = case_when(Year == 2001 & ID2 == 227 ~ "SP",
+                            Year == 2001 & ID2 == 176 ~ "WP",
+                            TRUE ~ Crop))
+  
   # Remove ID2 values with NA (fields north of current CookEast used to be sampled)
   # Calculate residue values, don't use supplied since it seems to have errors
-  df.calc <- df.wc.to.sc %>%
+  df.calc <- df.fix.planting.mistakes %>%
     mutate(GrainYieldDryPerArea = GrainMassFinal / `total area harvested (M2)`) %>% 
     mutate(ResidueMassWet = `Residue plus Grain Wet Weight (grams)` - `Residue sample Grain Wet Weight (grams)`) %>%
     mutate(ResidueMoistureProportion = (`Residue Sub-Sample Wet Weight (grams)` - `Residue Sub-Sample Dry Weight (grams)`) / `Residue Sub-Sample Wet Weight (grams)`) %>%
@@ -281,8 +288,13 @@ get_clean2010 <- function() {
     mutate(ResidueMassDryPerArea = ResidueMassDry / `Area (m2)`) %>%
     mutate(HarvestIndex = GrainYieldDryPerArea / (ResidueMassDryPerArea + GrainYieldDryPerArea))
   
+  # After reviewing management data, determined that strip A1 should be WW, not SW
+  df.sw.to.ww <- df.merge %>% 
+    mutate(`Grain Type` = case_when(Field == "A" & Strip == 1 ~ "WW",
+                                    TRUE ~ `Grain Type`))
+  
   # Rename columns to standard and drop unneeded columns
-  df.clean <- df.merge %>% 
+  df.clean <- df.sw.to.ww %>% 
     rename("HarvestYear" = Year,
            "Crop" = `Grain Type`,
            "SampleID" = `Bag Barcode`,
