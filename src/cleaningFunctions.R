@@ -128,6 +128,7 @@ get_clean1999_2009 <- function() {
                                    is.na(GrainCUbbie) & !is.na(GrainCUnger) ~ GrainCUnger,
                                    !is.na(GrainCUbbie) & is.na(GrainCUnger) ~ GrainCUbbie)) %>% 
     mutate(GrainMassUbbie = case_when(`total grain yield dry (grams)` > 0 ~ `total grain yield dry (grams)`)) %>% 
+    mutate(GrainMassWetUbbie = case_when(`total grain yield wet(grams)` > 0 ~ `total grain yield wet(grams)`)) %>% 
     mutate(`total area harvested (M2)` = na_if(`total area harvested (M2)`, 0)) %>% 
     mutate(`Residue plus Grain Wet Weight (grams)` = na_if(`Residue plus Grain Wet Weight (grams)`, 0)) %>% 
     mutate(`Residue Sub-Sample Dry Weight (grams)` = na_if(`Residue Sub-Sample Dry Weight (grams)`, 0)) %>% 
@@ -194,7 +195,7 @@ get_clean1999_2009 <- function() {
   # Remove values with no ID and if fallow
   # Aggregate comments, rename crops for consistency
   # Accept Unger's crop abbreviations over Ubbies (Dave and I reviewed)
-  # Add missing residue using crop averages of moisture proportion
+  # Add missing residue using crop averages of moisture proportion (2023-05-04: I think this is not being done here)
   df.clean <- df.calc %>% 
     mutate(Comments = coalesce(`Grain Harvest Comments`, `Residue Sample Comments`)) %>%
     mutate(HarvestYear = as.integer(Year)) %>%
@@ -207,13 +208,17 @@ get_clean1999_2009 <- function() {
            ResidueCarbon = `Residue Carbon %`,
            ResidueNitrogen = `Residue Nitrogen %`,
            GrainSampleArea = `total area harvested (M2)`,
-           ResidueSampleArea = `Residue Sample Area (square meters)`) %>% 
+           ResidueSampleArea = `Residue Sample Area (square meters)`,
+           GrainMassOvenDry = GrainMassFinal,
+           GrainMassWet = GrainMassWetUbbie) %>% 
     select(HarvestYear,
            Crop,
            Longitude,
            Latitude,
            ID2,
            GrainSampleArea,
+           GrainMassWet,
+           GrainMassOvenDry,
            GrainYieldOvenDryPerArea,
            GrainCarbon,
            GrainNitrogen,
@@ -284,8 +289,7 @@ get_clean2010 <- function() {
   df.merge <- df %>% 
     full_join(df.res.slim, by = c("Bag Barcode")) %>%
     mutate(GrainYieldOvenDryPerArea = `Total Grain Dry (g)` / `Area (m2)`) %>% 
-    mutate(ResidueMassOvenDryPerArea = ResidueMassOvenDry / `Area (m2)`) %>%
-    mutate(HarvestIndex = GrainYieldOvenDryPerArea / (ResidueMassOvenDryPerArea + GrainYieldOvenDryPerArea))
+    mutate(ResidueMassOvenDryPerArea = ResidueMassOvenDry / `Area (m2)`)
   
   # After reviewing management data, determined that strip A1 should be WW, not SW
   df.sw.to.ww <- df.merge %>% 
@@ -299,7 +303,9 @@ get_clean2010 <- function() {
            "SampleID" = `Bag Barcode`,
            "Latitude" = Y,
            "Longitude" = X,
-           "GrainSampleArea" = `Area (m2)`) %>% 
+           "GrainSampleArea" = `Area (m2)`,
+           "GrainMassWet" = `Total Grain Wet (g)`,
+           "GrainMassOvenDry" = `Total Grain Dry (g)`) %>% 
     mutate(ResidueSampleArea = GrainSampleArea) %>% 
     select(HarvestYear,
            Crop,
@@ -308,6 +314,8 @@ get_clean2010 <- function() {
            Longitude,
            ID2,
            GrainSampleArea,
+           GrainMassWet,
+           GrainMassOvenDry,
            GrainYieldOvenDryPerArea,
            ResidueSampleArea,
            ResidueMassWet,
@@ -353,8 +361,8 @@ get_clean2011 <- function() {
     mutate(Comments = case_when(is.na(as.numeric(df$`Total Grain Wet (g)`)) ~ paste(Comments, " | Grain note: ", df$`Total Grain Wet (g)`, sep = ""), TRUE ~ Comments)) %>% 
     mutate(BiomassWet = as.numeric(`Total Residue and Grain Wet (g)`)) %>% 
     mutate(GrainMassWet = as.numeric(`Total Grain Wet (g)`)) %>% 
-    mutate(ResidueMassWet = BiomassWet - GrainMassWet) %>% 
-    mutate(GrainYieldWetPerArea = GrainMassWet / `Area (m2)`)
+    mutate(ResidueMassWet = BiomassWet - GrainMassWet) #%>% 
+    #mutate(GrainYieldWetPerArea = GrainMassWet / `Area (m2)`)
   
   # Rename columns to standard, drop unwanted columns
   df.clean <- df.calcs %>% 
@@ -371,7 +379,8 @@ get_clean2011 <- function() {
            Latitude,
            ID2,
            GrainSampleArea,
-           GrainYieldWetPerArea,
+           GrainMassWet,
+           #GrainYieldWetPerArea,
            ResidueSampleArea,
            ResidueMassWet,
            Comments)
@@ -406,12 +415,24 @@ get_clean2012 <- function() {
   
   # Calc missing values
   df.calcs <- df %>% 
-    mutate(GrainYieldWetPerArea = `Grain Weight Wet (g)` / `Area (m2)`) %>% 
+    mutate(GrainMassAirDry = `Grain Weight Wet (g)`) %>%
+    #mutate(GrainYieldWetPerArea = `Grain Weight Wet (g)` / `Area (m2)`) %>% 
     mutate(Comments = case_when((!is.na(df$`Test Weight`) & is.na(as.numeric(df$`Test Weight`))) ~ paste("TestWeight note: ", df$`Test Weight`, sep = ""), TRUE ~ "")) %>% 
     mutate(Comments = case_when(!is.na(df$...24) ~ paste(Comments, " | Sample note: ", df$...24, sep = ""), TRUE ~ Comments)) %>% 
     mutate(HarvestYear = 2012) %>% 
     mutate(ResidueMassWet = `Total Biomass Wet (g)` - `Grain Weight Wet (g)`) %>% 
     mutate(GrainTestWeight = as.numeric(`Test Weight`))
+  
+  # Calc grain at 0 % moisture
+  df.calcs <- df.calcs %>%
+    mutate(GrainMassOvenDry = case_when(
+      !is.na(df.calcs$`Grain Weight Dry (g)`) ~ df.calcs$`Grain Weight Dry (g)`, 
+      TRUE ~ (df.calcs$`Grain Weight Wet (g)` - (df.calcs$`Grain Weight Wet (g)` * (df.calcs$`Moisture` / 100)))))
+
+  
+  # Calc yield at 0% moisture
+  df.calcs <- df.calcs %>%
+    mutate(GrainYieldOvenDryPerArea = df.calcs$GrainMassOvenDry / df.calcs$`Area (m2)`)
   
   # Clean and output
   df.clean <- df.calcs %>% 
@@ -431,7 +452,9 @@ get_clean2012 <- function() {
            Latitude,
            ID2,
            GrainSampleArea,
-           GrainYieldWetPerArea,
+           GrainMassAirDry,
+           GrainMassOvenDry,
+           GrainYieldOvenDryPerArea,
            GrainProtein,
            GrainMoisture,
            GrainStarch,
@@ -568,6 +591,11 @@ get_clean2013 <- function() {
     mutate(GrainYieldAirDryPerArea = GrainWeightWet / Area,
            ResidueMassAirDryPerArea = ResidueMassAirDry / Area)
   
+  # Calculate oven dry using NIR data
+  df.calcs <- df.calcs %>%
+    mutate(GrainMassOvenDry = GrainWeightWet - (GrainWeightWet * (Moisture / 100))) %>%
+    mutate(GrainYieldOvenDryPerArea = GrainMassOvenDry / Area)
+  
   # Clean
   df.clean <- df.calcs %>% 
     filter(!is.na(SampleID)) %>% 
@@ -578,7 +606,8 @@ get_clean2013 <- function() {
            GrainWGlutDM = WGlutDM,
            Comments = Notes,
            GrainSampleArea = Area,
-           GrainTestWeight = TestWeight) %>% 
+           GrainTestWeight = TestWeight,
+           GrainMassAirDry = GrainWeightWet) %>% 
     mutate(ResidueSampleArea = GrainSampleArea) %>% 
     select(HarvestYear,
            Crop,
@@ -587,7 +616,9 @@ get_clean2013 <- function() {
            Latitude,
            ID2,
            GrainSampleArea,
-           GrainYieldAirDryPerArea,
+           GrainMassAirDry,
+           GrainMassOvenDry,
+           GrainYieldOvenDryPerArea,
            GrainCarbon,
            GrainNitrogen,
            GrainProtein,
@@ -596,7 +627,8 @@ get_clean2013 <- function() {
            GrainWGlutDM,
            GrainTestWeight,
            ResidueSampleArea,
-           ResidueMassAirDryPerArea,
+           ResidueMassAirDry,
+           #ResidueMassAirDryPerArea,
            ResidueCarbon,
            ResidueNitrogen,
            Comments)
@@ -723,6 +755,7 @@ get_clean2014_prioritizeNirData <- function() {
     mutate(GrainSampleArea = 2,
            ResidueSampleArea = 2) %>% 
     mutate(GrainYieldAirDryPerArea = TotalGrain.g. / GrainSampleArea,
+           ResidueMassAirDry = biomass - TotalGrain.g.,
            ResidueMassAirDryPerArea = (biomass - TotalGrain.g.) / ResidueSampleArea,
            Comments = paste(NOTES, Notes2, Notes3,
                             sep = " | "),
@@ -731,7 +764,7 @@ get_clean2014_prioritizeNirData <- function() {
   ## Clean data
   df.clean <- df.calc %>% 
     rename("SampleID" = BarcodeFinal,
-           "GrainMassAirDryPerArea" = TotalGrain.g.,
+           "GrainMassAirDry" = TotalGrain.g.,
            "GrainProtein" = protein,
            "GrainMoisture" = moisture,
            "GrainStarch" = starch,
@@ -753,7 +786,8 @@ get_clean2014_prioritizeNirData <- function() {
            GrainWGlutDM,
            GrainTestWeight,
            ResidueSampleArea,
-           ResidueMassAirDryPerArea,
+           ResidueMassAirDry,
+           #ResidueMassAirDryPerArea,
            Comments)
   
   return(df.clean)
@@ -782,7 +816,7 @@ get_clean2014 <- function() {
   gb.names <- c("Column",
                 "Row2",
                 "SampleID",
-                "BiomassDry",
+                "BiomassAirDry",
                 "GrainMassAirDry",
                 "Comments")
   df.gb <- read_excel("input/GPHY14_GB20141221.xlsx",
@@ -807,7 +841,7 @@ get_clean2014 <- function() {
   sb.names <- c("Column",
                 "Row2",
                 "SampleID",
-                "GrainAirMassDry",
+                "GrainMassAirDry",
                 "BiomassAirDry",
                 "GrainProtein",
                 "GrainMoisture",
@@ -915,7 +949,7 @@ get_clean2014 <- function() {
   
   # NIR dataset has some values missing from this dataset, so merge then select best values
   df.merge <- df.nir %>% 
-    mutate(ResidueMassAirDry = ResidueMassAirDryPerArea * ResidueSampleArea) %>% 
+    #mutate(ResidueMassAirDry = ResidueMassAirDryPerArea * ResidueSampleArea) %>% 
     select(ID2, 
            GrainProtein, 
            GrainMoisture, 
@@ -923,7 +957,7 @@ get_clean2014 <- function() {
            GrainWGlutDM,
            GrainTestWeight,
            ResidueMassAirDry,
-           ResidueMassAirDryPerArea,
+           #ResidueMassAirDryPerArea,
            Comments) %>% 
     left_join(df.calc, by = "ID2")
   
@@ -938,8 +972,8 @@ get_clean2014 <- function() {
            GrainTestWeight = GrainTestWeight.x,
            ResidueMassAirDry = case_when(!is.na(ResidueMassAirDry.y) ~ ResidueMassAirDry.y,
                                       TRUE ~ ResidueMassAirDry.x),
-           ResidueMassAirDryPerArea = case_when(!is.na(ResidueMassAirDryPerArea.y) ~ ResidueMassAirDryPerArea.y,
-                                             TRUE ~ ResidueMassAirDryPerArea.x),
+           #ResidueMassAirDryPerArea = case_when(!is.na(ResidueMassAirDryPerArea.y) ~ ResidueMassAirDryPerArea.y,
+           #                                  TRUE ~ ResidueMassAirDryPerArea.x),
            Comments = paste(Comments.x, Comments.y, sep = " | ")) %>% 
     select(HarvestYear,
            Crop,
@@ -949,7 +983,6 @@ get_clean2014 <- function() {
            ID2,
            GrainSampleArea,
            GrainMassAirDry,
-           GrainYieldAirDryPerArea,
            GrainProtein,
            GrainMoisture,
            GrainStarch,
@@ -957,10 +990,15 @@ get_clean2014 <- function() {
            GrainTestWeight,
            ResidueSampleArea,
            ResidueMassAirDry,
-           ResidueMassAirDryPerArea,
+           #ResidueMassAirDryPerArea,
            Comments)
+  
+  # Now that data are cleaned and merged, calculate yield at 0 % moisture
+  df.clean.calc <- df.clean %>%
+    mutate(GrainMassOvenDry = GrainMassAirDry - (GrainMassAirDry * (GrainMoisture/100))) %>%
+    mutate(GrainYieldOvenDryPerArea = GrainMassOvenDry/GrainSampleArea)
 
-  return(df.clean)
+  return(df.clean.calc)
 }
 
 get_clean2015 <- function() {
@@ -987,7 +1025,12 @@ get_clean2015 <- function() {
                                        TRUE ~ 2.4384),
            ResidueSampleArea = GrainSampleArea) %>% 
     mutate(GrainYieldAirDryPerArea = `GrainNetWt (g)` / GrainSampleArea,
-           ResidueMassAirDryPerArea = (`NetWt (g)` - `GrainNetWt (g)`) / ResidueSampleArea)
+           ResidueMassAirDry = `NetWt (g)` - `GrainNetWt (g)`)
+  
+  # Calc yield at 0% moisture
+  df.calc <- df.calc %>%
+    mutate(GrainMassOvenDry = `GrainNetWt (g)` - (`GrainNetWt (g)` * (`Moisture (%)` / 100))) %>%
+    mutate(GrainYieldOvenDryPerArea = GrainMassOvenDry / GrainSampleArea)
   
   # Rename and select columns
   df.clean <- df.calc %>% 
@@ -998,7 +1041,8 @@ get_clean2015 <- function() {
            GrainStarch = `Starch (%)`,
            GrainWGlutDM = WGlutDM,
            GrainTestWeight = `TestWeight (g)`,
-           Comments = Notes) %>% 
+           Comments = Notes,
+           GrainMassAirDry = `GrainNetWt (g)`) %>% 
     select(HarvestYear,
            Crop,
            SampleID,
@@ -1006,7 +1050,9 @@ get_clean2015 <- function() {
            Latitude,
            ID2,
            GrainSampleArea,
-           GrainYieldAirDryPerArea,
+           GrainMassAirDry,
+           GrainMassOvenDry,
+           GrainYieldOvenDryPerArea,
            GrainOilDM,
            GrainProtein,
            GrainMoisture,
@@ -1014,7 +1060,8 @@ get_clean2015 <- function() {
            GrainWGlutDM,
            GrainTestWeight,
            ResidueSampleArea,
-           ResidueMassAirDryPerArea,
+           ResidueMassAirDry,
+           #ResidueMassAirDryPerArea,
            Comments)
   
   return(df.clean)
@@ -1040,8 +1087,13 @@ get_clean2016 <- function() {
                                        TRUE ~ 2.4384),
            ResidueSampleArea = GrainSampleArea) %>% 
     mutate(GrainYieldAirDryPerArea = `GrainNetWt (g)` / GrainSampleArea,
-           ResidueMassAirDryPerArea = (`NetWt (g)` - `GrainNetWt (g)`) / ResidueSampleArea,
+           ResidueMassAirDry = `NetWt (g)` - `GrainNetWt (g)`,
            Longitude = as.numeric(Longitude))
+  
+  # Calc yield at 0% moisture
+  df.calc <- df.calc %>%
+    mutate(GrainMassOvenDry = `GrainNetWt (g)` - (`GrainNetWt (g)` * (`Moisture (%)` / 100))) %>%
+    mutate(GrainYieldOvenDryPerArea = GrainMassOvenDry / GrainSampleArea)
   
   # Rename and select columns
   df.clean <- df.calc %>% 
@@ -1052,7 +1104,8 @@ get_clean2016 <- function() {
            GrainStarch = `Starch (%)`,
            GrainWGlutDM = WGlutDM,
            GrainTestWeight = `TestWeight (g)`,
-           Comments = NotesValue) %>% 
+           Comments = NotesValue,
+           GrainMassAirDry = `GrainNetWt (g)`) %>% 
     select(HarvestYear,
            Crop,
            SampleID,
@@ -1060,7 +1113,9 @@ get_clean2016 <- function() {
            Latitude,
            ID2,
            GrainSampleArea,
-           GrainYieldAirDryPerArea,
+           GrainMassAirDry,
+           GrainMassOvenDry,
+           GrainYieldOvenDryPerArea,
            GrainOilDM,
            GrainProtein,
            GrainMoisture,
@@ -1068,7 +1123,8 @@ get_clean2016 <- function() {
            GrainWGlutDM,
            GrainTestWeight,
            ResidueSampleArea,
-           ResidueMassAirDryPerArea,
+           ResidueMassAirDry,
+           #ResidueMassAirDryPerArea,
            Comments)
   
   return(df.clean)
