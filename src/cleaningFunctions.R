@@ -1153,23 +1153,25 @@ get_clean1999_2016 <- function(rm.outliers = F) {
                   df2014,
                   df2015,
                   df2016)
-  # TODO: 2023-05-03 - Need to redo this
+  
+  # TODO: 2023-05-03 - Need to redo this (nevermind, it's not being used)
   if(rm.outliers == T) {
-    df.rm.outliers <- df %>% 
-      group_by(HarvestYear, Crop) %>% 
-      mutate(GrainYieldDryPerArea = removeOutliers(GrainYieldDryPerArea),
-             GrainCarbon = removeOutliers(GrainCarbon),
-             GrainNitrogen = removeOutliers(GrainNitrogen),
-             ResidueMassDryPerArea = removeOutliers(ResidueMassDryPerArea),
-             ResidueCarbon = removeOutliers(ResidueCarbon),
-             ResidueNitrogen = removeOutliers(ResidueNitrogen),
-             GrainProtein = removeOutliers(GrainProtein),
-             GrainMoisture = removeOutliers(GrainMoisture),
-             GrainStarch = removeOutliers(GrainStarch),
-             GrainWGlutDM = removeOutliers(GrainWGlutDM),
-             GrainOilDM = removeOutliers(GrainOilDM))
-    
-    return(df.rm.outliers)
+    print("rm.outliers is not implemented")
+    #df.rm.outliers <- df %>% 
+    #  group_by(HarvestYear, Crop) %>% 
+    #  mutate(GrainYieldDryPerArea = removeOutliers(GrainYieldDryPerArea),
+    #         GrainCarbon = removeOutliers(GrainCarbon),
+    #         GrainNitrogen = removeOutliers(GrainNitrogen),
+    #         ResidueMassDryPerArea = removeOutliers(ResidueMassDryPerArea),
+    #         ResidueCarbon = removeOutliers(ResidueCarbon),
+    #         ResidueNitrogen = removeOutliers(ResidueNitrogen),
+    #         GrainProtein = removeOutliers(GrainProtein),
+    #         GrainMoisture = removeOutliers(GrainMoisture),
+    #         GrainStarch = removeOutliers(GrainStarch),
+    #         GrainWGlutDM = removeOutliers(GrainWGlutDM),
+    #         GrainOilDM = removeOutliers(GrainOilDM))
+    #
+    #return(df.rm.outliers)
   } else {
     return(df);
   }
