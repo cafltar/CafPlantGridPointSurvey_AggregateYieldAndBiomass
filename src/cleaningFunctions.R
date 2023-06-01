@@ -127,14 +127,31 @@ get_clean1999_2009 <- function() {
     mutate(GrainCFinal = case_when(!is.na(GrainCUbbie) & !is.na(GrainCUnger) ~ GrainCUnger,
                                    is.na(GrainCUbbie) & !is.na(GrainCUnger) ~ GrainCUnger,
                                    !is.na(GrainCUbbie) & is.na(GrainCUnger) ~ GrainCUbbie)) %>% 
-    mutate(GrainMassUbbie = case_when(`total grain yield dry (grams)` > 0 ~ `total grain yield dry (grams)`)) %>% 
-    mutate(GrainMassWetUbbie = case_when(`total grain yield wet(grams)` > 0 ~ `total grain yield wet(grams)`)) %>% 
-    mutate(`total area harvested (M2)` = na_if(`total area harvested (M2)`, 0)) %>% 
-    mutate(`Residue plus Grain Wet Weight (grams)` = na_if(`Residue plus Grain Wet Weight (grams)`, 0)) %>% 
-    mutate(`Residue Sub-Sample Dry Weight (grams)` = na_if(`Residue Sub-Sample Dry Weight (grams)`, 0)) %>% 
-    mutate(`Residue Sub-Sample Wet Weight (grams)` = na_if(`Residue Sub-Sample Wet Weight (grams)`, 0)) %>% 
-    mutate(`Residue Sample Area (square meters)` = na_if(`Residue Sample Area (square meters)`, 0)) %>% 
-    mutate(GrainMassFinal = GrainMassUbbie) %>% 
+    #mutate(GrainMassUbbie = case_when(`total grain yield dry (grams)` > 0 ~ `total grain yield dry (grams)`)) %>% 
+    #mutate(GrainMassWetUbbie = case_when(`total grain yield wet(grams)` > 0 ~ `total grain yield wet(grams)`)) %>% 
+    #mutate(`total area harvested (M2)` = na_if(`total area harvested (M2)`, 0)) %>% 
+    #mutate(`Residue plus Grain Wet Weight (grams)` = na_if(`Residue plus Grain Wet Weight (grams)`, 0)) %>% 
+    #mutate(`Residue Sub-Sample Dry Weight (grams)` = na_if(`Residue Sub-Sample Dry Weight (grams)`, 0)) %>% 
+    #mutate(`Residue Sub-Sample Wet Weight (grams)` = na_if(`Residue Sub-Sample Wet Weight (grams)`, 0)) %>% 
+    #mutate(`Residue Sample Area (square meters)` = na_if(`Residue Sample Area (square meters)`, 0)) %>% 
+    #mutate(GrainMassFinal = GrainMassUbbie) %>% 
+    mutate(GrainSampleArea = `Non-Residue Grain Sample Area (square meters)`) %>%
+    mutate(BiomassSampleArea =  `Residue Sample Area (square meters)`) %>%
+    mutate(GrainMassWetInGrainSample = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ NA_real_,
+                                               TRUE ~ `Non-Residue Grain Wet Weight (grams)`)) %>%
+    mutate(GrainMassDryInGrainSample = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ NA_real_,
+                                               TRUE ~ `Non-Residue grain dry weight (grams)`)) %>%
+    mutate(BiomassWet = `Residue plus Grain Wet Weight (grams)`) %>%
+    mutate(GrainMassWetInBiomassSample = `Residue sample Grain Wet Weight (grams)`) %>%
+    mutate(GrainMassOvenDryInBiomassSample = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ NA_real_,
+                                                       TRUE ~ `Residue sample Grain Dry Weight (grams)`)) %>%
+    mutate(ResidueMassWetSubsample = `Residue Sub-Sample Wet Weight (grams)`) %>%
+    mutate(ResidueMassOvenDrySubsample = `Residue Sub-Sample Dry Weight (grams)`) %>%
+    mutate(GrainMassWet = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ `total grain yield wet(grams)`,
+                                    TRUE ~ NA_real_)) %>%
+    mutate(GrainMassOvenDry = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ `total grain yield dry (grams)`,
+                                    TRUE ~ NA_real_)) %>%
+    
     ungroup()
   
   
@@ -207,13 +224,18 @@ get_clean1999_2009 <- function() {
            GrainNitrogen = GrainNFinal,
            ResidueCarbon = `Residue Carbon %`,
            ResidueNitrogen = `Residue Nitrogen %`,
-           GrainSampleArea = `total area harvested (M2)`,
-           BiomassSampleArea = `Residue Sample Area (square meters)`,
-           GrainMassOvenDry = GrainMassFinal,
-           BiomassWet = `Residue plus Grain Wet Weight (grams)`,
-           GrainMassWet = GrainMassWetUbbie,
-           ResidueMassWetSubsample = `Residue Sub-Sample Wet Weight (grams)`,
-           ResidueMassOvenDrySubsample = `Residue Sub-Sample Dry Weight (grams)`
+           #GrainSampleArea = `total area harvested (M2)`,
+           #GrainSampleArea = `Non-Residue Grain Sample Area (square meters)`,
+           #GrainMassWet = GrainMassWetUbbie,
+           #GrainMassWet = `Non-Residue Grain Wet Weight (grams)`,
+           #BiomassSampleArea = `Residue Sample Area (square meters)`,
+           #GrainMassOvenDry = GrainMassFinal,
+           #GrainMassOvenDry = `Non-Residue grain dry weight (grams)`,
+           #BiomassWet = `Residue plus Grain Wet Weight (grams)`,
+           #GrainMassWetInBiomassSample = `Residue sample Grain Wet Weight (grams)`,
+           #GrainMassOvenDryInBiomassSample = `Residue sample Grain Dry Weight (grams)`,
+           #ResidueMassWetSubsample = `Residue Sub-Sample Wet Weight (grams)`,
+           #ResidueMassOvenDrySubsample = `Residue Sub-Sample Dry Weight (grams)`
            ) %>% 
     select(HarvestYear,
            Crop,
@@ -221,13 +243,15 @@ get_clean1999_2009 <- function() {
            Latitude,
            ID2,
            GrainSampleArea,
-           BiomassWet,
            GrainMassWet,
            GrainMassOvenDry,
            #GrainYieldOvenDryPerArea,
            GrainCarbon,
            GrainNitrogen,
            BiomassSampleArea,
+           BiomassWet,
+           GrainMassWetInBiomassSample,
+           GrainMassOvenDryInBiomassSample,
            #ResidueMassWet,
            ResidueMassWetSubsample,
            ResidueMassOvenDrySubsample,
