@@ -139,7 +139,7 @@ get_clean1999_2009 <- function() {
     mutate(BiomassSampleArea =  `Residue Sample Area (square meters)`) %>%
     mutate(GrainMassWetInGrainSample = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ NA_real_,
                                                TRUE ~ `Non-Residue Grain Wet Weight (grams)`)) %>%
-    mutate(GrainMassDryInGrainSample = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ NA_real_,
+    mutate(GrainMassOvenDryInGrainSample = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ NA_real_,
                                                TRUE ~ `Non-Residue grain dry weight (grams)`)) %>%
     mutate(BiomassWet = `Residue plus Grain Wet Weight (grams)`) %>%
     mutate(GrainMassWetInBiomassSample = `Residue sample Grain Wet Weight (grams)`) %>%
@@ -222,8 +222,10 @@ get_clean1999_2009 <- function() {
            Longitude = X,
            GrainCarbon = GrainCFinal,
            GrainNitrogen = GrainNFinal,
+           GrainSulfur = `Grain Sulfur %...12`,
            ResidueCarbon = `Residue Carbon %`,
            ResidueNitrogen = `Residue Nitrogen %`,
+           ResidueSulfur = `Residue Sulfur %`,
            #GrainSampleArea = `total area harvested (M2)`,
            #GrainSampleArea = `Non-Residue Grain Sample Area (square meters)`,
            #GrainMassWet = GrainMassWetUbbie,
@@ -244,10 +246,13 @@ get_clean1999_2009 <- function() {
            ID2,
            GrainSampleArea,
            GrainMassWet,
+           GrainMassWetInGrainSample,
+           GrainMassOvenDryInGrainSample,
            GrainMassOvenDry,
            #GrainYieldOvenDryPerArea,
            GrainCarbon,
            GrainNitrogen,
+           GrainSulfur,
            BiomassSampleArea,
            BiomassWet,
            GrainMassWetInBiomassSample,
@@ -260,6 +265,7 @@ get_clean1999_2009 <- function() {
            #ResidueMassOvenDryPerArea,
            ResidueCarbon,
            ResidueNitrogen,
+           ResidueSulfur,
            Comments) %>% 
     arrange(HarvestYear, ID2)
   

@@ -36,6 +36,8 @@ dfClean_P1 <- df %>%
          Crop,
          GrainSampleArea,
          GrainMassWet,
+         GrainMassWetInGrainSample,
+         GrainMassOvenDryInGrainSample,
          GrainMassAirDry,
          GrainMassOvenDry,
          GrainMoisture,
@@ -46,6 +48,7 @@ dfClean_P1 <- df %>%
          GrainTestWeight,
          GrainCarbon,
          GrainNitrogen,
+         GrainSulfur,
          BiomassSampleArea,
          BiomassWet,
          BiomassAirDry,
@@ -55,9 +58,10 @@ dfClean_P1 <- df %>%
          ResidueMassOvenDrySubsample,
          ResidueCarbon,
          ResidueNitrogen,
+         ResidueSulfur,
          Comments)
 
-write_csv_gridPointSurvey(dfClean_P1, NULL, "1999-2016", "output", 0, 2)
+write_csv_gridPointSurvey(dfClean_P1, NULL, "1999-2016", "output", 0, 1)
 
 # Note that even though we calculate a parameter to convert wet residue mass to dry this is not considered a "modeled" result since this is similar to what is done in the lab, thus meets criteria for a "calculated" result so is included in the "Processing Level 2" dataset
 #dfClean_P2 <- dfGapFillByGrainMass %>% 
