@@ -349,10 +349,15 @@ get_clean2010 <- function() {
            SampleID = `Bag Barcode`,
            Latitude = Y,
            Longitude = X,
-           GrainSampleArea = `Area (m2)`,
+           #GrainSampleArea = `Area (m2)`,
            GrainMassWet = `Total Grain Wet (g)`,
            GrainMassOvenDry = `Total Grain Dry (g)`) %>% 
-    mutate(BiomassSampleArea = GrainSampleArea) %>% 
+    mutate(GrainSampleArea = case_when(is.na(BiomassWet) & is.na(GrainMassWet) ~ NA_real_,
+                                       is.na(BiomassWet) & !is.na(GrainMassWet) ~ `Area (m2)`,
+                                       TRUE ~ 0),
+           BiomassSampleArea = case_when(is.na(BiomassWet) & is.na(GrainMassWet) ~ NA_real_,
+                                         !is.na(BiomassWet) ~ `Area (m2)`,
+                                         TRUE ~ 0)) %>% 
     select(HarvestYear,
            Crop,
            SampleID,
@@ -406,8 +411,8 @@ get_clean2011 <- function() {
   
   # Calc missing values
   df.calcs <- df %>% 
-    mutate(Comments = case_when(is.na(as.numeric(df$`Total Residue and Grain Wet (g)`)) ~ paste("Residue note: ", df$`Total Residue and Grain Wet (g)`, sep = ""), TRUE ~ "")) %>% 
-    mutate(Comments = case_when(is.na(as.numeric(df$`Total Grain Wet (g)`)) ~ paste(Comments, " | Grain note: ", df$`Total Grain Wet (g)`, sep = ""), TRUE ~ Comments)) %>% 
+    mutate(Comments = case_when(is.na(as.numeric(df$`Total Residue and Grain Wet (g)`) & !is.na(df$`Total Residue and Grain Wet (g)`)) ~ paste("Residue note: ", df$`Total Residue and Grain Wet (g)`, " ", sep = ""), TRUE ~ "")) %>% 
+    mutate(Comments = case_when(is.na(as.numeric(df$`Total Grain Wet (g)`) & !is.na(df$`Total Grain Wet (g)`)) ~ paste(Comments, "Grain note: ", df$`Total Grain Wet (g)`, sep = ""), TRUE ~ Comments)) %>% 
     mutate(BiomassWet = as.numeric(`Total Residue and Grain Wet (g)`)) %>% 
     mutate(GrainMassWet = as.numeric(`Total Grain Wet (g)`)) #%>% 
     #mutate(ResidueMassWet = BiomassWet - GrainMassWet) #%>% 
@@ -419,8 +424,14 @@ get_clean2011 <- function() {
            Crop = `Current Crop`,
            Longitude = X,
            Latitude = Y,
-           GrainSampleArea = `Area (m2)`) %>% 
-    mutate(BiomassSampleArea = GrainSampleArea) %>% 
+           #GrainSampleArea = `Area (m2)`
+           ) %>% 
+    mutate(GrainSampleArea = case_when(is.na(BiomassWet) & is.na(GrainMassWet) ~ NA_real_,
+                                       is.na(BiomassWet) & !is.na(GrainMassWet) ~ `Area (m2)`,
+                                       TRUE ~ 0),
+           BiomassSampleArea = case_when(is.na(BiomassWet) & is.na(GrainMassWet) ~ NA_real_,
+                                         !is.na(BiomassWet) ~ `Area (m2)`,
+                                         TRUE ~ 0)) %>% 
     select(HarvestYear,
            Crop,
            SampleID,
@@ -439,7 +450,7 @@ get_clean2011 <- function() {
 }
 
 get_clean2012 <- function() {
-  # Loads legecy data from one or more datasets and outputs cleaned dataframe
+  # Loads legacy data from one or more datasets and outputs cleaned dataframe
   
   require(tidyverse)
   require(readxl)
@@ -467,8 +478,8 @@ get_clean2012 <- function() {
   df.calcs <- df %>% 
     mutate(GrainMassWet = `Grain Weight Wet (g)`) %>%
     #mutate(GrainYieldWetPerArea = `Grain Weight Wet (g)` / `Area (m2)`) %>% 
-    mutate(Comments = case_when((!is.na(df$`Test Weight`) & is.na(as.numeric(df$`Test Weight`))) ~ paste("TestWeight note: ", df$`Test Weight`, sep = ""), TRUE ~ "")) %>% 
-    mutate(Comments = case_when(!is.na(df$...24) ~ paste(Comments, " | Sample note: ", df$...24, sep = ""), TRUE ~ Comments)) %>% 
+    mutate(Comments = case_when((!is.na(df$`Test Weight`) & is.na(as.numeric(df$`Test Weight`))) ~ paste("TestWeight note: ", df$`Test Weight`, " ", sep = ""), TRUE ~ "")) %>% 
+    mutate(Comments = case_when(!is.na(df$...24) ~ paste(Comments, "Sample note: ", df$...24, sep = ""), TRUE ~ Comments)) %>% 
     mutate(HarvestYear = 2012) %>% 
     #mutate(ResidueMassWet = `Total Biomass Wet (g)` - `Grain Weight Wet (g)`) %>% 
     mutate(GrainTestWeight = as.numeric(`Test Weight`))
@@ -493,10 +504,16 @@ get_clean2012 <- function() {
            GrainMoisture = Moisture,
            GrainStarch = Starch,
            GrainWGlutDM = Gluten,
-           GrainSampleArea = `Area (m2)`,
+           #GrainSampleArea = `Area (m2)`,
            BiomassWet = `Total Biomass Wet (g)`,
            GrainMassOvenDry = `Grain Weight Dry (g)`) %>% 
-    mutate(BiomassSampleArea = GrainSampleArea) %>% 
+    #mutate(BiomassSampleArea = GrainSampleArea) %>% 
+    mutate(GrainSampleArea = case_when(is.na(BiomassWet) & is.na(GrainMassWet) ~ NA_real_,
+                                       is.na(BiomassWet) & !is.na(GrainMassWet) ~ `Area (m2)`,
+                                       TRUE ~ 0),
+           BiomassSampleArea = case_when(is.na(BiomassWet) & is.na(GrainMassWet) ~ NA_real_,
+                                         !is.na(BiomassWet) ~ `Area (m2)`,
+                                         TRUE ~ 0)) %>% 
     select(HarvestYear,
            Crop,
            SampleID,
@@ -806,8 +823,14 @@ get_clean2014_prioritizeNirData <- function() {
   # Calc per area
   # NOTE: The actual area harvested was not recorded for 2014. It is likely that confusion over SOP caused area to be 1 m x 2 m or 2 m2 (harvesting within area inside pvc pipes instead of four rows of 2 m lenght - as was previous methods).  After mapping yields and comparing between years, Dave Huggins decided that 2014 was likely harvested at 2 m2. See notes in "CookEastPlantHandHarvest" OneNote (Bryan's WSU account)
   df.calc <- dfdBiomass %>% 
-    mutate(GrainSampleArea = 2,
-           BiomassSampleArea = 2) %>% 
+    mutate(GrainSampleArea = case_when(is.na(biomass) & is.na(TotalGrain.g.) ~ NA_real_,
+                                       is.na(biomass) & !is.na(TotalGrain.g.) ~ 2,
+                                       TRUE ~ 0),
+           BiomassSampleArea = case_when(is.na(biomass) & is.na(TotalGrain.g.) ~ NA_real_,
+                                         !is.na(biomass) ~ 2,
+                                         TRUE ~ 0)) %>% 
+    #mutate(GrainSampleArea = 2,
+    #       BiomassSampleArea = 2) %>% 
     mutate(#GrainYieldAirDryPerArea = TotalGrain.g. / GrainSampleArea,
            #ResidueMassAirDry = biomass - TotalGrain.g.,
            #ResidueMassAirDryPerArea = (biomass - TotalGrain.g.) / ResidueSampleArea,
@@ -960,8 +983,8 @@ get_clean2014 <- function() {
   # Append rows from all dataframes
   df.bind <- bind_rows(df.gb, df.sb, df.sw, df.ww) %>% 
     # NOTE: The actual area harvested was not recorded for 2014. It is likely that confusion over SOP caused area to be 1 m x 2 m or 2 m2 (harvesting within area inside pvc pipes instead of four rows of 2 m lenght - as was previous methods).  After mapping yields and comparing between years, Dave Huggins decided that 2014 was likely harvested at 2 m2. See notes in "CookEastPlantHandHarvest" OneNote (Bryan's WSU account)
-    mutate(GrainSampleArea = 2,
-           BiomassSampleArea = 2) %>% 
+    #mutate(GrainSampleArea = 2,
+    #       BiomassSampleArea = 2) %>% 
     arrange(SampleID)
   
   # Some WW samples have a observation for residue (_RES) samples and one for grain, these need to be combined
@@ -1038,6 +1061,12 @@ get_clean2014 <- function() {
            #ResidueMassAirDryPerArea = case_when(!is.na(ResidueMassAirDryPerArea.y) ~ ResidueMassAirDryPerArea.y,
            #                                  TRUE ~ ResidueMassAirDryPerArea.x),
            Comments = paste(Comments.x, Comments.y, sep = " | ")) %>% 
+    mutate(GrainSampleArea = case_when(is.na(BiomassAirDry) & is.na(GrainMassAirDry) ~ NA_real_,
+                                       is.na(BiomassAirDry) & !is.na(GrainMassAirDry) ~ 2,
+                                       TRUE ~ 0),
+           BiomassSampleArea = case_when(is.na(BiomassAirDry) & is.na(GrainMassAirDry) ~ NA_real_,
+                                         !is.na(BiomassAirDry) ~ 2,
+                                         TRUE ~ 0)) %>% 
     select(HarvestYear,
            Crop,
            SampleID,
@@ -1082,12 +1111,12 @@ get_clean2015 <- function() {
   df.calc <- df2015 %>% 
     # Ellen mapped data, ID2 of 258 is within SC strip
     mutate(Crop = case_when(ID2 == 258 ~ "SC",
-                            TRUE ~ Crop)) %>% 
+                            TRUE ~ Crop)) #%>% 
     # SC was harvested using 1 m x 2 m pipes as guide due to difficulties seeing drill rows
     # All others were harvested at 4 rows of 1 m length
-    mutate(GrainSampleArea = case_when(Crop == "SC" ~ 2,
-                                       TRUE ~ 2.4384),
-           BiomassSampleArea = GrainSampleArea) #%>% 
+    #mutate(GrainSampleArea = case_when(Crop == "SC" ~ 2,
+    #                                   TRUE ~ 2.4384),
+    #       BiomassSampleArea = GrainSampleArea) #%>% 
     #mutate(GrainYieldAirDryPerArea = `GrainNetWt (g)` / GrainSampleArea,
     #       ResidueMassAirDry = `NetWt (g)` - `GrainNetWt (g)`)
   
@@ -1108,6 +1137,14 @@ get_clean2015 <- function() {
            Comments = Notes,
            GrainMassAirDry = `GrainNetWt (g)`,
            BiomassAirDry = `NetWt (g)`) %>% 
+    mutate(GrainSampleArea = case_when(is.na(BiomassAirDry) & is.na(GrainMassAirDry) ~ NA_real_,
+                                       is.na(BiomassAirDry) & !is.na(GrainMassAirDry) & Crop == "SC" ~ 2,
+                                       is.na(BiomassAirDry) & !is.na(GrainMassAirDry) & Crop != "SC" ~ 2.4384,
+                                       TRUE ~ 0),
+           BiomassSampleArea = case_when(is.na(BiomassAirDry) & is.na(GrainMassAirDry) ~ NA_real_,
+                                         !is.na(BiomassAirDry) & Crop == "SC" ~ 2,
+                                         !is.na(BiomassAirDry) & Crop != "SC" ~ 2.4384,
+                                         TRUE ~ 0)) %>% 
     select(HarvestYear,
            Crop,
            SampleID,
@@ -1149,9 +1186,9 @@ get_clean2016 <- function() {
   
   # Fill area values and calc missing
   df.calc <- df2016 %>% 
-    mutate(GrainSampleArea = case_when(Crop == "SC" ~ 2,
-                                       TRUE ~ 2.4384),
-           BiomassSampleArea = GrainSampleArea) %>% 
+    #mutate(GrainSampleArea = case_when(Crop == "SC" ~ 2,
+     #                                  TRUE ~ 2.4384),
+     #      BiomassSampleArea = GrainSampleArea) %>% 
     mutate(#GrainYieldAirDryPerArea = `GrainNetWt (g)` / GrainSampleArea,
            #ResidueMassAirDry = `NetWt (g)` - `GrainNetWt (g)`,
            Longitude = as.numeric(Longitude))
@@ -1173,6 +1210,14 @@ get_clean2016 <- function() {
            Comments = NotesValue,
            GrainMassAirDry = `GrainNetWt (g)`,
            BiomassAirDry = `NetWt (g)`) %>% 
+    mutate(GrainSampleArea = case_when(is.na(BiomassAirDry) & is.na(GrainMassAirDry) ~ NA_real_,
+                                       is.na(BiomassAirDry) & !is.na(GrainMassAirDry) & Crop == "SC" ~ 2,
+                                       is.na(BiomassAirDry) & !is.na(GrainMassAirDry) & Crop != "SC" ~ 2.4384,
+                                       TRUE ~ 0),
+           BiomassSampleArea = case_when(is.na(BiomassAirDry) & is.na(GrainMassAirDry) ~ NA_real_,
+                                         !is.na(BiomassAirDry) & Crop == "SC" ~ 2,
+                                         !is.na(BiomassAirDry) & Crop != "SC" ~ 2.4384,
+                                         TRUE ~ 0)) %>% 
     select(HarvestYear,
            Crop,
            SampleID,
