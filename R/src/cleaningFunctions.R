@@ -399,8 +399,24 @@ get_clean2011 <- function() {
     mutate(SampleID = toupper(Barcode)) %>% 
     arrange(UID)
   
+  nir.data <- read_excel("input/NIR 2011 6-8-12.xls.xlsx",
+                       "Grid Points") %>%
+    filter(!is.na(UID) | (!is.na(Row) & !is.na(Column))) %>%
+    mutate(SampleID = toupper(Barcode)) %>%
+    arrange(UID)
+  
+  # Check if two input files have different measurement values
+  grain.wet.check <- as.numeric(df2011$`Total Grain Wet (g)`) - as.numeric(nir.data$`Total Grain Wet (g)`)
+  biomass.wet.check <- as.numeric(df2011$`Total Residue and Grain Wet (g)`) - as.numeric(nir.data$`Total Residue and Grain Wet (g)`)
+  area.check <- as.numeric(df2011$`Area (m2)`) - as.numeric(nir.data$`Area (m2)`)
+  
+  if(sum(grain.wet.check, na.rm = TRUE) != 0) { warning("Grain mass different")}
+  if(sum(biomass.wet.check, na.rm = TRUE) != 0) {warning("Biomass different")}
+  if(sum(area.check, na.rm = TRUE) != 0) {warning("area different")}
+  
   # Merge the georef data based on col and row2
-  df <- append_georef_to_df(df2011, "Row", "Column")
+  #df <- append_georef_to_df(df2011, "Row", "Column")
+  df <- append_georef_to_df(nir.data, "Row", "Column")
   
   # Check that ID2 values are ok after merging with row2 and col (it's not)
   #df.id2.check <- df %>% 
@@ -413,8 +429,10 @@ get_clean2011 <- function() {
   df.calcs <- df %>% 
     mutate(Comments = case_when(is.na(as.numeric(df$`Total Residue and Grain Wet (g)`) & !is.na(df$`Total Residue and Grain Wet (g)`)) ~ paste("Residue note: ", df$`Total Residue and Grain Wet (g)`, " ", sep = ""), TRUE ~ "")) %>% 
     mutate(Comments = case_when(is.na(as.numeric(df$`Total Grain Wet (g)`) & !is.na(df$`Total Grain Wet (g)`)) ~ paste(Comments, "Grain note: ", df$`Total Grain Wet (g)`, sep = ""), TRUE ~ Comments)) %>% 
+    mutate(Comments = case_when(is.na(as.numeric(df$`Test weight`) & !is.na(df$`Test weight`)) ~ paste(Comments, "NIR note: ", df$`Test weight`, sep = ""), TRUE ~ Comments)) %>%
     mutate(BiomassWet = as.numeric(`Total Residue and Grain Wet (g)`)) %>% 
-    mutate(GrainMassWet = as.numeric(`Total Grain Wet (g)`)) #%>% 
+    mutate(GrainMassWet = as.numeric(`Total Grain Wet (g)`)) %>% 
+    mutate(GrainTestWeight = as.numeric(`Test weight`))
     #mutate(ResidueMassWet = BiomassWet - GrainMassWet) #%>% 
     #mutate(GrainYieldWetPerArea = GrainMassWet / `Area (m2)`)
   
@@ -424,8 +442,10 @@ get_clean2011 <- function() {
            Crop = `Current Crop`,
            Longitude = X,
            Latitude = Y,
-           #GrainSampleArea = `Area (m2)`
-           ) %>% 
+           GrainProtein = ProtDM,
+           GrainMoisture = Moisture,
+           GrainStarch = StarchDM,
+           GrainWGlutDM = WGlutDM) %>% 
     mutate(GrainSampleArea = case_when(is.na(BiomassWet) & is.na(GrainMassWet) ~ NA_real_,
                                        is.na(BiomassWet) & !is.na(GrainMassWet) ~ `Area (m2)`,
                                        TRUE ~ 0),
@@ -440,6 +460,11 @@ get_clean2011 <- function() {
            ID2,
            GrainSampleArea,
            GrainMassWet,
+           GrainProtein,
+           GrainMoisture,
+           GrainStarch,
+           GrainWGlutDM,
+           GrainTestWeight,
            #GrainYieldWetPerArea,
            BiomassSampleArea,
            BiomassWet,
@@ -528,6 +553,7 @@ get_clean2012 <- function() {
            GrainMoisture,
            GrainStarch,
            GrainWGlutDM,
+           GrainTestWeight,
            BiomassSampleArea,
            #ResidueMassWet,
            BiomassWet,

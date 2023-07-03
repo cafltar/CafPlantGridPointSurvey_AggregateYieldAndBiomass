@@ -1,4 +1,4 @@
-# Readme
+# Files
 
 ## 12/13/2018
 
@@ -122,3 +122,14 @@
 * [crop-harvest-index-bounds.csv](crop-harvest-index-bounds.csv)
   * File created from figure in attachement "Crop data organization workflow0815 summary_updated.pptx" by Qiuping Peng, sent via ARS email "Re: Harvest data" on 11/15/2019
   * "Notes: When our min > Minfrom literature, I chose the literature value, or else, chose our min. When our Max > Maxreported from literature, We chose our max. If our Max<Maxreported, we chose literature value. This just to get wider bound." - Qiuping Peng
+  
+## 07/03/2023
+
+* [NIR 2011 6-8-12.xls.xlsx](NIR 2011 6-8-12.xls.xlsx)
+  * Contains some N data not found elsewhere
+  * Copied from Shared drive: `CafPlantGridPointSurvey\1999-2016\Working\20230103_FindingMissingNitrogenData`
+  * Originally from: Google Drive: https://docs.google.com/spreadsheets/d/1x3hjmDFQGMYUHsn7BYrXER6vE85G7rI1/edit#gid=879921411 (`G:\My Drive\Archive\NasRm243_20160615_oldDataBackup\DataDriveBackup\Projects\Back-Up\Thumbdrives 122612\13\Covered Storage Dec 2012\Harvest DH 2012`)
+* [GP 2016.xlsx](GP 2016.xlsx)
+  * Contains some N data not found elsewhere
+  * Copied from Shared drive: `CafPlantGridPointSurvey\1999-2016\Working\20230103_FindingMissingNitrogenData`
+  * Originally from Google Drive: https://docs.google.com/spreadsheets/d/1pwaPwlXunhEkIKSyBXdfOQXd-hwrbYHu/edit?usp=share_link&ouid=110442196581274005249&rtpof=true&sd=true (G:\My Drive\Archive\BlackUsbThumbDrivePcsfA_20190219\2016 nir\GP 2016.xlsx)
