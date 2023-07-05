@@ -1210,8 +1210,50 @@ get_clean2016 <- function() {
                        "Clean") %>% 
     filter(!is.na(ID2))
   
+  nir.sc <- read_excel("input/GP 2016.xlsx",
+                       "Spring Canola",
+                       range = cell_rows(5:269)) %>%
+    select(-c(
+      `Gross Wt. (g) + Bag`, 
+      `Total Bag Wt. (g)`,
+      `Grain Yield + Bag (g)`,
+      `Grain Bag Wt. (g)`,
+      `...13`))
+  nir.ww <- read_excel("input/GP 2016.xlsx",
+                       "Winter Wheat",
+                       na = "N/A",
+                       range = cell_rows(5:110)) %>%
+    select(-c(
+      `Gross Wt. (g) + Bag`, 
+      `Total Bag Wt. (g)`,
+      `Grain Yield + Bag (g)`,
+      `Grain Bag Wt. (g)`,
+      `...14`))
+  nir <- bind_rows(nir.sc, nir.ww)
+  
+  
+  # Merge two data frames with preference towards "HY2016GP_171019.xlsx" data
+  df.merge <- merge(df2016, nir, by.x = c("Barcode"), by.y = c("Sample"))
+  df.merge$GrainOilDM <- ifelse(is.na(df.merge$`Oil (DM).x`), df.merge$`Oil (DM).y`, df.merge$`Oil (DM).x`)
+  df.merge$GrainProtein <- ifelse(is.na(df.merge$`Protein (%)`), df.merge$ProtDM, df.merge$`Protein (%)`)
+  df.merge$GrainMoisture <- ifelse(is.na(df.merge$`Moisture (%)`), df.merge$Moisture, df.merge$`Moisture (%)`)
+  df.merge$GrainStarch <- ifelse(is.na(df.merge$`Starch (%)`), df.merge$StarchDM, df.merge$`Starch (%)`)
+  df.merge$GrainWGlutDM <- ifelse(is.na(df.merge$WGlutDM.x), df.merge$WGlutDM.y, df.merge$WGlutDM.x)
+  df.merge$GrainTestWeight <- ifelse(is.na(df.merge$`TestWeight (g)`), df.merge$`Infartec 1241 Test Weight`, df.merge$`TestWeight (g)`)
+  
+  # Check that masses match
+  if(sum(df.merge$`GrainNetWt (g)` - df.merge$`Grain Net Wt. (g)`, na.rm = TRUE) > 0) {
+    warning("Grain weights do not match")
+  }
+  
+  if(sum(df.merge$`NetWt (g)` - df.merge$`Net Wt. (g)`, na.rm = TRUE) > 0){
+    warning("Biomass weights do not match")
+  }
+  
+  #df2016$MergeOil <- ifelse(is.na(df2016$`Oil (DM)`), nir$`Oil (DM)`, df2016$`Oil (DM)`)
+  
   # Fill area values and calc missing
-  df.calc <- df2016 %>% 
+  df.calc <- df.merge %>% 
     #mutate(GrainSampleArea = case_when(Crop == "SC" ~ 2,
      #                                  TRUE ~ 2.4384),
      #      BiomassSampleArea = GrainSampleArea) %>% 
@@ -1227,12 +1269,6 @@ get_clean2016 <- function() {
   # Rename and select columns
   df.clean <- df.calc %>% 
     rename(SampleID = Barcode,
-           GrainOilDM = `Oil (DM)`,
-           GrainProtein = `Protein (%)`,
-           GrainMoisture = `Moisture (%)`,
-           GrainStarch = `Starch (%)`,
-           GrainWGlutDM = WGlutDM,
-           GrainTestWeight = `TestWeight (g)`,
            Comments = NotesValue,
            GrainMassAirDry = `GrainNetWt (g)`,
            BiomassAirDry = `NetWt (g)`) %>% 
