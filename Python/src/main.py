@@ -313,6 +313,16 @@ def main(args):
         .with_columns(
             pl.when((pl.col('GrainSampleArea') > 0) & 
                 ((pl.col('BiomassSampleArea') == 0) | pl.col('BiomassSampleArea').is_null()))
+            .then(pl.col('GrainMassWet') / pl.col('GrainSampleArea'))
+            .when(((pl.col('GrainSampleArea') == 0) | pl.col('GrainSampleArea').is_null()) & 
+                (pl.col('BiomassSampleArea') > 0))
+            .then(pl.col('GrainMassWet') / pl.col('BiomassSampleArea'))
+            .otherwise(None)
+            .alias('GrainYieldWet_P2')
+        )
+        .with_columns(
+            pl.when((pl.col('GrainSampleArea') > 0) & 
+                ((pl.col('BiomassSampleArea') == 0) | pl.col('BiomassSampleArea').is_null()))
             .then(pl.col('GrainMassOvenDry_P2') / pl.col('GrainSampleArea'))
             .when(((pl.col('GrainSampleArea') == 0) | pl.col('GrainSampleArea').is_null()) & 
                 (pl.col('BiomassSampleArea') > 0))
