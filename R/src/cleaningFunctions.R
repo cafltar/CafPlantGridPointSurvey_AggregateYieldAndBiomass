@@ -692,8 +692,16 @@ get_clean2013 <- function() {
   #  mutate(GrainMassOvenDry = GrainWeightWet - (GrainWeightWet * (Moisture / 100))) %>%
   #  mutate(GrainYieldOvenDryPerArea = GrainMassOvenDry / Area)
   
+  df.calc <- df %>%
+    mutate(GrainSampleArea = case_when(is.na(BiomassAirDry) & is.na(GrainWeightWet) ~ NA_real_,
+                                       is.na(BiomassAirDry) & !is.na(GrainWeightWet) ~ Area,
+                                       TRUE ~ 0),
+           BiomassSampleArea = case_when(is.na(BiomassAirDry) & is.na(GrainWeightWet) ~ NA_real_,
+                                         !is.na(BiomassAirDry) ~ Area,
+                                         TRUE ~ 0))
+  
   # Clean
-  df.clean <- df %>% 
+  df.clean <- df.calc %>% 
     filter(!is.na(SampleID)) %>% 
     rename(HarvestYear = Year,
            GrainProtein = Protein,
@@ -701,10 +709,10 @@ get_clean2013 <- function() {
            GrainStarch = Starch,
            GrainWGlutDM = WGlutDM,
            Comments = Notes,
-           GrainSampleArea = Area,
+           #GrainSampleArea = Area,
            GrainTestWeight = TestWeight,
            GrainMassAirDry = GrainWeightWet) %>% 
-    mutate(BiomassSampleArea = GrainSampleArea) %>% 
+    #mutate(BiomassSampleArea = GrainSampleArea) %>% 
     select(HarvestYear,
            Crop,
            SampleID,
