@@ -132,7 +132,9 @@ def main(args):
         # === Residue calculations ===
         # Residue mass wet via biomass - grain mass 
         .with_columns(
-            (pl.col('BiomassWet') - pl.col('GrainMassWetInBiomassSample'))
+            pl.when(pl.col('BiomassWet') > 0)
+            .then(pl.col('BiomassWet') - pl.col('GrainMassWetInBiomassSample'))
+            .otherwise(None)
             .alias('ResidueMassWet_P2')
         )
         # Residue subsample oisture proportions via: (wet - dry) / wet
@@ -182,7 +184,9 @@ def main(args):
         # === Residue ===
         # Residue
         .with_columns(
-            (pl.col('BiomassWet') - pl.col('GrainMassWetInBiomassSample'))
+            pl.when(pl.col('BiomassWet') > 0)
+            .then(pl.col('BiomassWet') - pl.col('GrainMassWetInBiomassSample'))
+            .otherwise(None)
             .alias('ResidueMassWet_P2')
         )
         # Residue subsample moisture proportions via: (wet - dry) / wet
@@ -380,6 +384,9 @@ def main(args):
     harvest_P2 = harvest_P2.rename(
         {c: c+'_P1' for c in harvest_P2.columns if c not in ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop'] if '_P2' not in c})
 
+    date_today = datetime.datetime.now().strftime("%Y%m%d")
+    write_name_P2A0 = 'HY1999-2016_' + str(date_today) + '_P2A0.csv'
+
     (harvest_P2
         .select([
             'HarvestYear', 
@@ -431,15 +438,19 @@ def main(args):
             'ResidueMassAirDryPerArea_P2'
         ])
     .sort(['HarvestYear', 'ID2'])
-    .write_csv('foo.csv'))
+    .write_csv(args['path_output'] / str(write_name_P2A0)))
+
     print('End')
 
 if __name__ == '__main__':
     path_data = pathlib.Path.cwd() / 'data'
     path_input = path_data / 'input'
     path_output = path_data / 'output'
+
+    path_output.mkdir(parents=True, exist_ok=True)
     
     args = {}
+    args['path_output'] = path_output
     args['path_harvest_data'] = path_input / 'HY1999-2016_20230710_P1A0.csv'
 
     main(args)
