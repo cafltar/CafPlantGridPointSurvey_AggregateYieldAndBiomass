@@ -1,0 +1,317 @@
+ID,Verb,Variable,NewVal,Comment,Reviewer
+2008_141,Update,ResidueMassWetSubsample,,"there is a residue sub sample dry weight for this sample, but no residue subsample wet or corresponding total residue weights?",Bryan Carlson
+CF11GPWW_108_15-E,Update,GrainTestWeight,75.6,NIR note: 75.6`,Bryan Carlson
+CF11GPSW_121_29-E,Flag,GrainMoisture,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+CF11GPSW_121_29-E,Flag,GrainProtein,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+CF11GPSW_121_29-E,Flag,GrainStarch,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+CF11GPSW_121_29-E,Flag,GrainWGlutDM,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+CF11GPSW_121_29-E,Flag,GrainTestWeight,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+CF11GPSW_147_29-F,Flag,GrainMoisture,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+CF11GPSW_147_29-F,Flag,GrainProtein,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+CF11GPSW_147_29-F,Flag,GrainStarch,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+CF11GPSW_147_29-F,Flag,GrainWGlutDM,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+CF11GPSW_147_29-F,Flag,GrainTestWeight,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+GPHY12_WW_A5_2_6-A,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A6_4_8-A,Flag,GrainMassWet,,Sample note: Mice,Bryan Carlson
+GPHY12_WW_B4_9_13-A,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A4_22_5-B,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_B4_30_13-B,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A3_45_5-C,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A3_46_6-C,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A5_48_8-C,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A2_69_4-D,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A4_73_8-D,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A5_101_9-E,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_SW_B1_103_11-E,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_B4_107_15-E,Flag,GrainTestWeight,,TestWeight note: not enough sample ,Bryan Carlson
+GPHY12_SW_C2_139_21-F,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A2_150_7-G,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_B4_160_17-G,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A1_175_6-H,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A1_176_7-H,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A4_179_10-H,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_SW_B2_158_15-G,Flag,GrainTestWeight,,TestWeight note: not enough sample ,Bryan Carlson
+GPHY12_WW_A1_201_8-I,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A2_202_9-I,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_SW_C2_217_24-I,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A3_227_9-J,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A6_231_13-J,Flag,GrainMassWet,,Sample note: Mice,Bryan Carlson
+GPHY12_WW_A1_249_9-K,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A3_251_11-K,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A6_255_15-K,Flag,GrainMassWet,,Sample note: Mice,Bryan Carlson
+GPHY12_WW_A1_272_9-L,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A3_274_11-L,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A6_278_15-L,Flag,GrainMassWet,,Sample note: Mice,Bryan Carlson
+GPHY12_WW_A1_348_11-O,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A4_351_14-O,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_B4_359_22-O,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_SW_B2_379_20-P,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A4_397_16-Q,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+GPHY12_WW_A5_422_18-R,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
+CF13GPSW_284_22-L,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_125_8-F,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_101_10-E,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_188_20-H,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_136_19-F,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_397_17-Q,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_30_14-B,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_187_19-H,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_260_21-K,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_32_16-B,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_227_10-J,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_10_15-A,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_372_14-P,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_326_14-N,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_69_5-D,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_161_19-G,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_418_15-R,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_213_21-I,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_324_12-N,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_311_24-M,Flag,GrainMassAirDry,,"Spilled | For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_336_24-N,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_299_12-M,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_149_7-G,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_277_15-L,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_251_12-K,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_19_3-B,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_300_13-M,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_3_8-A,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_349_13-O,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_98_7-E,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_393_13-Q,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_202_10-I,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_205_13-I,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_152_10-G,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_298_11-M,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_70_6-D,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_128_11-F,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_21_5-B,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_0_5-A,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_249_10-K,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_124_7-F,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_20_4-B,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_97_6-E,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_420_17-R,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_302_15-M,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_275_13-L,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_348_12-O,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_206_14-I,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_46_7-C,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_371_13-P,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_99_8-E,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_236_19-J,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_350_14-O,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_274_12-L,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_228_11-J,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_22_6-B,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_203_11-I,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_325_13-N,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_399_19-Q,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_230_13-J,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_373_15-P,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_201_9-I,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_74_10-D,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_73_9-D,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_395_15-Q,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_178_10-H,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_225_8-J,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_151_9-G,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_44_5-C,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_419_16-R,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSB_180_12-H,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_396_16-Q,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_135_18-F,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_108_17-E,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_239_22-J,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_214_22-I,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_160_18-G,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_54_15-C,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_162_20-G,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_107_16-E,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPSW_18_2-B,Flag,GrainMassAirDry,,"For the red ones, the air valve of the blowing machine was completely open and has blown some grain with the chaff",Bryan Carlson
+CF13GPWW_14_19-A,Flag,GrainTestWeight,,insufficient sample,Bryan Carlson
+CF13GPWW_122_5-F,Flag,GrainTestWeight,,insufficient sample,Bryan Carlson
+CF13GPWW_148_6-G,Flag,GrainTestWeight,,insufficient sample,Bryan Carlson
+CF13GPSW_186_18-H,Flag,GrainTestWeight,,insufficient sample,Bryan Carlson
+CF13GPWW_147_29-F,Flag,GrainMassAirDry,,Lost small amount; thesher not working well,Bryan Carlson
+CF13GPGB_153_11-G,Flag,GrainMassAirDry,,mouse damage,Bryan Carlson
+CF13GPGB_421_18-R,Flag,GrainMassAirDry,,Mouse damage,Bryan Carlson
+GPHY14_GB_A4_1_5-A,,GrainMassAirDry,,TOTAL SAMPLE GROUND |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_1_5-A,,BiomassAirDry,,TOTAL SAMPLE GROUND |  |  | NA,Bryan Carlson
+CF14GPSW_6-A,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_7-A,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_8-A,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_17-A,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_17-A,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_17-A,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+GPHY14_GB_A4_23_6-B,,GrainMassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_23_6-B,,BiomassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | NA,Bryan Carlson
+CF14GPSW_7-B,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_8-B,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_8-B,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_25_9-B,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_28_12-B,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_17-B,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_23-B,,GrainMassAirDry,,"SAMPLE TOO SMALL, MUST BE GROUND AND ANALYZED |  |  | NA",Bryan Carlson
+CF14GPSW_24-B,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG DAMAGED | NA,Bryan Carlson
+CF14GPSW_24-B,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG DAMAGED | NA,Bryan Carlson
+CF14GPSW_24-B,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG DAMAGED | NA,Bryan Carlson
+GPHY14_GB_A3_46_6-C,,GrainMassAirDry,,MOUSE DAMAGE |  |  | NA,Bryan Carlson
+GPHY14_GB_A3_46_6-C,,BiomassAirDry,,MOUSE DAMAGE |  |  | NA,Bryan Carlson
+CF14GPSW_8-C,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_9-C,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_18-C,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_18-C,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_24-C,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_25-C,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_25-C,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_26-C,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_26-C,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_26-C,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_27-C,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_73_8-D,,GrainMassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | 4 MICE IN THE BAG,Bryan Carlson
+GPHY14_GB_A4_73_8-D,,BiomassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | 4 MICE IN THE BAG,Bryan Carlson
+CF14GPSW_9-D,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_10-D,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_80_16-D,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_81_17-D,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_19-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_24-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_25-D,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_25-D,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_25-D,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_25-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_26-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_27-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_28-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_29-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_9-E,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_9-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_10-E,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_10-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_18-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_19-E,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_19-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_25-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_26-E,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_27-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_28-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_29-E,,GrainTestWeight,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT |  | NA,Bryan Carlson
+CF14GPSW_29-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT |  | NA,Bryan Carlson
+CF14GPSW_9-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_10-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_11-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_20-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_25-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_26-F,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_26-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_27-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_28-F,,GrainTestWeight,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_28-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_28-F,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_28-F,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_29-F,,GrainTestWeight,, |  | SAMPLE TOO SMALL FOR TEST WEIGHT | NA,Bryan Carlson
+GPHY14_GB_A4_152_9-G,,GrainMassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_152_9-G,,BiomassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
+CF14GPSW_11-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_12-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_162_20-G,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_21-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_22-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_27-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | SAMPLE TOO SMALL FOR TEST WEIGHT | NA,Bryan Carlson
+CF14GPSW_27-G,,GrainTestWeight,,MOISTURE OUTSIDE LIMITS |  | SAMPLE TOO SMALL FOR TEST WEIGHT | NA,Bryan Carlson
+CF14GPSW_29-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_30-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_31-G,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_31-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_12-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_188_20-H,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_21-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_22-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_27-H,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_27-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_28-H,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_28-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_29-H,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_29-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_29-H,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_29-H,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_30-H,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_30-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_208_16-I,,GrainStarch,,There is s small piece of tape on the bag; starch outside limit |  |  | NA,Bryan Carlson
+CF14GPWW_208_16-I,,GrainMassAirDry,,There is s small piece of tape on the bag; starch outside limit |  |  | NA,Bryan Carlson
+CF14GPWW_208_16-I,,BiomassAirDry,,There is s small piece of tape on the bag; starch outside limit |  |  | NA,Bryan Carlson
+CF14GPSW_23-I,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_28-I,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_29-I,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_29-I,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_31-I,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_31-I,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_31-I,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+GPHY14_GB_A4_229_11-J,,GrainMassAirDry,,SAMPLE BAG DIFFERENT FROM OTHER SAMPLE BAGS |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_229_11-J,,BiomassAirDry,,SAMPLE BAG DIFFERENT FROM OTHER SAMPLE BAGS |  |  | NA,Bryan Carlson
+CF14GPSW_12-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_13-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_233_16-J,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_237_20-J,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_238_21-J,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_239_22-J,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_23-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_28-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_29-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_30-J,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_30-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+GPHY14_GB_A1_249_9-K,,GrainMassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
+GPHY14_GB_A1_249_9-K,,BiomassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
+GPHY14_GB_A3_251_11-K,,GrainMassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
+GPHY14_GB_A3_251_11-K,,BiomassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
+GPHY14_GB_A4_252_12-K,,GrainMassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_252_12-K,,BiomassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
+CF14GPSW_14-K,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_15-K,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_258_19-K,,GrainProtein,,Protein DM outside limit |  |  | NA,Bryan Carlson
+CF14GPWW_262_23-K,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_30-K,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_30-K,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_31-K,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_31-K,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_31-K,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_31-K,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_14-L,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_15-L,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_281_19-L,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_284_22-L,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_24-L,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_24-L,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+GPHY14_SB_C3_290_27-L,,GrainTestWeight,,small sample (test weight) |  |  | test weight: small sample,Bryan Carlson
+CF14GPWW_291_29-L,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_30-L,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_14-M,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_14-M,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_15-M,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_16-M,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_309_22-M,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_310_23-M,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_25-M,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_16-N,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_16-N,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_17-N,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_330_18-N,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_334_22-N,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_335_23-N,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_25-N,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_15-O,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_16-O,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_17-O,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_17-O,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_17-P,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_17-P,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_378_20-P,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_379_21-P,,GrainMassAirDry,,Small piece of tape on bag |  |  | NA,Bryan Carlson
+CF14GPWW_379_21-P,,BiomassAirDry,,Small piece of tape on bag |  |  | NA,Bryan Carlson
+CF14GPSW_18-Q,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_19-Q,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_400_20-Q,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_18-R,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_18-R,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_19-R,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson

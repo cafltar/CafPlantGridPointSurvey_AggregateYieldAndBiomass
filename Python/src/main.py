@@ -1,54 +1,67 @@
 import polars as pl
 import pathlib
 import datetime
+import pandas as pd
 
-def main(args):
-    print('main')
+#https://github.com/cafltar/cafcore/releases/tag/v0.1.3
+import cafcore.qc
+import cafcore.file_io
 
-    harvest_dtypes = [
-        pl.Int32,
-        pl.Int32,
-        pl.Float64,
-        pl.Float64,
-        pl.Utf8,
-        pl.Utf8,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Float64,
-        pl.Utf8
-    ]
-
-    harvest = pl.read_csv(
-        args['path_harvest_data'],
-        dtypes=harvest_dtypes)
+def generate_p1a1(df, args):
+    print('generate_p1a1')
     
+    # Assign SampleIDs to ones without SampleIDs (mostly prior to 2010)
+    df = (df
+          .with_columns(
+            pl.when(pl.col('HarvestYear') < 2010)
+            .then(pl.concat_str([pl.col('HarvestYear'),pl.col('ID2')], separator='_'))
+            .otherwise(pl.col('SampleID'))
+            .alias('SampleID')
+          )
+    )
     
-    harvest_1999_2009 = harvest.filter((pl.col('HarvestYear') >= 1999) & (pl.col('HarvestYear') <= 2009))
-    harvest_2010 = harvest.filter((pl.col('HarvestYear') == 2010))
-    harvest_2011_2012 = harvest.filter((pl.col('HarvestYear') >= 2011) & (pl.col('HarvestYear') <= 2012))
-    harvest_2013_2016 = harvest.filter((pl.col('HarvestYear') >= 2013) & (pl.col('HarvestYear') <= 2016))
+    # Load the QA file
+    qa = pd.read_csv(args['path_qa_file'])
+
+    #qaUpdate = qa[qa['Verb'] == 'Update']
+    qaFlag = qa[qa['Verb'] == 'Flag']
+
+    # Based on QA stuff, split the dataframe by passed and failed
+    # Call cafcore.set_quality_assurance_applied (after initializing)
+    # Merge data back
+    # Return new dataset
+
+    df_pd = df.to_pandas()
+    df_qa = cafcore.qc.initialize_qc(df_pd, args['dimension_vars'])
+
+    df_qa = cafcore.qc.set_quality_assurance_applied(df_qa, args['dimension_vars'], True, True)
+
+    for index, row in qaFlag.iterrows():
+        reasonPhraseCol = row['Variable'] + '_P1_qcPhrase'
+        changePhrase = "(Assurance) {}".format(row['Comment'])
+
+        qaResultCol = row['Variable'] + '_P1_qcResult'
+
+        phrase_series = df_qa.loc[(df_qa['SampleID'] == row['ID']), reasonPhraseCol]
+
+        df_qa.loc[(df_qa['SampleID'] == row['ID']), reasonPhraseCol] = cafcore.qc.update_phrase(
+            df_qa.loc[phrase_series.index[0], reasonPhraseCol],
+            changePhrase
+        )
+
+        df_qa.loc[(df_qa['SampleID'] == row['ID']), qaResultCol] = cafcore.qc.update_qc_bitstring(
+            '000001', '000000')
+        
+
+    return df_qa
+
+def generate_p2a1(df, args):
+    print("generate_p2a1")
+    
+    harvest_1999_2009 = df.filter((pl.col('HarvestYear') >= 1999) & (pl.col('HarvestYear') <= 2009))
+    harvest_2010 = df.filter((pl.col('HarvestYear') == 2010))
+    harvest_2011_2012 = df.filter((pl.col('HarvestYear') >= 2011) & (pl.col('HarvestYear') <= 2012))
+    harvest_2013_2016 = df.filter((pl.col('HarvestYear') >= 2013) & (pl.col('HarvestYear') <= 2016))
 
     # Check that we didn't leave any rows behind (or duplicated)
     split_row_sum = (
@@ -56,7 +69,7 @@ def main(args):
         harvest_2010.shape[0] + 
         harvest_2011_2012.shape[0] + 
         harvest_2013_2016.shape[0])
-    if(harvest.shape[0] != split_row_sum):
+    if(df.shape[0] != split_row_sum):
         print("Warning! There was a loss or gain of rows")
 
     # Further split 1999-2010 calculations by way the sample was collected
@@ -381,13 +394,10 @@ def main(args):
         rechunk=True, 
         how='diagonal')
     
-    harvest_P2 = harvest_P2.rename(
-        {c: c+'_P1' for c in harvest_P2.columns if c not in ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop'] if '_P2' not in c})
-
-    date_today = datetime.datetime.now().strftime("%Y%m%d")
-    write_name_P2A0 = 'HY1999-2016_' + str(date_today) + '_P2A0.csv'
-
-    (harvest_P2
+    #harvest_P2 = harvest_P2.rename(
+    #    {c: c+'_P1' for c in harvest_P2.columns if c not in ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop'] if '_P2' not in c})
+    
+    harvest_P2 = (harvest_P2
         .select([
             'HarvestYear', 
             'ID2', 
@@ -437,8 +447,62 @@ def main(args):
             'ResidueMassAirDry_P2', 
             'ResidueMassAirDryPerArea_P2'
         ])
-    .sort(['HarvestYear', 'ID2'])
-    .write_csv(args['path_output'] / str(write_name_P2A0)))
+        .sort(['HarvestYear', 'ID2']))
+    
+    return harvest_P2
+
+def main(args):
+    print('main')
+
+    harvest_dtypes = [
+        pl.Int32,
+        pl.Int32,
+        pl.Float64,
+        pl.Float64,
+        pl.Utf8,
+        pl.Utf8,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Float64,
+        pl.Int32,
+        pl.Utf8
+    ]
+
+    harvest = pl.read_csv(
+        args['path_harvest_data'],
+        dtypes=harvest_dtypes)
+    
+    harvest_p1 = harvest.rename(
+        {c: c+'_P1' for c in harvest.columns if c not in args['dimension_vars']})
+
+    harvest_p1a1 = generate_p1a1(harvest_p1, args)
+    harvest_p2a1 = generate_p2a1(harvest_p1a1, args)
+    
+    date_today = datetime.datetime.now().strftime("%Y%m%d")
+    #write_name_P2A0 = 'HY1999-2016_' + str(date_today) + '_P2A0.csv'   
+    #.write_csv(args['path_output'] / str(write_name_P2A0)))
 
     print('End')
 
@@ -451,6 +515,9 @@ if __name__ == '__main__':
     
     args = {}
     args['path_output'] = path_output
-    args['path_harvest_data'] = path_input / 'HY1999-2016_20230710_P1A0.csv'
+    args['path_harvest_data'] = path_input / 'HY1999-2016_20230815_P1A0.csv'
+    args['path_qa_file'] = path_input / 'qaFlagFile_All.csv'
+
+    args['dimension_vars'] = ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop', 'CropExists', 'Comments']
 
     main(args)
