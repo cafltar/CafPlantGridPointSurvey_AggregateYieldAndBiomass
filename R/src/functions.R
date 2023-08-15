@@ -93,6 +93,28 @@ append_georef_to_df <- function(df, row.name, col.name) {
   return(df.merged)
 }
 
+append_georef_to_df_by_id2 <- function(df) {
+  require(sf)
+  
+  georef <- st_read("input/CookEast_GeoreferencePoints_171127.json") %>% 
+    select(-Strip, -Field) %>% 
+    mutate(Row2 = as.character(Row2),
+           Column = as.integer(Column))
+  
+  df.merged <- df %>% 
+    inner_join(data.frame(st_coordinates(georef),
+                         st_set_geometry(georef, NULL)),
+              by = c("ID2"))
+  
+  df.merged <- df.merged %>% 
+    rename(
+      Latitude = Y,
+      Longitude = X,
+    )
+  
+  return(df.merged)
+}
+
 check_yields <- function(df.in, sheet.name, year, yield.column) {
   # Compares yield values in df.in with yield values in a dataset cleaned by Kadar
   
@@ -150,6 +172,40 @@ append_cropexists <- function(df) {
   # Merge datasets
   df.merge <- df %>% 
     left_join(df.cropPresent, by = c("HarvestYear", "ID2"))
+  
+  years <- df %>% 
+    distinct(HarvestYear) %>% 
+    pull()
+  
+  ID2s <- df %>% 
+    filter(HarvestYear == 1999) %>% 
+    distinct(ID2) %>% 
+    pull()
+  
+  missing_rows <- data.frame(matrix(ncol = 3, nrow = 0))
+  colnames(missing_rows) <- c("HarvestYear", "ID2", "CropExists")
+  missing_rows$HarvestYear <- as.numeric(missing_rows$HarvestYear)
+  missing_rows$ID2 <- as.numeric(missing_rows$ID2)
+  
+  for (year in years) {
+    id2InYear <- df %>% filter(HarvestYear == year) %>% select(ID2) %>% pull()
+    missingId2s <- setdiff(ID2s, id2InYear)
+    
+    for (missingId2 in missingId2s) {
+      newRow = data.frame(HarvestYear = year, ID2 = missingId2, CropExists = FALSE)
+      print(newRow)
+      missing_rows <- missing_rows %>% 
+        rows_append(newRow)
+    }
+  }
+  
+  df.georefs <- append_georef_to_df_by_id2(missing_rows) %>% 
+    select(-c("Column", "Row2"))
+  
+  df.with.missing <- df.merge %>% 
+    rows_append(df.georefs)
+  
+  return(df.with.missing)
 }
 
 removeOutliers <- function(x, na.rm = TRUE) {

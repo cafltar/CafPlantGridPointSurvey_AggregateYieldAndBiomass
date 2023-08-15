@@ -62,7 +62,8 @@ dfClean_P1 <- df.cropExists %>%
          ResidueNitrogen,
          ResidueSulfur,
          CropExists,
-         Comments)
+         Comments) %>% 
+  arrange(HarvestYear, ID2)
 
 write_csv_gridPointSurvey(dfClean_P1, NULL, "1999-2016", "output", 0, 1)
 
