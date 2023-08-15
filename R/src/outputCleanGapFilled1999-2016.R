@@ -8,6 +8,8 @@ source("src/qualityControlChecks.R")
 # Processing level = 2 (calculated), accuracy level = 1 (only QA checks)
 df <- get_clean1999_2016(FALSE)
 
+df.cropExists <- append_cropexists(df)
+
 # Some values were found to be outliers, remove them here
 # Processing level = 2 (calculated), accuracy = 1,4 (outlier check operated of HI on whole dataset) for residue and yield, but 1 for others
 #df.rm.outliers <- remove_calculated_values_manually(df)
@@ -27,7 +29,7 @@ df <- get_clean1999_2016(FALSE)
 
 # ==== Output ====
 # Clean up columns
-dfClean_P1 <- df %>%
+dfClean_P1 <- df.cropExists %>%
   select(HarvestYear,
          ID2,
          Longitude,
@@ -59,6 +61,7 @@ dfClean_P1 <- df %>%
          ResidueCarbon,
          ResidueNitrogen,
          ResidueSulfur,
+         CropExists,
          Comments)
 
 write_csv_gridPointSurvey(dfClean_P1, NULL, "1999-2016", "output", 0, 1)

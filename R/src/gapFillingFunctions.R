@@ -121,6 +121,8 @@ estimateYieldByAvgYieldAndRelativeYield <- function(df) {
     select(UID, Field, Strip, `11Years Avg_Strip`) %>% 
     rename(RelativeYield = `11Years Avg_Strip`,
            ID2 = UID)
+  
+  stop("The CropExists code was moved and following code has not been updated -- check the logic before continuing")
   # Load data to assess whether or not yield should be estimated
   df.cropPresent <- read_xlsx("input/HY1999-2016_20190708_NOGapfill with updated cropexistcode.xlsx",
                              sheet = "HY1999-2016_20190708_NOGap") %>% 

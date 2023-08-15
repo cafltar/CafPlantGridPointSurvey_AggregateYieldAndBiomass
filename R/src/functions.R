@@ -140,6 +140,18 @@ getUngerDF <- function(worksheet) {
   return(df)
 }
 
+append_cropexists <- function(df) {
+  # Load data to assess whether or not yield should be estimated
+  df.cropPresent <- read_xlsx("input/HY1999-2016_20190708_NOGapfill with updated cropexistcode.xlsx",
+                              sheet = "HY1999-2016_20190708_NOGap") %>% 
+    select(HarvestYear, ID2, updateCropwaspresentcode) %>% 
+    rename(CropExists = updateCropwaspresentcode)
+  
+  # Merge datasets
+  df.merge <- df %>% 
+    left_join(df.cropPresent, by = c("HarvestYear", "ID2"))
+}
+
 removeOutliers <- function(x, na.rm = TRUE) {
   # Calculates extreme outlier and sets any to NA
   #
