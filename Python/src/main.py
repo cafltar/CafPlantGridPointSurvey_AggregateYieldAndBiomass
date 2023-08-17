@@ -78,8 +78,8 @@ def generate_p1a1(df, args):
         df_qa.loc[(df_qa['SampleID'] == row['ID']), qaResultCol] = cafcore.qc.update_qc_bitstring(
             '000001', '000000')
         
-
-    return df_qa
+    # TODO: Return a Polar dataframe, not pandas
+    return pl.from_pandas(df_qa)
 
 def generate_p2a1(df, args):
     print("generate_p2a1")
@@ -100,20 +100,20 @@ def generate_p2a1(df, args):
 
     # Further split 1999-2010 calculations by way the sample was collected
     harvest_1999_2009_grain = harvest_1999_2009.filter(
-        (pl.col('GrainSampleArea') > 0) & 
-        ((pl.col('BiomassSampleArea') == 0) | pl.col('BiomassSampleArea').is_null())
+        (pl.col('GrainSampleArea_P1') > 0) & 
+        ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null())
     )
     harvest_1999_2009_biomass = harvest_1999_2009.filter(
-        ((pl.col('GrainSampleArea') == 0) | pl.col('GrainSampleArea').is_null()) & 
-        (pl.col('BiomassSampleArea') > 0 )
+        ((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
+        (pl.col('BiomassSampleArea_P1') > 0 )
     )
     harvest_1999_2009_both = harvest_1999_2009.filter(
-        (pl.col('GrainSampleArea') > 0) & 
-        (pl.col('BiomassSampleArea') > 0 )
+        (pl.col('GrainSampleArea_P1') > 0) & 
+        (pl.col('BiomassSampleArea_P1') > 0 )
     )
     harvest_1999_2009_neither = harvest_1999_2009.filter(
-        (pl.col('GrainSampleArea').is_null() | (pl.col('GrainSampleArea') == 0)) &
-        (pl.col('BiomassSampleArea').is_null() | (pl.col('BiomassSampleArea') == 0))
+        (pl.col('GrainSampleArea_P1').is_null() | (pl.col('GrainSampleArea_P1') == 0)) &
+        (pl.col('BiomassSampleArea_P1').is_null() | (pl.col('BiomassSampleArea_P1') == 0))
     )
     
     # Check sums
@@ -127,59 +127,59 @@ def generate_p2a1(df, args):
         print('WARNING: 1999-2010 dataframe splits dont add up')
 
     harvest_1999_2009_grain_calc = (harvest_1999_2009_grain
-        .with_columns(pl.col('GrainMassWetInGrainSample').alias('GrainMassWet'))
-        .with_columns(pl.col('GrainMassOvenDryInGrainSample').alias('GrainMassOvenDry'))
+        .with_columns(pl.col('GrainMassWetInGrainSample_P1').alias('GrainMassWet_P1'))
+        .with_columns(pl.col('GrainMassOvenDryInGrainSample_P1').alias('GrainMassOvenDry_P1'))
         .with_columns(
-            pl.when(pl.col('GrainSampleArea') > 0)
-            .then(pl.col('GrainMassWet') / pl.col('GrainSampleArea'))
+            pl.when(pl.col('GrainSampleArea_P1') > 0)
+            .then(pl.col('GrainMassWet_P1') / pl.col('GrainSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldWet_P2'))
         .with_columns(
-            pl.when(pl.col('GrainMassWet') > 0)
-            .then((pl.col('GrainMassWet') - pl.col('GrainMassOvenDry')) / pl.col('GrainMassWet'))
+            pl.when(pl.col('GrainMassWet_P1') > 0)
+            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassOvenDry_P1')) / pl.col('GrainMassWet_P1'))
             .otherwise(None)
             .alias('GrainMoistureProportion_P2'))
         .with_columns(
-            pl.when(pl.col('GrainSampleArea') > 0)
-            .then(pl.col('GrainMassOvenDry') / pl.col('GrainSampleArea'))
+            pl.when(pl.col('GrainSampleArea_P1') > 0)
+            .then(pl.col('GrainMassOvenDry_P1') / pl.col('GrainSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldOvenDry_P2'))
     )
 
     harvest_1999_2009_biomass_calc = (harvest_1999_2009_biomass
         # === Grain calculations ===
-        .with_columns(pl.col('GrainMassWetInBiomassSample')
-            .alias('GrainMassWet'))
-        .with_columns(pl.col('GrainMassOvenDryInBiomassSample')
-            .alias('GrainMassOvenDry'))
+        .with_columns(pl.col('GrainMassWetInBiomassSample_P1')
+            .alias('GrainMassWet_P1'))
+        .with_columns(pl.col('GrainMassOvenDryInBiomassSample_P1')
+            .alias('GrainMassOvenDry_P1'))
         .with_columns(
-            pl.when(pl.col('GrainMassWet') > 0)
-            .then((pl.col('GrainMassWet') - pl.col('GrainMassOvenDry')) / pl.col('GrainMassWet'))
+            pl.when(pl.col('GrainMassWet_P1') > 0)
+            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassOvenDry_P1')) / pl.col('GrainMassWet_P1'))
             .otherwise(None)
             .alias('GrainMoistureProportion_P2'))
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('GrainMassWet') / pl.col('BiomassSampleArea'))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('GrainMassWet_P1') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldWet_P2'))
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('GrainMassOvenDry') / pl.col('BiomassSampleArea'))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('GrainMassOvenDry_P1') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldOvenDry_P2'))
         
         # === Residue calculations ===
         # Residue mass wet via biomass - grain mass 
         .with_columns(
-            pl.when(pl.col('BiomassWet') > 0)
-            .then(pl.col('BiomassWet') - pl.col('GrainMassWetInBiomassSample'))
+            pl.when(pl.col('BiomassWet_P1') > 0)
+            .then(pl.col('BiomassWet_P1') - pl.col('GrainMassWetInBiomassSample_P1'))
             .otherwise(None)
             .alias('ResidueMassWet_P2')
         )
         # Residue subsample oisture proportions via: (wet - dry) / wet
         .with_columns(
-            pl.when(pl.col('ResidueMassWetSubsample') > 0)
-            .then((pl.col('ResidueMassWetSubsample') - pl.col('ResidueMassOvenDrySubsample')) / pl.col('ResidueMassWetSubsample'))
+            pl.when(pl.col('ResidueMassWetSubsample_P1') > 0)
+            .then((pl.col('ResidueMassWetSubsample_P1') - pl.col('ResidueMassOvenDrySubsample_P1')) / pl.col('ResidueMassWetSubsample_P1'))
             .otherwise(None)
             .alias('ResidueMoistureProportionSubsample_P2')
         )
@@ -189,13 +189,13 @@ def generate_p2a1(df, args):
             .alias('ResidueMassOvenDry_P2')
         )
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('ResidueMassWet_P2') / pl.col('BiomassSampleArea'))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('ResidueMassWet_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('ResidueMassWetPerArea_P2'))
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('ResidueMassOvenDry_P2') / pl.col('BiomassSampleArea'))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('ResidueMassOvenDry_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('ResidueMassOvenDryPerArea_P2'))
     )
@@ -205,13 +205,13 @@ def generate_p2a1(df, args):
         # === Grain ===
         # Grain in grain sample
         .with_columns(
-            (pl.col('GrainMassWet') - pl.col('GrainMassWetInBiomassSample'))
+            (pl.col('GrainMassWet_P1') - pl.col('GrainMassWetInBiomassSample_P1'))
             .alias('GrainMassWetInGrainSample_P2')
         )
         # Moisture in grain
         .with_columns(
-            pl.when(pl.col('GrainMassWet') > 0)
-            .then((pl.col('GrainMassWet') - pl.col('GrainMassOvenDry')) / pl.col('GrainMassWet'))
+            pl.when(pl.col('GrainMassWet_P1') > 0)
+            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassOvenDry_P1')) / pl.col('GrainMassWet_P1'))
             .otherwise(None)
             .alias('GrainMoistureProportion_P2'))
         # Use moisture proportion in grain to calculate dry mass of grain in the grain samples
@@ -223,15 +223,15 @@ def generate_p2a1(df, args):
         # === Residue ===
         # Residue
         .with_columns(
-            pl.when(pl.col('BiomassWet') > 0)
-            .then(pl.col('BiomassWet') - pl.col('GrainMassWetInBiomassSample'))
+            pl.when(pl.col('BiomassWet_P1') > 0)
+            .then(pl.col('BiomassWet_P1') - pl.col('GrainMassWetInBiomassSample_P1'))
             .otherwise(None)
             .alias('ResidueMassWet_P2')
         )
         # Residue subsample moisture proportions via: (wet - dry) / wet
         .with_columns(
-            pl.when(pl.col('ResidueMassWetSubsample') > 0)
-            .then((pl.col('ResidueMassWetSubsample') - pl.col('ResidueMassOvenDrySubsample')) / pl.col('ResidueMassWetSubsample'))
+            pl.when(pl.col('ResidueMassWetSubsample_P1') > 0)
+            .then((pl.col('ResidueMassWetSubsample_P1') - pl.col('ResidueMassOvenDrySubsample_P1')) / pl.col('ResidueMassWetSubsample_P1'))
             .otherwise(None)
             .alias('ResidueMoistureProportionSubsample_P2')
         )
@@ -244,31 +244,31 @@ def generate_p2a1(df, args):
         # === Biomass ===
         # Use moisture proportion in grain to calculate dry mass of grain in the biomass samples
         .with_columns(
-            (pl.col('GrainMassWetInBiomassSample') - (pl.col('GrainMassWetInBiomassSample') * pl.col('GrainMoistureProportion_P2')))
+            (pl.col('GrainMassWetInBiomassSample_P1') - (pl.col('GrainMassWetInBiomassSample_P1') * pl.col('GrainMoistureProportion_P2')))
             .alias('GrainMassOvenDryInBiomassSample_P2')
         )
 
         # === Per area ===
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('GrainMassWet') / (pl.col('GrainSampleArea') + pl.col('BiomassSampleArea')))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('GrainMassWet_P1') / (pl.col('GrainSampleArea_P1') + pl.col('BiomassSampleArea_P1')))
             .otherwise(None)
             .alias('GrainYieldWet_P2')
         )
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('GrainMassOvenDry') / (pl.col('GrainSampleArea') + pl.col('BiomassSampleArea')))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('GrainMassOvenDry_P1') / (pl.col('GrainSampleArea_P1') + pl.col('BiomassSampleArea_P1')))
             .otherwise(None)
             .alias('GrainYieldOvenDry_P2')
         )
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('ResidueMassWet_P2') / (pl.col('BiomassSampleArea')))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('ResidueMassWet_P2') / (pl.col('BiomassSampleArea_P1')))
             .otherwise(None)
             .alias('ResidueMassWetPerArea_P2'))
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('ResidueMassOvenDry_P2') / (pl.col('BiomassSampleArea')))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('ResidueMassOvenDry_P2') / (pl.col('BiomassSampleArea_P1')))
             .otherwise(None)
             .alias('ResidueMassOvenDryPerArea_P2'))
     )
@@ -282,19 +282,19 @@ def generate_p2a1(df, args):
 
     harvest_2010_calc = (harvest_2010
         .with_columns(
-            (pl.col('BiomassWet') - pl.col('GrainMassWet'))
+            (pl.col('BiomassWet_P1') - pl.col('GrainMassWet_P1'))
             .alias('ResidueMassWet_P2')
         )
         .with_columns(
-            pl.when(pl.col('GrainMassWet') > 0)
-            .then((pl.col('GrainMassWet') - pl.col('GrainMassOvenDry')) / pl.col('GrainMassWet'))
+            pl.when(pl.col('GrainMassWet_P1') > 0)
+            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassOvenDry_P1')) / pl.col('GrainMassWet_P1'))
             .otherwise(None)
             .alias('GrainMoistureProportion_P2')
         )
         # Residue subsample moisture proportions via: (wet - dry) / wet
         .with_columns(
-            pl.when(pl.col('ResidueMassWetSubsample') > 0)
-            .then((pl.col('ResidueMassWetSubsample') - pl.col('ResidueMassOvenDrySubsample')) / pl.col('ResidueMassWetSubsample'))
+            pl.when(pl.col('ResidueMassWetSubsample_P1') > 0)
+            .then((pl.col('ResidueMassWetSubsample_P1') - pl.col('ResidueMassOvenDrySubsample_P1')) / pl.col('ResidueMassWetSubsample_P1'))
             .otherwise(None)
             .alias('ResidueMoistureProportionSubsample_P2')
         )
@@ -305,34 +305,34 @@ def generate_p2a1(df, args):
         )
 
         .with_columns(
-            pl.when((pl.col('GrainSampleArea') > 0) & 
-                ((pl.col('BiomassSampleArea') == 0) | pl.col('BiomassSampleArea').is_null()))
-            .then(pl.col('GrainMassWet') / pl.col('GrainSampleArea'))
-            .when(((pl.col('GrainSampleArea') == 0) | pl.col('GrainSampleArea').is_null()) & 
-                (pl.col('BiomassSampleArea') > 0))
-            .then(pl.col('GrainMassWet') / pl.col('BiomassSampleArea'))
+            pl.when((pl.col('GrainSampleArea_P1') > 0) & 
+                ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
+            .then(pl.col('GrainMassWet_P1') / pl.col('GrainSampleArea_P1'))
+            .when(((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
+                (pl.col('BiomassSampleArea_P1') > 0))
+            .then(pl.col('GrainMassWet_P1') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldWet_P2')
         )
         .with_columns(
-            pl.when((pl.col('GrainSampleArea') > 0) & 
-                ((pl.col('BiomassSampleArea') == 0) | pl.col('BiomassSampleArea').is_null()))
-            .then(pl.col('GrainMassOvenDry') / pl.col('GrainSampleArea'))
-            .when(((pl.col('GrainSampleArea') == 0) | pl.col('GrainSampleArea').is_null()) & 
-                (pl.col('BiomassSampleArea') > 0))
-            .then(pl.col('GrainMassOvenDry') / pl.col('BiomassSampleArea'))
+            pl.when((pl.col('GrainSampleArea_P1') > 0) & 
+                ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
+            .then(pl.col('GrainMassOvenDry_P1') / pl.col('GrainSampleArea_P1'))
+            .when(((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
+                (pl.col('BiomassSampleArea_P1') > 0))
+            .then(pl.col('GrainMassOvenDry_P1') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldOvenDry_P2')
         )
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('ResidueMassWet_P2') / pl.col('BiomassSampleArea'))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('ResidueMassWet_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('ResidueMassWetPerArea_P2')
         )
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('ResidueMassOvenDry_P2') / pl.col('BiomassSampleArea'))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('ResidueMassOvenDry_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('ResidueMassOvenDryPerArea_P2')
         )
@@ -340,36 +340,36 @@ def generate_p2a1(df, args):
     
     harvest_2011_2012_calc = (harvest_2011_2012
         .with_columns(
-            (pl.col('BiomassWet') - pl.col('GrainMassWet'))
+            (pl.col('BiomassWet_P1') - pl.col('GrainMassWet_P1'))
             .alias('ResidueMassWet_P2')
         )
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('ResidueMassWet_P2') / pl.col('BiomassSampleArea'))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('ResidueMassWet_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('ResidueMassWetPerArea_P2')
         )
         .with_columns(
-            (pl.col('GrainMassWet') - (pl.col('GrainMassWet') * (pl.col('GrainMoisture') / 100)))
+            (pl.col('GrainMassWet_P1') - (pl.col('GrainMassWet_P1') * (pl.col('GrainMoisture_P1') / 100)))
             .alias('GrainMassOvenDry_P2')
         )
         .with_columns(
-            pl.when((pl.col('GrainSampleArea') > 0) & 
-                ((pl.col('BiomassSampleArea') == 0) | pl.col('BiomassSampleArea').is_null()))
-            .then(pl.col('GrainMassWet') / pl.col('GrainSampleArea'))
-            .when(((pl.col('GrainSampleArea') == 0) | pl.col('GrainSampleArea').is_null()) & 
-                (pl.col('BiomassSampleArea') > 0))
-            .then(pl.col('GrainMassWet') / pl.col('BiomassSampleArea'))
+            pl.when((pl.col('GrainSampleArea_P1') > 0) & 
+                ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
+            .then(pl.col('GrainMassWet_P1') / pl.col('GrainSampleArea_P1'))
+            .when(((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
+                (pl.col('BiomassSampleArea_P1') > 0))
+            .then(pl.col('GrainMassWet_P1') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldWet_P2')
         )
         .with_columns(
-            pl.when((pl.col('GrainSampleArea') > 0) & 
-                ((pl.col('BiomassSampleArea') == 0) | pl.col('BiomassSampleArea').is_null()))
-            .then(pl.col('GrainMassOvenDry_P2') / pl.col('GrainSampleArea'))
-            .when(((pl.col('GrainSampleArea') == 0) | pl.col('GrainSampleArea').is_null()) & 
-                (pl.col('BiomassSampleArea') > 0))
-            .then(pl.col('GrainMassOvenDry_P2') / pl.col('BiomassSampleArea'))
+            pl.when((pl.col('GrainSampleArea_P1') > 0) & 
+                ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
+            .then(pl.col('GrainMassOvenDry_P2') / pl.col('GrainSampleArea_P1'))
+            .when(((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
+                (pl.col('BiomassSampleArea_P1') > 0))
+            .then(pl.col('GrainMassOvenDry_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldOvenDry_P2')
         )
@@ -377,36 +377,36 @@ def generate_p2a1(df, args):
     
     harvest_2013_2016_calc = (harvest_2013_2016
         .with_columns(
-            (pl.col('BiomassAirDry') - pl.col('GrainMassAirDry'))
+            (pl.col('BiomassAirDry_P1') - pl.col('GrainMassAirDry_P1'))
             .alias('ResidueMassAirDry_P2')
         )
         .with_columns(
-            pl.when(pl.col('BiomassSampleArea') > 0)
-            .then(pl.col('ResidueMassAirDry_P2') / pl.col('BiomassSampleArea'))
+            pl.when(pl.col('BiomassSampleArea_P1') > 0)
+            .then(pl.col('ResidueMassAirDry_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('ResidueMassAirDryPerArea_P2')
         )
         .with_columns(
-            (pl.col('GrainMassAirDry') - (pl.col('GrainMassAirDry') * (pl.col('GrainMoisture') / 100)))
+            (pl.col('GrainMassAirDry_P1') - (pl.col('GrainMassAirDry_P1') * (pl.col('GrainMoisture_P1') / 100)))
             .alias('GrainMassOvenDry_P2')
         )
         .with_columns(
-            pl.when((pl.col('GrainSampleArea') > 0) & 
-                ((pl.col('BiomassSampleArea') == 0) | pl.col('BiomassSampleArea').is_null()))
-            .then(pl.col('GrainMassAirDry') / pl.col('GrainSampleArea'))
-            .when(((pl.col('GrainSampleArea') == 0) | pl.col('GrainSampleArea').is_null()) & 
-                (pl.col('BiomassSampleArea') > 0))
-            .then(pl.col('GrainMassAirDry') / pl.col('BiomassSampleArea'))
+            pl.when((pl.col('GrainSampleArea_P1') > 0) & 
+                ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
+            .then(pl.col('GrainMassAirDry_P1') / pl.col('GrainSampleArea_P1'))
+            .when(((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
+                (pl.col('BiomassSampleArea_P1') > 0))
+            .then(pl.col('GrainMassAirDry_P1') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldAirDry_P2')
         )
         .with_columns(
-            pl.when((pl.col('GrainSampleArea') > 0) & 
-                ((pl.col('BiomassSampleArea') == 0) | pl.col('BiomassSampleArea').is_null()))
-            .then(pl.col('GrainMassOvenDry_P2') / pl.col('GrainSampleArea'))
-            .when(((pl.col('GrainSampleArea') == 0) | pl.col('GrainSampleArea').is_null()) & 
-                (pl.col('BiomassSampleArea') > 0))
-            .then(pl.col('GrainMassOvenDry_P2') / pl.col('BiomassSampleArea'))
+            pl.when((pl.col('GrainSampleArea_P1') > 0) & 
+                ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
+            .then(pl.col('GrainMassOvenDry_P2') / pl.col('GrainSampleArea_P1'))
+            .when(((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
+                (pl.col('BiomassSampleArea_P1') > 0))
+            .then(pl.col('GrainMassOvenDry_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldOvenDry_P2')
         )
