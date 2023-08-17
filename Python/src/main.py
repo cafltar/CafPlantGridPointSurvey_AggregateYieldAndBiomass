@@ -23,19 +23,45 @@ def generate_p1a1(df, args):
     # Load the QA file
     qa = pd.read_csv(args['path_qa_file'])
 
-    #qaUpdate = qa[qa['Verb'] == 'Update']
+    qaUpdate = qa[qa['Verb'] == 'Update']
     qaFlag = qa[qa['Verb'] == 'Flag']
-
-    # Based on QA stuff, split the dataframe by passed and failed
-    # Call cafcore.set_quality_assurance_applied (after initializing)
-    # Merge data back
-    # Return new dataset
 
     df_pd = df.to_pandas()
     df_qa = cafcore.qc.initialize_qc(df_pd, args['dimension_vars'])
 
     df_qa = cafcore.qc.set_quality_assurance_applied(df_qa, args['dimension_vars'], True, True)
 
+    # Update values (copied from cafcore/qc.py)
+    for index, row in qaUpdate.iterrows():
+        prevValueSeries = df_qa.loc[(df_qa['SampleID'] == row["ID"]), (row["Variable"] + '_P1')]
+        
+        if len(prevValueSeries) == 0:
+            raise Exception("ID not found, check QA File")
+        if len(prevValueSeries) > 1:
+            raise Exception("Multiple values found for given ID, check input dataframe")
+        
+        prevValue = prevValueSeries.values[0]
+        changePhraseCol = row["Variable"] + "_P1_qcPhrase"
+
+        if(pd.isna(row["NewVal"])):
+            df_qa.loc[(df_qa['SampleID'] == row["ID"]), (row["Variable"] + '_P1')] = None
+        else:
+            df_qa.loc[(df_qa['SampleID'] == row["ID"]), (row["Variable"] + '_P1')] = row["NewVal"]
+
+        changePhrase = "(Assurance) Previous val: {}, reason: {}".format(prevValue, row["Comment"])
+        
+        # Create column if not exist
+        if changePhraseCol not in df_qa.columns:
+            df_qa[changePhraseCol] = None
+
+        series = df_qa.loc[(df_qa['SampleID'] == row["ID"]), changePhraseCol]
+
+        df_qa.loc[(df_qa['SampleID'] == row["ID"]), changePhraseCol] = cafcore.qc.update_phrase(
+            df_qa.loc[series.index[0], changePhraseCol],
+            changePhrase
+        )
+
+    # Flag values by setting QA bit to fail
     for index, row in qaFlag.iterrows():
         reasonPhraseCol = row['Variable'] + '_P1_qcPhrase'
         changePhrase = "(Assurance) {}".format(row['Comment'])
@@ -518,6 +544,6 @@ if __name__ == '__main__':
     args['path_harvest_data'] = path_input / 'HY1999-2016_20230815_P1A0.csv'
     args['path_qa_file'] = path_input / 'qaFlagFile_All.csv'
 
-    args['dimension_vars'] = ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop', 'CropExists', 'Comments']
+    args['dimension_vars'] = ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop', 'Comments']
 
     main(args)

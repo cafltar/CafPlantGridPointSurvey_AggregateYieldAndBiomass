@@ -1,5 +1,7 @@
 ID,Verb,Variable,NewVal,Comment,Reviewer
-2008_141,Update,ResidueMassWetSubsample,,"there is a residue sub sample dry weight for this sample, but no residue subsample wet or corresponding total residue weights?",Bryan Carlson
+2007_86,Update,CropExists,0,wet spot. This spot was not planted,Bryan Carlson
+2007_304,Update,CropExists,0,crop Failure,Bryan Carlson
+2008_141,Flag,ResidueMassWetSubsample,,"there is a residue sub sample dry weight for this sample, but no residue subsample wet or corresponding total residue weights?",Bryan Carlson
 CF11GPWW_108_15-E,Update,GrainTestWeight,75.6,NIR note: 75.6`,Bryan Carlson
 CF11GPSW_121_29-E,Flag,GrainMoisture,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
 CF11GPSW_121_29-E,Flag,GrainProtein,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
@@ -136,182 +138,343 @@ CF13GPSW_186_18-H,Flag,GrainTestWeight,,insufficient sample,Bryan Carlson
 CF13GPWW_147_29-F,Flag,GrainMassAirDry,,Lost small amount; thesher not working well,Bryan Carlson
 CF13GPGB_153_11-G,Flag,GrainMassAirDry,,mouse damage,Bryan Carlson
 CF13GPGB_421_18-R,Flag,GrainMassAirDry,,Mouse damage,Bryan Carlson
-GPHY14_GB_A4_1_5-A,,GrainMassAirDry,,TOTAL SAMPLE GROUND |  |  | NA,Bryan Carlson
-GPHY14_GB_A4_1_5-A,,BiomassAirDry,,TOTAL SAMPLE GROUND |  |  | NA,Bryan Carlson
-CF14GPSW_6-A,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_7-A,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_8-A,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_17-A,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_17-A,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_17-A,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-GPHY14_GB_A4_23_6-B,,GrainMassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | NA,Bryan Carlson
-GPHY14_GB_A4_23_6-B,,BiomassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | NA,Bryan Carlson
-CF14GPSW_7-B,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_8-B,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_8-B,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPWW_25_9-B,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPWW_28_12-B,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPSW_17-B,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_23-B,,GrainMassAirDry,,"SAMPLE TOO SMALL, MUST BE GROUND AND ANALYZED |  |  | NA",Bryan Carlson
-CF14GPSW_24-B,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG DAMAGED | NA,Bryan Carlson
-CF14GPSW_24-B,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG DAMAGED | NA,Bryan Carlson
-CF14GPSW_24-B,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG DAMAGED | NA,Bryan Carlson
-GPHY14_GB_A3_46_6-C,,GrainMassAirDry,,MOUSE DAMAGE |  |  | NA,Bryan Carlson
-GPHY14_GB_A3_46_6-C,,BiomassAirDry,,MOUSE DAMAGE |  |  | NA,Bryan Carlson
-CF14GPSW_8-C,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_9-C,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_18-C,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_18-C,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_24-C,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_25-C,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_25-C,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_26-C,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_26-C,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_26-C,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_27-C,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-GPHY14_GB_A4_73_8-D,,GrainMassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | 4 MICE IN THE BAG,Bryan Carlson
-GPHY14_GB_A4_73_8-D,,BiomassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | 4 MICE IN THE BAG,Bryan Carlson
-CF14GPSW_9-D,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_10-D,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPWW_80_16-D,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPWW_81_17-D,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPSW_19-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_24-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_25-D,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_25-D,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_25-D,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_25-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_26-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_27-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_28-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_29-D,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_9-E,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_9-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_10-E,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_10-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_18-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_19-E,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_19-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_25-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_26-E,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_27-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_28-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_29-E,,GrainTestWeight,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT |  | NA,Bryan Carlson
-CF14GPSW_29-E,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT |  | NA,Bryan Carlson
-CF14GPSW_9-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_10-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_11-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_20-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_25-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_26-F,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_26-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_27-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_28-F,,GrainTestWeight,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_28-F,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_28-F,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_28-F,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_29-F,,GrainTestWeight,, |  | SAMPLE TOO SMALL FOR TEST WEIGHT | NA,Bryan Carlson
-GPHY14_GB_A4_152_9-G,,GrainMassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
-GPHY14_GB_A4_152_9-G,,BiomassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
-CF14GPSW_11-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_12-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPWW_162_20-G,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPSW_21-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_22-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_27-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | SAMPLE TOO SMALL FOR TEST WEIGHT | NA,Bryan Carlson
-CF14GPSW_27-G,,GrainTestWeight,,MOISTURE OUTSIDE LIMITS |  | SAMPLE TOO SMALL FOR TEST WEIGHT | NA,Bryan Carlson
-CF14GPSW_29-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_30-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_31-G,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_31-G,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_12-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPWW_188_20-H,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPSW_21-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_22-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_27-H,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_27-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_28-H,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_28-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_29-H,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_29-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_29-H,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_29-H,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_30-H,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_30-H,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPWW_208_16-I,,GrainStarch,,There is s small piece of tape on the bag; starch outside limit |  |  | NA,Bryan Carlson
-CF14GPWW_208_16-I,,GrainMassAirDry,,There is s small piece of tape on the bag; starch outside limit |  |  | NA,Bryan Carlson
-CF14GPWW_208_16-I,,BiomassAirDry,,There is s small piece of tape on the bag; starch outside limit |  |  | NA,Bryan Carlson
-CF14GPSW_23-I,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_28-I,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_29-I,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_29-I,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_31-I,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_31-I,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_31-I,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-GPHY14_GB_A4_229_11-J,,GrainMassAirDry,,SAMPLE BAG DIFFERENT FROM OTHER SAMPLE BAGS |  |  | NA,Bryan Carlson
-GPHY14_GB_A4_229_11-J,,BiomassAirDry,,SAMPLE BAG DIFFERENT FROM OTHER SAMPLE BAGS |  |  | NA,Bryan Carlson
-CF14GPSW_12-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_13-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPWW_233_16-J,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPWW_237_20-J,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPWW_238_21-J,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPWW_239_22-J,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPSW_23-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_28-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_29-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_30-J,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_30-J,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-GPHY14_GB_A1_249_9-K,,GrainMassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
-GPHY14_GB_A1_249_9-K,,BiomassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
-GPHY14_GB_A3_251_11-K,,GrainMassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
-GPHY14_GB_A3_251_11-K,,BiomassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
-GPHY14_GB_A4_252_12-K,,GrainMassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
-GPHY14_GB_A4_252_12-K,,BiomassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
-CF14GPSW_14-K,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_15-K,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPWW_258_19-K,,GrainProtein,,Protein DM outside limit |  |  | NA,Bryan Carlson
-CF14GPWW_262_23-K,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPSW_30-K,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_30-K,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_31-K,,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_31-K,,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_31-K,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_31-K,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
-CF14GPSW_14-L,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_15-L,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPWW_281_19-L,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPWW_284_22-L,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPSW_24-L,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_24-L,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-GPHY14_SB_C3_290_27-L,,GrainTestWeight,,small sample (test weight) |  |  | test weight: small sample,Bryan Carlson
-CF14GPWW_291_29-L,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPSW_30-L,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_14-M,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_14-M,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_15-M,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_16-M,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPWW_309_22-M,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPWW_310_23-M,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPSW_25-M,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_16-N,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_16-N,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_17-N,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPWW_330_18-N,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPWW_334_22-N,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPWW_335_23-N,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPSW_25-N,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_15-O,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPSW_16-O,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_17-O,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_17-O,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_17-P,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_17-P,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPWW_378_20-P,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPWW_379_21-P,,GrainMassAirDry,,Small piece of tape on bag |  |  | NA,Bryan Carlson
-CF14GPWW_379_21-P,,BiomassAirDry,,Small piece of tape on bag |  |  | NA,Bryan Carlson
-CF14GPSW_18-Q,,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_19-Q,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
-CF14GPWW_400_20-Q,,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
-CF14GPSW_18-R,,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_18-R,,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
-CF14GPSW_19-R,,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_1_5-A,Flag,GrainMassAirDry,,TOTAL SAMPLE GROUND |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_1_5-A,Flag,BiomassAirDry,,TOTAL SAMPLE GROUND |  |  | NA,Bryan Carlson
+CF14GPSW_6-A,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_7-A,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_8-A,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_17-A,Flag,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_17-A,Flag,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_17-A,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+GPHY14_GB_A4_23_6-B,Flag,GrainMassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_23_6-B,Flag,BiomassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | NA,Bryan Carlson
+CF14GPSW_7-B,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_8-B,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_8-B,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_25_9-B,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_28_12-B,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_17-B,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_23-B,Flag,GrainMassAirDry,,"SAMPLE TOO SMALL, MUST BE GROUND AND ANALYZED |  |  | NA",Bryan Carlson
+CF14GPSW_24-B,Flag,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG DAMAGED | NA,Bryan Carlson
+CF14GPSW_24-B,Flag,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG DAMAGED | NA,Bryan Carlson
+CF14GPSW_24-B,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG DAMAGED | NA,Bryan Carlson
+GPHY14_GB_A3_46_6-C,Flag,GrainMassAirDry,,MOUSE DAMAGE |  |  | NA,Bryan Carlson
+GPHY14_GB_A3_46_6-C,Flag,BiomassAirDry,,MOUSE DAMAGE |  |  | NA,Bryan Carlson
+CF14GPSW_8-C,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_9-C,Flag,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_18-C,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_18-C,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_24-C,Flag,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_25-C,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_25-C,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_26-C,Flag,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_26-C,Flag,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_26-C,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_27-C,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_73_8-D,Flag,GrainMassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | 4 MICE IN THE BAG,Bryan Carlson
+GPHY14_GB_A4_73_8-D,Flag,BiomassAirDry,,MOUSE DAMAGE TO ORIGINAL BAG |  |  | 4 MICE IN THE BAG,Bryan Carlson
+CF14GPSW_9-D,Flag,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_10-D,Flag,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_80_16-D,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_81_17-D,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_19-D,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_24-D,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_25-D,Flag,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_25-D,Flag,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_25-D,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_25-D,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_26-D,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_27-D,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_28-D,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_29-D,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_9-E,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_9-E,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_10-E,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_10-E,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_18-E,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_19-E,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_19-E,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_25-E,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_26-E,Flag,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_27-E,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_28-E,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_29-E,Flag,GrainTestWeight,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT |  | NA,Bryan Carlson
+CF14GPSW_29-E,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT |  | NA,Bryan Carlson
+CF14GPSW_9-F,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_10-F,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_11-F,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_20-F,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_25-F,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_26-F,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_26-F,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_27-F,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_28-F,Flag,GrainTestWeight,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_28-F,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_28-F,Flag,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_28-F,Flag,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | SAMPLE TOO SMALL TO GIVE TEST WT | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_29-F,Flag,GrainTestWeight,, |  | SAMPLE TOO SMALL FOR TEST WEIGHT | NA,Bryan Carlson
+GPHY14_GB_A4_152_9-G,Flag,GrainMassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_152_9-G,Flag,BiomassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
+CF14GPSW_11-G,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_12-G,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_162_20-G,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_21-G,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_22-G,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_27-G,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | SAMPLE TOO SMALL FOR TEST WEIGHT | NA,Bryan Carlson
+CF14GPSW_27-G,Flag,GrainTestWeight,,MOISTURE OUTSIDE LIMITS |  | SAMPLE TOO SMALL FOR TEST WEIGHT | NA,Bryan Carlson
+CF14GPSW_29-G,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_30-G,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_31-G,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_31-G,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_12-H,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_188_20-H,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_21-H,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_22-H,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_27-H,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_27-H,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_28-H,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_28-H,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_29-H,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_29-H,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_29-H,Flag,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_29-H,Flag,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_30-H,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_30-H,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_208_16-I,Flag,GrainStarch,,There is s small piece of tape on the bag; starch outside limit |  |  | NA,Bryan Carlson
+CF14GPWW_208_16-I,Flag,GrainMassAirDry,,There is s small piece of tape on the bag; starch outside limit |  |  | NA,Bryan Carlson
+CF14GPWW_208_16-I,Flag,BiomassAirDry,,There is s small piece of tape on the bag; starch outside limit |  |  | NA,Bryan Carlson
+CF14GPSW_23-I,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_28-I,Flag,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_29-I,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_29-I,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_31-I,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_31-I,Flag,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_31-I,Flag,BiomassAirDry,,MOISTURE OUTSIDE LIMITS |  | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+GPHY14_GB_A4_229_11-J,Flag,GrainMassAirDry,,SAMPLE BAG DIFFERENT FROM OTHER SAMPLE BAGS |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_229_11-J,Flag,BiomassAirDry,,SAMPLE BAG DIFFERENT FROM OTHER SAMPLE BAGS |  |  | NA,Bryan Carlson
+CF14GPSW_12-J,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_13-J,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_233_16-J,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_237_20-J,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_238_21-J,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_239_22-J,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_23-J,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_28-J,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_29-J,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_30-J,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_30-J,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+GPHY14_GB_A1_249_9-K,Flag,GrainMassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
+GPHY14_GB_A1_249_9-K,Flag,BiomassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
+GPHY14_GB_A3_251_11-K,Flag,GrainMassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
+GPHY14_GB_A3_251_11-K,Flag,BiomassAirDry,,"MOUSE DAMAGE TO SAMPLE BAG, SO WEIGHED BAG SEPERATELY |  |  | NA",Bryan Carlson
+GPHY14_GB_A4_252_12-K,Flag,GrainMassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
+GPHY14_GB_A4_252_12-K,Flag,BiomassAirDry,,MOUSE DAMAGE TO SAMPLE |  |  | NA,Bryan Carlson
+CF14GPSW_14-K,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_15-K,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_258_19-K,Flag,GrainProtein,,Protein DM outside limit |  |  | NA,Bryan Carlson
+CF14GPWW_262_23-K,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_30-K,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_30-K,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_31-K,Flag,GrainMassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_31-K,Flag,BiomassAirDry,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_31-K,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_31-K,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS | ORIGINAL SAMPLE BAG RIPPED | NA,Bryan Carlson
+CF14GPSW_14-L,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_15-L,Flag,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_281_19-L,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_284_22-L,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_24-L,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_24-L,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+GPHY14_SB_C3_290_27-L,Flag,GrainTestWeight,,small sample (test weight) |  |  | test weight: small sample,Bryan Carlson
+CF14GPWW_291_29-L,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_30-L,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_14-M,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_14-M,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_15-M,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_16-M,Flag,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_309_22-M,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_310_23-M,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_25-M,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_16-N,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_16-N,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_17-N,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_330_18-N,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_334_22-N,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_335_23-N,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_25-N,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_15-O,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPSW_16-O,Flag,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_17-O,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_17-O,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_17-P,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_17-P,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPWW_378_20-P,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPWW_379_21-P,Flag,GrainMassAirDry,,Small piece of tape on bag |  |  | NA,Bryan Carlson
+CF14GPWW_379_21-P,Flag,BiomassAirDry,,Small piece of tape on bag |  |  | NA,Bryan Carlson
+CF14GPSW_18-Q,Flag,GrainStarch,, | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_19-Q,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+CF14GPWW_400_20-Q,Flag,GrainStarch,,Starch outside limits |  |  | NA,Bryan Carlson
+CF14GPSW_18-R,Flag,GrainStarch,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_18-R,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS | STARCH OUTSIDE LIMITS |  | NA,Bryan Carlson
+CF14GPSW_19-R,Flag,GrainMoisture,,MOISTURE OUTSIDE LIMITS |  |  | NA,Bryan Carlson
+GPHY15_WW_A4_1_5-A,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_2_6-A,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_3_7-A,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_4_8-A,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_9_13-A,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_18_1-B,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_19_2-B,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_20_3-B,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_21_4-B,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_22_5-B,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_23_6-B,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_24_7-B,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_25_8-B,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_30_13-B,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_42_2-C,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_43_3-C,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_44_4-C,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_45_5-C,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_46_6-C,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_47_7-C,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_48_8-C,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_49_9-C,Flag,GrainMoisture,,",moisture,starch",Bryan Carlson
+GPHY15_WW_A6_49_9-C,Flag,GrainStarch,,",moisture,starch",Bryan Carlson
+GPHY15_WW_B4_54_14-C,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_68_3-D,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_69_4-D,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_71_6-D,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_72_7-D,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_73_8-D,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_74_9-D,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_80_15-D,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_95_3-E,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_96_4-E,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_97_5-E,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_98_6-E,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_99_7-E,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_101_9-E,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_102_10-E,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_107_15-E,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_123_5-F,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_124_6-F,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_125_7-F,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_126_8-F,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_127_9-F,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_128_10-F,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_129_11-F,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_149_6-G,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_150_7-G,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_152_9-G,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_154_11-G,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_155_12-G,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_160_17-G,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_175_6-H,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_176_7-H,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_177_8-H,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_178_9-H,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_179_10-H,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_181_12-H,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_186_17-H,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_SB_B5_188_19-H,Flag,GrainMassAirDry,,"Paper document originally said ""Bag Wt 272g"", I think this should be the 259g Bag. It might have been  tared with the paper bag(s) inside",Bryan Carlson
+GPHY15_SB_B5_188_19-H,Flag,BiomassAirDry,,"Paper document originally said ""Bag Wt 272g"", I think this should be the 259g Bag. It might have been  tared with the paper bag(s) inside",Bryan Carlson
+GPHY15_WW_A1_200_7-I,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_201_8-I,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_202_9-I,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_203_10-I,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_204_11-I,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_205_12-I,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_206_13-I,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_207_14-I,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_211_18-I,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_212_19-I,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_225_7-J,Flag,GrainStarch,,",starch",Bryan Carlson
+GPHY15_WW_A2_226_8-J,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_227_9-J,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_228_10-J,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_229_11-J,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_230_12-J,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_231_13-J,Flag,GrainMoisture,,",moisture,starch",Bryan Carlson
+GPHY15_WW_A6_231_13-J,Flag,GrainStarch,,",moisture,starch",Bryan Carlson
+GPHY15_WW_B4_236_18-J,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_249_9-K,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_250_10-K,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_251_11-K,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_252_12-K,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_253_13-K,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_254_14-K,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_255_15-K,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_SB_B5_261_21-K,Flag,GrainMassAirDry,,"Paper document originally said ""Bag Wt 272g"", I think this should be the 259g Bag. It might have been  tared with the paper bag(s) inside,moisture",Bryan Carlson
+GPHY15_SB_B5_261_21-K,Flag,BiomassAirDry,,"Paper document originally said ""Bag Wt 272g"", I think this should be the 259g Bag. It might have been  tared with the paper bag(s) inside,moisture",Bryan Carlson
+GPHY15_WW_A1_272_9-L,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_273_10-L,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_274_11-L,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_275_12-L,Flag,GrainMoisture,,",moisture,starch",Bryan Carlson
+GPHY15_WW_A3_275_12-L,Flag,GrainStarch,,",moisture,starch",Bryan Carlson
+GPHY15_WW_A4_276_13-L,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_277_14-L,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_278_15-L,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_283_20-L,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_297_9-M,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_298_10-M,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_299_11-M,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_300_12-M,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_302_14-M,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_303_15-M,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_304_16-M,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_SB_B5_309_21-M,Flag,GrainMassAirDry,,"Paper document originally said ""Bag Wt 272g"", I think this should be the 259g Bag. It might have been  tared with the paper bag(s) inside,moisture",Bryan Carlson
+GPHY15_SB_B5_309_21-M,Flag,BiomassAirDry,,"Paper document originally said ""Bag Wt 272g"", I think this should be the 259g Bag. It might have been  tared with the paper bag(s) inside,moisture",Bryan Carlson
+GPHY15_SB_B5_310_22-M,Flag,GrainMassAirDry,,"Paper document originally said ""Bag Wt 272g"", I think this should be the 259g Bag. It might have been  tared with the paper bag(s) inside,moisture,paper tare includes duct tape",Bryan Carlson
+GPHY15_SB_B5_310_22-M,Flag,BiomassAirDry,,"Paper document originally said ""Bag Wt 272g"", I think this should be the 259g Bag. It might have been  tared with the paper bag(s) inside,moisture,paper tare includes duct tape",Bryan Carlson
+GPHY15_WW_A2_324_11-N,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_325_12-N,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_326_13-N,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_327_14-N,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_329_16-N,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_330_17-N,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_334_21-N,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_335_22-N,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_SB_B5_336_23-N,Flag,GrainMassAirDry,,"Paper document originally said ""Bag Wt 272g"", I think this should be the 259g Bag. It might have been  tared with the paper bag(s) inside,moisture",Bryan Carlson
+GPHY15_SB_B5_336_23-N,Flag,BiomassAirDry,,"Paper document originally said ""Bag Wt 272g"", I think this should be the 259g Bag. It might have been  tared with the paper bag(s) inside,moisture",Bryan Carlson
+GPHY15_WW_A1_348_11-O,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_349_12-O,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_351_14-O,Flag,GrainMoisture,,",moisture,starch",Bryan Carlson
+GPHY15_WW_A4_351_14-O,Flag,GrainStarch,,",moisture,starch",Bryan Carlson
+GPHY15_WW_A5_352_15-O,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_353_16-O,Flag,GrainMoisture,,",moisture,starch",Bryan Carlson
+GPHY15_WW_A5_353_16-O,Flag,GrainStarch,,",moisture,starch",Bryan Carlson
+GPHY15_WW_A6_354_17-O,Flag,GrainMoisture,,",moisture,starch",Bryan Carlson
+GPHY15_WW_A6_354_17-O,Flag,GrainStarch,,",moisture,starch",Bryan Carlson
+GPHY15_WW_B4_358_21-O,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_B4_359_22-O,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A1_371_12-P,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_372_13-P,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_373_14-P,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_374_15-P,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_375_16-P,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_376_17-P,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_395_14-Q,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A3_396_15-Q,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_397_16-Q,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_398_17-Q,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_400_19-Q,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A2_419_15-R,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A4_421_17-R,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A5_422_18-R,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_423_19-R,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY15_WW_A6_424_20-R,Flag,GrainMoisture,,",moisture",Bryan Carlson
+GPHY16_SC_B2_6_10-A_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
+GPHY16_SC_B5_31_14-B_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
+GPHY16_SC_B2_105_13-E_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
+GPHY16_SC_B6_109_17-E_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
+GPHY16_SC_C2_140_22-F_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
+GPHY16_SC_B6_162_19-G_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
+GPHY16_SC_A1_201_8-I_B,Flag,GrainMassAirDry,,",grain bag ripped, slightly probably 107g lost",Bryan Carlson
+GPHY16_SC_B3_210_17-I_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
+GPHY16_SC_C2_217_24-I_B,Flag,GrainMassAirDry,,",Does this have the right grain yield?",Bryan Carlson
+GPHY16_SC_B3_259_19-K_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
+GPHY16_SC_C1_264_24-K_B,Flag,GrainMassAirDry,,",Did the grain yield of this get mixed up with 24-H? Should this be 427?",Bryan Carlson
+GPHY16_SC_B5_310_22-M_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
+GPHY16_SC_B5_336_23-N_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
+GPHY16_SC_B2_379_20-P_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
+GPHY16_SC_B1_401_20-Q_B,Flag,GrainMoisture,,",Moisture outside limits",Bryan Carlson
