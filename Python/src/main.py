@@ -128,7 +128,7 @@ def generate_p2a1(df, args):
 
     harvest_1999_2009_grain_calc = (harvest_1999_2009_grain
         .with_columns(pl.col('GrainMassWetInGrainSample_P1').alias('GrainMassWet_P1'))
-        .with_columns(pl.col('GrainMassOvenDryInGrainSample_P1').alias('GrainMassOvenDry_P1'))
+        .with_columns(pl.col('GrainMassAirDryInGrainSample_P1').alias('GrainMassAirDry_P1'))
         .with_columns(
             pl.when(pl.col('GrainSampleArea_P1') > 0)
             .then(pl.col('GrainMassWet_P1') / pl.col('GrainSampleArea_P1'))
@@ -136,27 +136,27 @@ def generate_p2a1(df, args):
             .alias('GrainYieldWet_P2'))
         .with_columns(
             pl.when(pl.col('GrainMassWet_P1') > 0)
-            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassOvenDry_P1')) / pl.col('GrainMassWet_P1'))
+            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassAirDry_P1')) / pl.col('GrainMassWet_P1'))
             .otherwise(None)
-            .alias('GrainMoistureProportion_P2'))
+            .alias('GrainMoistureProportionPartial_P2'))
         .with_columns(
             pl.when(pl.col('GrainSampleArea_P1') > 0)
-            .then(pl.col('GrainMassOvenDry_P1') / pl.col('GrainSampleArea_P1'))
+            .then(pl.col('GrainMassAirDry_P1') / pl.col('GrainSampleArea_P1'))
             .otherwise(None)
-            .alias('GrainYieldOvenDry_P2'))
+            .alias('GrainYieldAirDry_P2'))
     )
 
     harvest_1999_2009_biomass_calc = (harvest_1999_2009_biomass
         # === Grain calculations ===
         .with_columns(pl.col('GrainMassWetInBiomassSample_P1')
             .alias('GrainMassWet_P1'))
-        .with_columns(pl.col('GrainMassOvenDryInBiomassSample_P1')
-            .alias('GrainMassOvenDry_P1'))
+        .with_columns(pl.col('GrainMassAirDryInBiomassSample_P1')
+            .alias('GrainMassAirDry_P1'))
         .with_columns(
             pl.when(pl.col('GrainMassWet_P1') > 0)
-            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassOvenDry_P1')) / pl.col('GrainMassWet_P1'))
+            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassAirDry_P1')) / pl.col('GrainMassWet_P1'))
             .otherwise(None)
-            .alias('GrainMoistureProportion_P2'))
+            .alias('GrainMoistureProportionPartial_P2'))
         .with_columns(
             pl.when(pl.col('BiomassSampleArea_P1') > 0)
             .then(pl.col('GrainMassWet_P1') / pl.col('BiomassSampleArea_P1'))
@@ -164,9 +164,9 @@ def generate_p2a1(df, args):
             .alias('GrainYieldWet_P2'))
         .with_columns(
             pl.when(pl.col('BiomassSampleArea_P1') > 0)
-            .then(pl.col('GrainMassOvenDry_P1') / pl.col('BiomassSampleArea_P1'))
+            .then(pl.col('GrainMassAirDry_P1') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
-            .alias('GrainYieldOvenDry_P2'))
+            .alias('GrainYieldAirDry_P2'))
         
         # === Residue calculations ===
         # Residue mass wet via biomass - grain mass 
@@ -179,14 +179,14 @@ def generate_p2a1(df, args):
         # Residue subsample oisture proportions via: (wet - dry) / wet
         .with_columns(
             pl.when(pl.col('ResidueMassWetSubsample_P1') > 0)
-            .then((pl.col('ResidueMassWetSubsample_P1') - pl.col('ResidueMassOvenDrySubsample_P1')) / pl.col('ResidueMassWetSubsample_P1'))
+            .then((pl.col('ResidueMassWetSubsample_P1') - pl.col('ResidueMassAirDrySubsample_P1')) / pl.col('ResidueMassWetSubsample_P1'))
             .otherwise(None)
-            .alias('ResidueMoistureProportionSubsample_P2')
+            .alias('ResidueMoistureProportionPartialSubsample_P2')
         )
         # Residue mass dry via (residue wet) - (residue wet * moisture proportion from sub sample)
         .with_columns(
-            (pl.col('ResidueMassWet_P2') - (pl.col('ResidueMassWet_P2') * pl.col('ResidueMoistureProportionSubsample_P2')))
-            .alias('ResidueMassOvenDry_P2')
+            (pl.col('ResidueMassWet_P2') - (pl.col('ResidueMassWet_P2') * pl.col('ResidueMoistureProportionPartialSubsample_P2')))
+            .alias('ResidueMassAirDry_P2')
         )
         .with_columns(
             pl.when(pl.col('BiomassSampleArea_P1') > 0)
@@ -195,9 +195,9 @@ def generate_p2a1(df, args):
             .alias('ResidueMassWetPerArea_P2'))
         .with_columns(
             pl.when(pl.col('BiomassSampleArea_P1') > 0)
-            .then(pl.col('ResidueMassOvenDry_P2') / pl.col('BiomassSampleArea_P1'))
+            .then(pl.col('ResidueMassAirDry_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
-            .alias('ResidueMassOvenDryPerArea_P2'))
+            .alias('ResidueMassAirDryPerArea_P2'))
     )
 
     # 
@@ -211,13 +211,13 @@ def generate_p2a1(df, args):
         # Moisture in grain
         .with_columns(
             pl.when(pl.col('GrainMassWet_P1') > 0)
-            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassOvenDry_P1')) / pl.col('GrainMassWet_P1'))
+            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassAirDry_P1')) / pl.col('GrainMassWet_P1'))
             .otherwise(None)
-            .alias('GrainMoistureProportion_P2'))
+            .alias('GrainMoistureProportionPartial_P2'))
         # Use moisture proportion in grain to calculate dry mass of grain in the grain samples
         .with_columns(
-            (pl.col('GrainMassWetInGrainSample_P2') - (pl.col('GrainMassWetInGrainSample_P2') * pl.col('GrainMoistureProportion_P2')))
-            .alias('GrainMassOvenDryInGrainSample_P2')
+            (pl.col('GrainMassWetInGrainSample_P2') - (pl.col('GrainMassWetInGrainSample_P2') * pl.col('GrainMoistureProportionPartial_P2')))
+            .alias('GrainMassAirDryInGrainSample_P2')
         )
 
         # === Residue ===
@@ -231,21 +231,21 @@ def generate_p2a1(df, args):
         # Residue subsample moisture proportions via: (wet - dry) / wet
         .with_columns(
             pl.when(pl.col('ResidueMassWetSubsample_P1') > 0)
-            .then((pl.col('ResidueMassWetSubsample_P1') - pl.col('ResidueMassOvenDrySubsample_P1')) / pl.col('ResidueMassWetSubsample_P1'))
+            .then((pl.col('ResidueMassWetSubsample_P1') - pl.col('ResidueMassAirDrySubsample_P1')) / pl.col('ResidueMassWetSubsample_P1'))
             .otherwise(None)
-            .alias('ResidueMoistureProportionSubsample_P2')
+            .alias('ResidueMoistureProportionPartialSubsample_P2')
         )
         # Residue mass dry from residue moisture proportions
         .with_columns(
-            (pl.col('ResidueMassWet_P2') - (pl.col('ResidueMassWet_P2') * pl.col('ResidueMoistureProportionSubsample_P2')))
-            .alias('ResidueMassOvenDry_P2')
+            (pl.col('ResidueMassWet_P2') - (pl.col('ResidueMassWet_P2') * pl.col('ResidueMoistureProportionPartialSubsample_P2')))
+            .alias('ResidueMassAirDry_P2')
         )
 
         # === Biomass ===
         # Use moisture proportion in grain to calculate dry mass of grain in the biomass samples
         .with_columns(
-            (pl.col('GrainMassWetInBiomassSample_P1') - (pl.col('GrainMassWetInBiomassSample_P1') * pl.col('GrainMoistureProportion_P2')))
-            .alias('GrainMassOvenDryInBiomassSample_P2')
+            (pl.col('GrainMassWetInBiomassSample_P1') - (pl.col('GrainMassWetInBiomassSample_P1') * pl.col('GrainMoistureProportionPartial_P2')))
+            .alias('GrainMassAirDryInBiomassSample_P2')
         )
 
         # === Per area ===
@@ -257,9 +257,9 @@ def generate_p2a1(df, args):
         )
         .with_columns(
             pl.when(pl.col('BiomassSampleArea_P1') > 0)
-            .then(pl.col('GrainMassOvenDry_P1') / (pl.col('GrainSampleArea_P1') + pl.col('BiomassSampleArea_P1')))
+            .then(pl.col('GrainMassAirDry_P1') / (pl.col('GrainSampleArea_P1') + pl.col('BiomassSampleArea_P1')))
             .otherwise(None)
-            .alias('GrainYieldOvenDry_P2')
+            .alias('GrainYieldAirDry_P2')
         )
         .with_columns(
             pl.when(pl.col('BiomassSampleArea_P1') > 0)
@@ -268,9 +268,9 @@ def generate_p2a1(df, args):
             .alias('ResidueMassWetPerArea_P2'))
         .with_columns(
             pl.when(pl.col('BiomassSampleArea_P1') > 0)
-            .then(pl.col('ResidueMassOvenDry_P2') / (pl.col('BiomassSampleArea_P1')))
+            .then(pl.col('ResidueMassAirDry_P2') / (pl.col('BiomassSampleArea_P1')))
             .otherwise(None)
-            .alias('ResidueMassOvenDryPerArea_P2'))
+            .alias('ResidueMassAirDryPerArea_P2'))
     )
 
     harvest_1999_2009_calc = pl.concat([harvest_1999_2009_grain_calc, 
@@ -287,21 +287,21 @@ def generate_p2a1(df, args):
         )
         .with_columns(
             pl.when(pl.col('GrainMassWet_P1') > 0)
-            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassOvenDry_P1')) / pl.col('GrainMassWet_P1'))
+            .then((pl.col('GrainMassWet_P1') - pl.col('GrainMassAirDry_P1')) / pl.col('GrainMassWet_P1'))
             .otherwise(None)
-            .alias('GrainMoistureProportion_P2')
+            .alias('GrainMoistureProportionPartial_P2')
         )
         # Residue subsample moisture proportions via: (wet - dry) / wet
         .with_columns(
             pl.when(pl.col('ResidueMassWetSubsample_P1') > 0)
-            .then((pl.col('ResidueMassWetSubsample_P1') - pl.col('ResidueMassOvenDrySubsample_P1')) / pl.col('ResidueMassWetSubsample_P1'))
+            .then((pl.col('ResidueMassWetSubsample_P1') - pl.col('ResidueMassAirDrySubsample_P1')) / pl.col('ResidueMassWetSubsample_P1'))
             .otherwise(None)
-            .alias('ResidueMoistureProportionSubsample_P2')
+            .alias('ResidueMoistureProportionPartialSubsample_P2')
         )
         # Residue mass dry from residue moisture proportions
         .with_columns(
-            (pl.col('ResidueMassWet_P2') - (pl.col('ResidueMassWet_P2') * pl.col('ResidueMoistureProportionSubsample_P2')))
-            .alias('ResidueMassOvenDry_P2')
+            (pl.col('ResidueMassWet_P2') - (pl.col('ResidueMassWet_P2') * pl.col('ResidueMoistureProportionPartialSubsample_P2')))
+            .alias('ResidueMassAirDry_P2')
         )
 
         .with_columns(
@@ -317,12 +317,12 @@ def generate_p2a1(df, args):
         .with_columns(
             pl.when((pl.col('GrainSampleArea_P1') > 0) & 
                 ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
-            .then(pl.col('GrainMassOvenDry_P1') / pl.col('GrainSampleArea_P1'))
+            .then(pl.col('GrainMassAirDry_P1') / pl.col('GrainSampleArea_P1'))
             .when(((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
                 (pl.col('BiomassSampleArea_P1') > 0))
-            .then(pl.col('GrainMassOvenDry_P1') / pl.col('BiomassSampleArea_P1'))
+            .then(pl.col('GrainMassAirDry_P1') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
-            .alias('GrainYieldOvenDry_P2')
+            .alias('GrainYieldAirDry_P2')
         )
         .with_columns(
             pl.when(pl.col('BiomassSampleArea_P1') > 0)
@@ -332,9 +332,9 @@ def generate_p2a1(df, args):
         )
         .with_columns(
             pl.when(pl.col('BiomassSampleArea_P1') > 0)
-            .then(pl.col('ResidueMassOvenDry_P2') / pl.col('BiomassSampleArea_P1'))
+            .then(pl.col('ResidueMassAirDry_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
-            .alias('ResidueMassOvenDryPerArea_P2')
+            .alias('ResidueMassAirDryPerArea_P2')
         )
     )
     
@@ -351,7 +351,7 @@ def generate_p2a1(df, args):
         )
         .with_columns(
             (pl.col('GrainMassWet_P1') - (pl.col('GrainMassWet_P1') * (pl.col('GrainMoisture_P1') / 100)))
-            .alias('GrainMassOvenDry_P2')
+            .alias('GrainMassDry0_P2')
         )
         .with_columns(
             pl.when((pl.col('GrainSampleArea_P1') > 0) & 
@@ -366,12 +366,12 @@ def generate_p2a1(df, args):
         .with_columns(
             pl.when((pl.col('GrainSampleArea_P1') > 0) & 
                 ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
-            .then(pl.col('GrainMassOvenDry_P2') / pl.col('GrainSampleArea_P1'))
+            .then(pl.col('GrainMassDry0_P2') / pl.col('GrainSampleArea_P1'))
             .when(((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
                 (pl.col('BiomassSampleArea_P1') > 0))
-            .then(pl.col('GrainMassOvenDry_P2') / pl.col('BiomassSampleArea_P1'))
+            .then(pl.col('GrainMassDry0_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
-            .alias('GrainYieldOvenDry_P2')
+            .alias('GrainYieldDry0_P2')
         )
     )
     
@@ -388,7 +388,7 @@ def generate_p2a1(df, args):
         )
         .with_columns(
             (pl.col('GrainMassAirDry_P1') - (pl.col('GrainMassAirDry_P1') * (pl.col('GrainMoisture_P1') / 100)))
-            .alias('GrainMassOvenDry_P2')
+            .alias('GrainMassDry0_P2')
         )
         .with_columns(
             pl.when((pl.col('GrainSampleArea_P1') > 0) & 
@@ -403,12 +403,12 @@ def generate_p2a1(df, args):
         .with_columns(
             pl.when((pl.col('GrainSampleArea_P1') > 0) & 
                 ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
-            .then(pl.col('GrainMassOvenDry_P2') / pl.col('GrainSampleArea_P1'))
+            .then(pl.col('GrainMassDry0_P2') / pl.col('GrainSampleArea_P1'))
             .when(((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
                 (pl.col('BiomassSampleArea_P1') > 0))
-            .then(pl.col('GrainMassOvenDry_P2') / pl.col('BiomassSampleArea_P1'))
+            .then(pl.col('GrainMassDry0_P2') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
-            .alias('GrainYieldOvenDry_P2')
+            .alias('GrainYieldDry0_P2')
         )
     )
     
@@ -423,8 +423,7 @@ def generate_p2a1(df, args):
     #harvest_P2 = harvest_P2.rename(
     #    {c: c+'_P1' for c in harvest_P2.columns if c not in ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop'] if '_P2' not in c})
     
-    harvest_P2 = (harvest_P2
-        .select([
+    col_order = [
             'HarvestYear', 
             'ID2', 
             'Longitude', 
@@ -435,12 +434,11 @@ def generate_p2a1(df, args):
             'GrainMassWet_P1', 
             'GrainMassWetInGrainSample_P1', 
             'GrainMassWetInGrainSample_P2',
-            'GrainMassOvenDryInGrainSample_P1', 
-            'GrainMassOvenDryInGrainSample_P2',
+            'GrainMassAirDryInGrainSample_P1', 
+            'GrainMassAirDryInGrainSample_P2',
             'GrainMassAirDry_P1', 
-            'GrainMassOvenDry_P1', 
-            'GrainMassOvenDry_P2',
-            'GrainMoistureProportion_P2',
+            'GrainMassDry0_P2',
+            'GrainMoistureProportionPartial_P2',
             'GrainMoisture_P1', 
             'GrainProtein_P1', 
             'GrainStarch_P1', 
@@ -454,28 +452,43 @@ def generate_p2a1(df, args):
             'BiomassWet_P1', 
             'BiomassAirDry_P1', 
             'GrainMassWetInBiomassSample_P1', 
-            'GrainMassOvenDryInBiomassSample_P1', 
-            'GrainMassOvenDryInBiomassSample_P2', 
+            'GrainMassAirDryInBiomassSample_P1', 
+            'GrainMassAirDryInBiomassSample_P2', 
             'ResidueMassWetSubsample_P1', 
-            'ResidueMassOvenDrySubsample_P1', 
-            'ResidueMoistureProportionSubsample_P2', 
+            'ResidueMassAirDrySubsample_P1', 
+            'ResidueMoistureProportionPartialSubsample_P2', 
             'ResidueCarbon_P1', 
             'ResidueNitrogen_P1', 
             'ResidueSulfur_P1', 
-            'Comments_P1', 
+            'Comments', 
             'GrainYieldWet_P2', 
             'GrainYieldAirDry_P2',
-            'GrainYieldOvenDry_P2', 
+            'GrainYieldDry0_P2', 
             'ResidueMassWet_P2', 
-            'ResidueMassOvenDry_P2', 
-            'ResidueMassWetPerArea_P2', 
-            'ResidueMassOvenDryPerArea_P2',  
             'ResidueMassAirDry_P2', 
+            'ResidueMassWetPerArea_P2', 
             'ResidueMassAirDryPerArea_P2'
-        ])
+        ]
+    
+    all_columns_ordered = organize_columns(col_order)
+
+    # TODO: Include qc columns here
+    harvest_P2 = (harvest_P2
+        .select(all_columns_ordered)
         .sort(['HarvestYear', 'ID2']))
     
     return harvest_P2
+
+def organize_columns(base_cols):
+    ordered_cols = []
+    for col in base_cols:
+        ordered_cols.append(col)
+        if(('_P1' in col)):
+            ordered_cols.append(col + '_qcApplied')
+            ordered_cols.append(col + '_qcResult')
+            ordered_cols.append(col + '_qcPhrase')
+    
+    return ordered_cols
 
 def main(args):
     print('main')
@@ -511,7 +524,6 @@ def main(args):
         pl.Float64,
         pl.Float64,
         pl.Float64,
-        pl.Float64,
         pl.Int32,
         pl.Utf8
     ]
@@ -520,15 +532,18 @@ def main(args):
         args['path_harvest_data'],
         dtypes=harvest_dtypes)
     
-    harvest_p1 = harvest.rename(
+    harvest_p1a0 = harvest.rename(
         {c: c+'_P1' for c in harvest.columns if c not in args['dimension_vars']})
 
-    harvest_p1a1 = generate_p1a1(harvest_p1, args)
+    harvest_p1a1 = generate_p1a1(harvest_p1a0, args)
     harvest_p2a1 = generate_p2a1(harvest_p1a1, args)
     
     date_today = datetime.datetime.now().strftime("%Y%m%d")
-    #write_name_P2A0 = 'HY1999-2016_' + str(date_today) + '_P2A0.csv'   
-    #.write_csv(args['path_output'] / str(write_name_P2A0)))
+    write_name_P1A1 = 'HY1999-2016_' + str(date_today) + '_P1A1.csv'
+    write_name_P2A1 = 'HY1999-2016_' + str(date_today) + '_P2A1.csv'   
+    
+    harvest_p1a1.write_csv(args['path_output'] / str(write_name_P1A1))
+    harvest_p2a1.write_csv(args['path_output'] / str(write_name_P2A1))
 
     print('End')
 
@@ -541,7 +556,7 @@ if __name__ == '__main__':
     
     args = {}
     args['path_output'] = path_output
-    args['path_harvest_data'] = path_input / 'HY1999-2016_20230815_P1A0.csv'
+    args['path_harvest_data'] = path_input / 'HY1999-2016_20230922_P1A0.csv'
     args['path_qa_file'] = path_input / 'qaFlagFile_All.csv'
 
     args['dimension_vars'] = ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop', 'Comments']
