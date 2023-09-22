@@ -139,17 +139,17 @@ get_clean1999_2009 <- function() {
     mutate(BiomassSampleArea =  `Residue Sample Area (square meters)`) %>%
     mutate(GrainMassWetInGrainSample = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ NA_real_,
                                                TRUE ~ `Non-Residue Grain Wet Weight (grams)`)) %>%
-    mutate(GrainMassOvenDryInGrainSample = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ NA_real_,
+    mutate(GrainMassAirDryInGrainSample = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ NA_real_,
                                                TRUE ~ `Non-Residue grain dry weight (grams)`)) %>%
     mutate(BiomassWet = `Residue plus Grain Wet Weight (grams)`) %>%
     mutate(GrainMassWetInBiomassSample = `Residue sample Grain Wet Weight (grams)`) %>%
-    mutate(GrainMassOvenDryInBiomassSample = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ NA_real_,
+    mutate(GrainMassAirDryInBiomassSample = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ NA_real_,
                                                        TRUE ~ `Residue sample Grain Dry Weight (grams)`)) %>%
     mutate(ResidueMassWetSubsample = `Residue Sub-Sample Wet Weight (grams)`) %>%
-    mutate(ResidueMassOvenDrySubsample = `Residue Sub-Sample Dry Weight (grams)`) %>%
+    mutate(ResidueMassAirDrySubsample = `Residue Sub-Sample Dry Weight (grams)`) %>%
     mutate(GrainMassWet = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ `total grain yield wet(grams)`,
                                     TRUE ~ NA_real_)) %>%
-    mutate(GrainMassOvenDry = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ `total grain yield dry (grams)`,
+    mutate(GrainMassAirDry = case_when(GrainSampleArea > 0 & BiomassSampleArea > 0 ~ `total grain yield dry (grams)`,
                                     TRUE ~ NA_real_)) %>%
     
     ungroup()
@@ -247,8 +247,8 @@ get_clean1999_2009 <- function() {
            GrainSampleArea,
            GrainMassWet,
            GrainMassWetInGrainSample,
-           GrainMassOvenDryInGrainSample,
-           GrainMassOvenDry,
+           GrainMassAirDryInGrainSample,
+           GrainMassAirDry,
            #GrainYieldOvenDryPerArea,
            GrainCarbon,
            GrainNitrogen,
@@ -256,10 +256,10 @@ get_clean1999_2009 <- function() {
            BiomassSampleArea,
            BiomassWet,
            GrainMassWetInBiomassSample,
-           GrainMassOvenDryInBiomassSample,
+           GrainMassAirDryInBiomassSample,
            #ResidueMassWet,
            ResidueMassWetSubsample,
-           ResidueMassOvenDrySubsample,
+           ResidueMassAirDrySubsample,
            #ResidueMassOvenDry,
            #ResidueMoistureProportion,
            #ResidueMassOvenDryPerArea,
@@ -321,14 +321,14 @@ get_clean2010 <- function() {
     #mutate(ResidueMoistureProportion = (`Residue Sub Wet (g)` - `Sub Res Dry (g)`) / `Residue Sub Wet (g)`) %>% 
     #mutate(ResidueMassOvenDry = ResidueMassWet * (1 - ResidueMoistureProportion)) %>% 
     rename(ResidueMassWetSubsample = `Residue Sub Wet (g)`,
-           ResidueMassOvenDrySubsample = `Sub Res Dry (g)`,
+           ResidueMassAirDrySubsample = `Sub Res Dry (g)`,
            BiomassWet = `Total Biomass Wet (g)`) %>%
     select(`Bag Barcode`, 
            #ResidueMassOvenDry, 
            #ResidueMassWet, 
            BiomassWet,
            ResidueMassWetSubsample,
-           ResidueMassOvenDrySubsample)
+           ResidueMassAirDrySubsample)
            #ResidueMoistureProportion)
   
   # Merge residue data and calc values
@@ -351,7 +351,7 @@ get_clean2010 <- function() {
            Longitude = X,
            #GrainSampleArea = `Area (m2)`,
            GrainMassWet = `Total Grain Wet (g)`,
-           GrainMassOvenDry = `Total Grain Dry (g)`) %>% 
+           GrainMassAirDry = `Total Grain Dry (g)`) %>% 
     mutate(GrainSampleArea = case_when(is.na(BiomassWet) & is.na(GrainMassWet) ~ NA_real_,
                                        is.na(BiomassWet) & !is.na(GrainMassWet) ~ `Area (m2)`,
                                        TRUE ~ 0),
@@ -366,13 +366,13 @@ get_clean2010 <- function() {
            ID2,
            GrainSampleArea,
            GrainMassWet,
-           GrainMassOvenDry,
+           GrainMassAirDry,
            #GrainYieldOvenDryPerArea,
            BiomassSampleArea,
            BiomassWet,
            #ResidueMassWet,
            ResidueMassWetSubsample,
-           ResidueMassOvenDrySubsample,
+           ResidueMassAirDrySubsample,
            #ResidueMassOvenDry,
            #ResidueMoistureProportion,
            #ResidueMassOvenDryPerArea,
@@ -531,7 +531,7 @@ get_clean2012 <- function() {
            GrainWGlutDM = Gluten,
            #GrainSampleArea = `Area (m2)`,
            BiomassWet = `Total Biomass Wet (g)`,
-           GrainMassOvenDry = `Grain Weight Dry (g)`) %>% 
+           GrainMassAirDry = `Grain Weight Dry (g)`) %>% 
     #mutate(BiomassSampleArea = GrainSampleArea) %>% 
     mutate(GrainSampleArea = case_when(is.na(BiomassWet) & is.na(GrainMassWet) ~ NA_real_,
                                        is.na(BiomassWet) & !is.na(GrainMassWet) ~ `Area (m2)`,
@@ -547,7 +547,7 @@ get_clean2012 <- function() {
            ID2,
            GrainSampleArea,
            GrainMassWet,
-           GrainMassOvenDry,
+           GrainMassAirDry,
            #GrainYieldOvenDryPerArea,
            GrainProtein,
            GrainMoisture,
