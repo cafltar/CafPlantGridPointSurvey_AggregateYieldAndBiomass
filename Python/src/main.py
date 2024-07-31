@@ -490,6 +490,68 @@ def organize_columns(base_cols):
     
     return ordered_cols
 
+def calculate_qc_summary_col(row, cols, qcSuffix):
+    total_cols = len(cols)
+    sum_cols_with_qc = 0
+    
+    for col in cols:
+        col_qc = col + qcSuffix
+        
+        if col_qc not in row.keys():
+            continue
+
+        if int(row[col_qc]) > 0:
+            sum_cols_with_qc += 1
+
+    coverage = (sum_cols_with_qc / total_cols) * 100
+
+    return round(coverage, 1)
+        
+def get_metric_cols(all_cols, dim_cols):
+    # strip out qc stuff
+    qc_suffixes = ['_qcApplied', '_qcResult', '_qcPhrase']
+    non_qc_cols = [col for col in all_cols if not any(qc_suffix in col for qc_suffix in qc_suffixes)]
+    result = list(set(non_qc_cols) - set(dim_cols))
+
+    return result
+        
+
+def append_qc_summary_cols(df:pl.DataFrame, processing_level, args):
+    print ('write simplified qc files')
+    # Takes dataframe with full detailed columns like _P1, _P2, _qcApplied, etc. and writes a simplified data file and a separate qc file
+
+    # Write summary columns for qc applied and qc results
+    metric_cols = get_metric_cols(df.columns, args['dimension_vars'])
+
+    qc_schema = {
+        'HarvestYear': pl.Int32, 
+        'ID2': pl.Int32, 
+        'QCCoverage': pl.Float32, 
+        'QCFlags': pl.Float32
+    }
+    
+    qc_df = pl.DataFrame(schema=qc_schema)
+
+    for row in df.iter_rows(named=True):
+        qc_coverage = calculate_qc_summary_col(row, metric_cols, '_qcApplied')
+        qc_flags = calculate_qc_summary_col(row, metric_cols, '_qcResult')
+        harvest_year = row['HarvestYear']
+        sample_ID = row['ID2']
+
+        row_df = pl.DataFrame({
+            'HarvestYear': harvest_year,
+            'ID2': sample_ID,
+            'QCCoverage': qc_coverage,
+            'QCFlags': qc_flags},
+            schema = qc_schema)
+        
+        qc_df.extend(row_df)
+
+    df = df.join(qc_df, on = ['HarvestYear', 'ID2'], how='left')
+
+    return df
+
+
 def main(args):
     print('main')
 
@@ -536,11 +598,14 @@ def main(args):
         {c: c+'_P1' for c in harvest.columns if c not in args['dimension_vars']})
 
     harvest_p1a1 = generate_p1a1(harvest_p1a0, args)
+    harvest_p1a1_qc = append_qc_summary_cols(harvest_p1a1, 1, args)
+
     harvest_p2a1 = generate_p2a1(harvest_p1a1, args)
-    
+    harvest_p2a1_qc = append_qc_summary_cols(harvest_p2a1, 2, args)
+
     date_today = datetime.datetime.now().strftime("%Y%m%d")
     write_name_P1A1 = 'HY1999-2016_' + str(date_today) + '_P1A1.csv'
-    write_name_P2A1 = 'HY1999-2016_' + str(date_today) + '_P2A1.csv'   
+    write_name_P2A1 = 'HY1999-2016_' + str(date_today) + '_P2A1.csv'
     
     harvest_p1a1.write_csv(args['path_output'] / str(write_name_P1A1))
     harvest_p2a1.write_csv(args['path_output'] / str(write_name_P2A1))
