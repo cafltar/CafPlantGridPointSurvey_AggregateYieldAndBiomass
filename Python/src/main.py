@@ -598,7 +598,13 @@ def main(args):
         {c: c+'_P1' for c in harvest.columns if c not in args['dimension_vars']})
 
     harvest_p1a1 = generate_p1a1(harvest_p1a0, args)
-    harvest_p1a1_qc = append_qc_summary_cols(harvest_p1a1, 1, args)
+    harvest_p1a1_trim = prune_columns_outside_p_level(harvest_p1a1, 1)
+    harvest_p1a1_qc = append_qc_summary_cols(harvest_p1a1_trim, 1, args)
+    harvest_p1a1_qc_p = condense_processing_columns(harvest_p1a1_qc, 1)
+    write_csv_files(
+        harvest_p1a1_qc_p, 
+        ['HarvestYear', 'ID2'], 'HY1999-2016', 1, 1, args['path_output'])
+    
 
     harvest_p2a1 = generate_p2a1(harvest_p1a1, args)
     harvest_p2a1_qc = append_qc_summary_cols(harvest_p2a1, 2, args)
@@ -611,6 +617,139 @@ def main(args):
     harvest_p2a1.write_csv(args['path_output'] / str(write_name_P2A1))
 
     print('End')
+
+def prune_columns_outside_p_level(df, processing_level):
+    df_result = df.clone()
+    qc_suffixes = ['_qcApplied', '_qcResult', '_qcPhrase']
+    p_suffixes = ['_P1', '_P2', '_P3']
+    p_suffixes_drop = p_suffixes[processing_level:]
+
+    # Drop columns ending in _P# if # is higher than processing level
+    p_cols_drop = [col for col in df_result.columns if any(col.endswith(p_suffix) for p_suffix in p_suffixes_drop)]
+    df_result = df_result.drop(p_cols_drop)
+
+    for qc_suffix in qc_suffixes:
+        for p_suffix in p_suffixes_drop:
+            suffix = qc_suffix + p_suffix
+            drop_cols = [col for col in df_result.columns if col.endswith(suffix)]
+            df_result = df_result.drop(drop_cols)
+
+    return df_result
+
+def write_csv_files(df, key, file_name, processing_level, accuracy_level, output_path):
+    date_today = datetime.datetime.now().strftime("%Y%m%d")
+    pa_suffix = f'P{processing_level}A{accuracy_level}'
+
+    qc_suffixes = ['_qcApplied', '_qcResult', '_qcPhrase']
+    p_suffixes = ['_P1', '_P2', '_P3'] #dropping all, so no need to worry about specified processing level
+    
+    qc_cols = [col for col in df.columns if any(col.endswith(qc_suffix) for qc_suffix in qc_suffixes)]
+    p_cols = [col for col in df.columns if any(col.endswith(p_suffix) for p_suffix in p_suffixes)]
+
+    # Write all columns
+    comprehensive_file_name = f'{file_name}_{pa_suffix}_Comprehensive_{str(date_today)}.csv'
+    df.write_csv(output_path / comprehensive_file_name)
+
+    # Write QC file
+    qc_file_name = f'{file_name}_{pa_suffix}_QC_{str(date_today)}.csv'
+    (df
+        .select(key + qc_cols)
+        .write_csv(output_path / qc_file_name)
+    )
+
+    # Write clean dataset
+    clean_file_name = f'{file_name}_{pa_suffix}_{str(date_today)}.csv'
+    (df
+        .drop(qc_cols)
+        .drop(p_cols)
+        .write_csv(output_path / clean_file_name)
+    )
+
+
+def condense_processing_columns(df, processing_level):
+    df_result = df.clone()
+    p_suffixes = ['_P1', '_P2', '_P3']
+    p_suffixes_keep = p_suffixes[0:processing_level]
+
+    #p_suffixes_keep = ['_P1']
+    #if processing_level == 2:
+    #    p_suffixes_keep = p_suffixes_keep + ['_P2']
+    #elif processing_level == 3:
+    #    p_suffixes_keep = p_suffixes_keep + ['_P2', '_P3']
+
+    # Drop any columns with processing levels higher than processing_level
+    #p_suffixes_drop = [p for p in p_suffixes if p not in p_suffixes_keep]
+    #p_cols_drop = [col for col in df_result.columns if any(col.endswith(p_suffix) for p_suffix in p_suffixes_drop)]
+    #df_result = df_result.drop(p_cols_drop)
+    
+    # Get base column names for cols at processing_level -- does not assume, e.g. a P3 col has a corresponding P1 col
+    #p_cols = [col for col in df.columns if any(p_suffix in col for p_suffix in p_suffixes_keep)]
+    p_cols = [col for col in df_result.columns if any(col.endswith(p_suffix) for p_suffix in p_suffixes_keep)]
+    p_cols_basenames = remove_substrings_from_list(p_cols, p_suffixes_keep)
+
+    # Fill values 
+    
+    for col_base in p_cols_basenames:
+        # Get a list of processing cols for this col_base (e.g. _P3, _P2, _P1)
+        p = processing_level
+        cols = []
+        while p > 0:
+            col_name = col_base + '_P' + str(p)
+            if(col_name in df_result.columns):
+                cols.append(col_name)
+            p = p - 1
+        
+        # Set condensed col to values in highest processing level then remove from list
+        #df_result[col_base] = df_result[cols[0]]
+        df_result = (df_result
+                     .with_columns(pl.col(cols[0]).alias(col_base))
+                     #.drop(cols[0])
+        )
+        cols.pop(0)
+
+        # Now fill in blanks with values from columns of lower processing
+        for col in cols:
+            #df_result[col_base] = df_result[col_base].fillna(df_result[col])
+            df_result = (df_result
+                         .with_columns(pl.col(col_base).fill_null(pl.col(col)))
+                         #.drop(col)
+            )
+
+
+
+    return df_result
+
+def remove_substrings_from_list(strings_list, substrings_to_remove):
+    """
+    Removes specified substrings from each string in the input list.
+
+    Args:
+        strings_list (list): List of strings.
+        substrings_to_remove (list): List of substrings to remove.
+
+    Returns:
+        list: New list of strings with specified substrings removed.
+    """
+    cleaned_strings = []
+    for s in strings_list:
+        for substring in substrings_to_remove:
+            s = s.replace(substring, '')
+        cleaned_strings.append(s)
+    return cleaned_strings
+
+def get_qc_dataset(df, index_cols):
+    qc_suffixes = ['_qcApplied', '_qcResult', '_qcPhrase']
+    qc_cols = [col for col in df.columns if any(qc_suffix in col for qc_suffix in qc_suffixes)]
+    keep_cols = index_cols + qc_cols
+
+    qa_df = df[keep_cols]
+
+    return qa_df
+
+
+def write_data_files(df, file_prefix, processing_level, accuracy_level):
+    qa = get_qc_dataset(df, ['HarvestYear', 'ID2'])
+    return True
 
 if __name__ == '__main__':
     path_data = pathlib.Path.cwd() / 'data'
