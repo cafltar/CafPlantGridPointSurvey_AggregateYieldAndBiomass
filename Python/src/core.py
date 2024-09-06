@@ -96,6 +96,15 @@ def prune_columns_outside_p_level(df, processing_level, p_suffixes, qc_suffixes)
 
     return df_result
 
+def drop_columns_include_qc(df, columns):
+    df_result = df.clone()
+
+    cols_drop = [col for col in df_result.columns if any(column in col for column in columns)]
+
+    df_result = df_result.drop(cols_drop)
+
+    return df_result
+
 def write_csv_files(df, key, file_name, processing_level, accuracy_level, output_path, p_suffixes, qc_suffixes):
     date_today = datetime.datetime.now().strftime("%Y%m%d")
     pa_suffix = f'P{processing_level}A{accuracy_level}'
@@ -111,19 +120,20 @@ def write_csv_files(df, key, file_name, processing_level, accuracy_level, output
     df.write_csv(output_path / comprehensive_file_name)
 
     # Write QC file
+    df_qc = df.select(key + qc_cols)
     qc_file_name = f'{file_name}_{pa_suffix}_QC_{str(date_today)}.csv'
-    (df
-        .select(key + qc_cols)
-        .write_csv(output_path / qc_file_name)
-    )
+    df_qc.write_csv(output_path / qc_file_name)
 
     # Write clean dataset
     clean_file_name = f'{file_name}_{pa_suffix}_{str(date_today)}.csv'
-    (df
+    df_clean = (df
         .drop(qc_cols)
         .drop(p_cols)
-        .write_csv(output_path / clean_file_name)
     )
+
+    df_clean.write_csv(output_path / clean_file_name)
+
+    return df_qc, df_clean
 
 def condense_processing_columns(df, processing_level, p_suffixes):
     df_result = df.clone()
@@ -201,7 +211,7 @@ def write_data_files(df, processing_level, accuracy_level, args):
     
     df_trim_qc_p = condense_processing_columns(df_trim_qc, processing_level, args['p_suffixes'])
     
-    write_csv_files(
+    df_qc, df_clean = write_csv_files(
         df_trim_qc_p, 
         args['key_vars'], 
         args['file_base_name'], 
@@ -211,4 +221,4 @@ def write_data_files(df, processing_level, accuracy_level, args):
         args['p_suffixes'], 
         args['qc_suffixes'])
     
-    return True
+    return df_qc, df_clean

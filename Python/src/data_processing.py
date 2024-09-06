@@ -21,7 +21,7 @@ def generate_p1a1(df, args):
     )
     
     # Load the QA file
-    qa = pd.read_csv(args['path_qa_file'])
+    qa = pd.read_csv(args['path_qa_file_p1a0'])
 
     qaUpdate = qa[qa['Verb'] == 'Update']
     qaFlag = qa[qa['Verb'] == 'Flag']
@@ -78,11 +78,10 @@ def generate_p1a1(df, args):
         df_qa.loc[(df_qa['SampleID'] == row['ID']), qaResultCol] = cafcore.qc.update_qc_bitstring(
             '000001', '000000')
         
-    # TODO: Return a Polar dataframe, not pandas
     return pl.from_pandas(df_qa)
 
 def generate_p2a0(df, args):
-    print("generate_p2a1")
+    print("generate_p2a0")
     
     harvest_1999_2009 = df.filter((pl.col('HarvestYear') >= 1999) & (pl.col('HarvestYear') <= 2009))
     harvest_2010 = df.filter((pl.col('HarvestYear') == 2010))
@@ -423,6 +422,7 @@ def generate_p2a0(df, args):
     #harvest_P2 = harvest_P2.rename(
     #    {c: c+'_P1' for c in harvest_P2.columns if c not in ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop'] if '_P2' not in c})
     
+    # TODO: Is 'CropExists' supposed to be in this dataset?
     col_order = [
             'HarvestYear', 
             'ID2', 
@@ -430,6 +430,7 @@ def generate_p2a0(df, args):
             'Latitude', 
             'SampleID', 
             'Crop', 
+            'CropExists_P1',
             'GrainSampleArea_P1', 
             'GrainMassWet_P1', 
             'GrainMassWetInGrainSample_P1', 
@@ -478,3 +479,94 @@ def generate_p2a0(df, args):
         .sort(['HarvestYear', 'ID2']))
     
     return harvest_P2
+
+def generate_p2a1(df, args):
+    print('generate_p2a1')
+
+    drop_cols = [
+        'GrainSampleArea_P1', 
+        'GrainMassWet_P1', 
+        'GrainMassWetInGrainSample_P1', 
+        'GrainMassWetInGrainSample_P2',
+        'GrainMassAirDryInGrainSample_P1', 
+        'GrainMassAirDryInGrainSample_P2',
+        'GrainMassAirDry_P1', 
+        'GrainMassDry0_P2',
+        'GrainMoistureProportionPartial_P2',
+        'BiomassSampleArea_P1', 
+        'BiomassWet_P1', 
+        'BiomassAirDry_P1', 
+        'GrainMassWetInBiomassSample_P1', 
+        'GrainMassAirDryInBiomassSample_P1', 
+        'GrainMassAirDryInBiomassSample_P2', 
+        'ResidueMassWetSubsample_P1', 
+        'ResidueMassAirDrySubsample_P1', 
+        'ResidueMoistureProportionPartialSubsample_P2', 
+        'GrainYieldDry0_P2', 
+        'ResidueMassWet_P2', 
+        'ResidueMassAirDry_P2']
+    
+    df_prune = core.drop_columns_include_qc(df, drop_cols)
+
+    # Load the QA file
+    qa = pd.read_csv(args['path_qa_file_p2a0'])
+
+    qaUpdate = qa[qa['Verb'] == 'Update']
+    qaFlag = qa[qa['Verb'] == 'Flag']
+
+    df_pd = df_prune.to_pandas()
+
+    p1_cols = [col for col in df_pd.columns if '_P1' in col]
+    df_qa = cafcore.qc.initialize_qc(df_pd, args['dimension_vars'] + p1_cols)
+
+    df_qa = cafcore.qc.set_quality_assurance_applied(df_qa, args['dimension_vars'] + p1_cols, True, True)
+
+    # Update values (copied from generate_p1a1, which was copied from cafcore/qc.py -- meaning I need to move this to cafcore)
+    for index, row in qaUpdate.iterrows():
+        prevValueSeries = df_qa.loc[(df_qa['SampleID'] == row["ID"]), (row["Variable"])]
+        
+        if len(prevValueSeries) == 0:
+            raise Exception("ID not found, check QA File")
+        if len(prevValueSeries) > 1:
+            raise Exception("Multiple values found for given ID, check input dataframe")
+        
+        prevValue = prevValueSeries.values[0]
+        changePhraseCol = row["Variable"] + "_qcPhrase"
+
+        if(pd.isna(row["NewVal"])):
+            df_qa.loc[(df_qa['SampleID'] == row["ID"]), (row["Variable"])] = None
+        else:
+            df_qa.loc[(df_qa['SampleID'] == row["ID"]), (row["Variable"])] = row["NewVal"]
+
+        changePhrase = "(Assurance) Previous val: {}, reason: {}".format(prevValue, row["Comment"])
+        
+        # Create column if not exist
+        if changePhraseCol not in df_qa.columns:
+            df_qa[changePhraseCol] = None
+
+        series = df_qa.loc[(df_qa['SampleID'] == row["ID"]), changePhraseCol]
+
+        df_qa.loc[(df_qa['SampleID'] == row["ID"]), changePhraseCol] = cafcore.qc.update_phrase(
+            df_qa.loc[series.index[0], changePhraseCol],
+            changePhrase
+        )
+
+    # Flag values by setting QA bit to fail
+    for index, row in qaFlag.iterrows():
+        reasonPhraseCol = row['Variable'] + '_qcPhrase'
+        changePhrase = "(Assurance) {}".format(row['Comment'])
+
+        qaResultCol = row['Variable'] + '_qcResult'
+
+        phrase_series = df_qa.loc[(df_qa['SampleID'] == row['ID']), reasonPhraseCol]
+
+        df_qa.loc[(df_qa['SampleID'] == row['ID']), reasonPhraseCol] = cafcore.qc.update_phrase(
+            df_qa.loc[phrase_series.index[0], reasonPhraseCol],
+            changePhrase
+        )
+
+        df_qa.loc[(df_qa['SampleID'] == row['ID']), qaResultCol] = cafcore.qc.update_qc_bitstring(
+            '000001', '000000')
+
+    # TODO: Do bounds checks
+    return pl.from_pandas(df_qa)

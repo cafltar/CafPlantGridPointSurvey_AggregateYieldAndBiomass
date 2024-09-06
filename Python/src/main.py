@@ -50,10 +50,11 @@ def main(args):
         {c: c+'_P1' for c in harvest.columns if c not in args['dimension_vars']})
 
     harvest_p1a1 = data_processing.generate_p1a1(harvest_p1a0, args)
-    core.write_data_files(harvest_p1a1, 1, 1, args)
+    #core.write_data_files(harvest_p1a1, 1, 1, args)
     
     harvest_p2a0 = data_processing.generate_p2a0(harvest_p1a1, args)
-    core.write_data_files(harvest_p2a0, 2, 0, args)
+    harvest_p2a1 = data_processing.generate_p2a1(harvest_p2a0, args)
+    core.write_data_files(harvest_p2a1, 2, 1, args)
 
     print('End')
 
@@ -67,7 +68,8 @@ if __name__ == '__main__':
     args = {}
     args['path_output'] = path_output
     args['path_harvest_data'] = path_input / 'HY1999-2016_20230922_P1A0.csv'
-    args['path_qa_file'] = path_input / 'qaFlagFile_All.csv'
+    args['path_qa_file_p1a0'] = path_input / 'qaFlagFile_p1a0_All.csv'
+    args['path_qa_file_p2a0'] = path_input / 'qaFlagFile_p2a0_All.csv'
 
     args['dimension_vars'] = ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop', 'Comments']
     args['key_vars'] = ['HarvestYear', 'ID2']
