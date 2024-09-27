@@ -44,7 +44,7 @@ def main(args):
 
     harvest = pl.read_csv(
         args['path_harvest_data'],
-        dtypes=harvest_dtypes)
+        schema_overrides=harvest_dtypes)
     
     harvest_p1a0 = harvest.rename(
         {c: c+'_P1' for c in harvest.columns if c not in args['dimension_vars']})
@@ -54,7 +54,13 @@ def main(args):
     
     harvest_p2a0 = data_processing.generate_p2a0(harvest_p1a1, args)
     harvest_p2a1 = data_processing.generate_p2a1(harvest_p2a0, args)
-    core.write_data_files(harvest_p2a1, 2, 1, args)
+    harvest_p2a2 = data_processing.generate_p2a2(harvest_p2a1, args)
+    harvest_p2a3 = data_processing.generate_p2a3(harvest_p2a2, args)
+
+    harvest_p3a0 = data_processing.generate_p3a0(harvest_p2a3, args)
+    harvest_p3a1 = data_processing.generate_p3a1(harvest_p3a0, args)
+
+    core.write_data_files(harvest_p3a1, 3, 1, args)
 
     print('End')
 
@@ -70,6 +76,9 @@ if __name__ == '__main__':
     args['path_harvest_data'] = path_input / 'HY1999-2016_20230922_P1A0.csv'
     args['path_qa_file_p1a0'] = path_input / 'qaFlagFile_p1a0_All.csv'
     args['path_qa_file_p2a0'] = path_input / 'qaFlagFile_p2a0_All.csv'
+    args['path_qc_bounds_p2a1'] = path_input / 'qcBounds_p2.csv'
+    args['path_qc_obs_hi_p2a2'] = path_input / 'qcHarvestIndex_p2.csv'
+    args['path_qa_file_p3a0'] = path_input / 'qaFlagFile_p3a0_All.csv'
 
     args['dimension_vars'] = ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop', 'Comments']
     args['key_vars'] = ['HarvestYear', 'ID2']

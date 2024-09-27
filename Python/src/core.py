@@ -105,6 +105,50 @@ def drop_columns_include_qc(df, columns):
 
     return df_result
 
+# Basically copied cafcore.qc.process_qc_bounds_check but updating 3rd bit in qc bitstring
+# Also need to add (hacky) logic to update qc columns for column(s) that are different than the one that is being checked with bounds
+def process_qc_observation_bounds_check(
+        df: pd.DataFrame, 
+        affectedColNames: list,
+        idColName: str, 
+        lower: int, 
+        upper: int,
+        flagNulls: bool = False) -> pd.DataFrame:
+
+    df_out = df.copy()
+
+    for affectedColName in affectedColNames:
+
+        qc_applied_colName = affectedColName + "_qcApplied"
+        qc_result_colName = affectedColName + "_qcResult"
+        qc_reason_colName = affectedColName + "_qcPhrase"
+
+        # TODO: Need to handle adding previous QC checks - use bin() / bit manip
+        # 000100 means level 3 check, or check using information from single observation
+    
+        if qc_applied_colName not in df.columns:
+            df_out[qc_applied_colName] = "000000"
+    
+        df_out[qc_applied_colName] = df_out[qc_applied_colName].apply(lambda x: cafcore.qc.update_qc_bitstring(x, "000100"))
+
+        if qc_result_colName not in df.columns:
+            df_out[qc_result_colName] = "000000"
+
+        # result code defaults to 0 (passed), set to 000100 (fail) if outside of bounds
+        # TODO: Definitely refactor this ugly code
+        if(flagNulls):
+            df_out.update(df_out.loc[(pd.isna(df_out[idColName]) | (df_out[idColName] < lower) | (df_out[idColName] > upper)), qc_result_colName].apply(lambda x: cafcore.qc.update_qc_bitstring(x, "000100")))
+        
+            changePhrase = f"(Observation) Calculated value {idColName} is outside of bounds [{lower}, {upper}]"
+            df_out.update(df_out.loc[(pd.isna(df_out[idColName]) | (df_out[idColName] < lower) | (df_out[idColName] > upper)), qc_reason_colName].apply(lambda x: cafcore.qc.update_phrase(x, changePhrase)))
+        else:
+            df_out.update(df_out.loc[((df_out[idColName] < lower) | (df_out[idColName] > upper)), qc_result_colName].apply(lambda x: cafcore.qc.update_qc_bitstring(x, "000100")))
+        
+            changePhrase = f"(Observation) Calculated value {idColName} is outside of bounds [{lower}, {upper}]"
+            df_out.update(df_out.loc[((df_out[idColName] < lower) | (df_out[idColName] > upper)), qc_reason_colName].apply(lambda x: cafcore.qc.update_phrase(x, changePhrase)))
+
+    return df_out
+
 def write_csv_files(df, key, file_name, processing_level, accuracy_level, output_path, p_suffixes, qc_suffixes):
     date_today = datetime.datetime.now().strftime("%Y%m%d")
     pa_suffix = f'P{processing_level}A{accuracy_level}'

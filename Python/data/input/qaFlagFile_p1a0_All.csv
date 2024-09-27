@@ -2,6 +2,7 @@ ID,Verb,Variable,NewVal,Comment,Reviewer
 2007_86,Update,CropExists,0,wet spot. This spot was not planted,Bryan Carlson
 2007_304,Update,CropExists,0,crop Failure,Bryan Carlson
 2008_141,Flag,ResidueMassWetSubsample,,"there is a residue sub sample dry weight for this sample, but no residue subsample wet or corresponding total residue weights?",Bryan Carlson
+2008_325,Update,ResidueMassAirDrySubsample,,Dry value is greater than wet value causing a negative moisture proportion. Setting to null so dry mass is calculated using mean moisture proportion,Bryan Carlson
 CF11GPWW_108_15-E,Update,GrainTestWeight,75.6,NIR note: 75.6`,Bryan Carlson
 CF11GPSW_121_29-E,Flag,GrainMoisture,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
 CF11GPSW_121_29-E,Flag,GrainProtein,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson

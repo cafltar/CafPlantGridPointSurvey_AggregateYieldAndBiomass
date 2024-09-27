@@ -1,0 +1,13 @@
+Crop,FieldName,AffectedColumns,Lower,Upper,Reference
+WW,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",0.08,0.641,"File created from figure in attachement ""Crop data organization workflow0815 summary_updated.pptx"" by Qiuping Peng, sent via ARS email ""Re: Harvest data"" on 11/15/2019"
+SW,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",0.08,0.602,"File created from figure in attachement ""Crop data organization workflow0815 summary_updated.pptx"" by Qiuping Peng, sent via ARS email ""Re: Harvest data"" on 11/15/2020"
+GB,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",0.047,0.571,"File created from figure in attachement ""Crop data organization workflow0815 summary_updated.pptx"" by Qiuping Peng, sent via ARS email ""Re: Harvest data"" on 11/15/2021"
+SC,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",0.04,0.496,"File created from figure in attachement ""Crop data organization workflow0815 summary_updated.pptx"" by Qiuping Peng, sent via ARS email ""Re: Harvest data"" on 11/15/2022"
+WC,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",0.04,0.41,"File created from figure in attachement ""Crop data organization workflow0815 summary_updated.pptx"" by Qiuping Peng, sent via ARS email ""Re: Harvest data"" on 11/15/2023"
+SB,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",,,
+SP,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",0.03,0.57,"File created from figure in attachement ""Crop data organization workflow0815 summary_updated.pptx"" by Qiuping Peng, sent via ARS email ""Re: Harvest data"" on 11/15/2025"
+WB,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",0.09,0.694,"File created from figure in attachement ""Crop data organization workflow0815 summary_updated.pptx"" by Qiuping Peng, sent via ARS email ""Re: Harvest data"" on 11/15/2026"
+WP,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",0.109,0.54,"File created from figure in attachement ""Crop data organization workflow0815 summary_updated.pptx"" by Qiuping Peng, sent via ARS email ""Re: Harvest data"" on 11/15/2027"
+WT,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",0.279,0.507,"File created from figure in attachement ""Crop data organization workflow0815 summary_updated.pptx"" by Qiuping Peng, sent via ARS email ""Re: Harvest data"" on 11/15/2028"
+WL,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",0.06,0.51,"File created from figure in attachement ""Crop data organization workflow0815 summary_updated.pptx"" by Qiuping Peng, sent via ARS email ""Re: Harvest data"" on 11/15/2029"
+AL,HarvestIndex,"GrainYieldAirDry_P2,ResidueMassAirDryPerArea_P2",,,
