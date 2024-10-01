@@ -1,0 +1,27 @@
+Crop,FieldName,Lower,Upper,Reference
+WW,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+WW,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+SW,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+SW,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+GB,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+GB,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+SC,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+SC,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+WC,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+WC,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+SB,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+SB,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+SP,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+SP,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+WB,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+WB,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+WP,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+WP,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+WT,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+WT,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+WL,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+WL,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+AL,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+AL,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers
+Generic,GrainYieldAirDry_P3,0,3000,Some arbitrary numbers
+Generic,ResidueMassAirDryPerArea_P3,0,3000,Some arbitrary numbers

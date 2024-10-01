@@ -418,54 +418,7 @@ def generate_p2a0(df, args):
         harvest_2013_2016_calc], 
         rechunk=True, 
         how='diagonal')
-    
-# Moved to generate_p3a0()
-#    # Calculate average moisture proportion to get dry mass where there is none then merge means into df
-#    moisture_proportion_means = (harvest_P2
-#                  .filter(
-#                      (pl.col('ResidueMassWetSubsample_P1_qcResult') == '000000') &
-#                      (pl.col('ResidueMassAirDrySubsample_P1_qcResult') == '000000'))
-#                  .group_by(['HarvestYear', 'Crop'], maintain_order=True)
-#                  .agg(pl.col('ResidueMoistureProportionPartialSubsample_P2').drop_nans().mean().alias('ResidueMoistureProportionPartialSubsampleMeanYearCrop_P2'))
-#                  
-#
-#    )
-#
-#    harvest_P2 = harvest_P2.join(moisture_proportion_means, on=['HarvestYear', 'Crop'], how='left')
-#
-#    # Now calculate dependent variables: ResidueMassAirDry_P2, ResidueMassAirDryPerArea_P2
-#    harvest_P2 = (
-#        harvest_P2.with_columns(
-#            pl.when(pl.col('ResidueMassAirDry_P2').is_not_null())
-#            .then('ResidueMassAirDry_P2')
-#            .when((pl.col('ResidueMoistureProportionPartialSubsample_P2').is_null()) & (pl.col('ResidueMassAirDry_P2').is_null()))
-#            .then((pl.col('ResidueMassWet_P2') - (pl.col('ResidueMassWet_P2') * pl.col('ResidueMoistureProportionPartialSubsampleMeanYearCrop_P2'))))
-#            .otherwise(None)
-#            .alias('ResidueMassAirDry_P2')
-#        )
-#    )
-#    # I don't need to check if it's BiomassSampleArea vs GrainSampleArea here since we only have moisture proportion for 1999-2011 where we only have biomasssamplearea for residue
-#    harvest_P2 = (
-#        harvest_P2.with_columns(
-#            pl.when(pl.col('ResidueMassAirDryPerArea_P2').is_not_null())
-#            .then('ResidueMassAirDryPerArea_P2')
-#            .when(
-#                (pl.col('ResidueMassAirDryPerArea_P2').is_null()) & 
-#                (pl.col('ResidueMoistureProportionPartialSubsample_P2').is_null()) & 
-#                (pl.col('ResidueMassAirDry_P2').is_not_null()) &
-#                (pl.col('BiomassSampleArea_P1') > 0))
-#            .then((pl.col('ResidueMassAirDry_P2') / pl.col('BiomassSampleArea_P1')))
-#            .otherwise(None)
-#            .alias('ResidueMassAirDryPerArea_P2')
-#        )
-#    )
-#
-#    #harvest_P2.filter(pl.col('ResidueMassWetSubsample_P1_qcResult') == '000000').groupby(['HarvestYear','Crop']).agg(pl.col('ResidueMoistureProportionPartialSubsample_P2').drop_nans().mean())
-#    
-    #harvest_P2 = harvest_P2.rename(
-    #    {c: c+'_P1' for c in harvest_P2.columns if c not in ['HarvestYear', 'ID2', 'Longitude', 'Latitude', 'SampleID', 'Crop'] if '_P2' not in c})
-    
-    # TODO: Is 'CropExists' supposed to be in this dataset?
+
     col_order = [
             'HarvestYear', 
             'ID2', 
@@ -504,19 +457,18 @@ def generate_p2a0(df, args):
             'ResidueCarbon_P1', 
             'ResidueNitrogen_P1', 
             'ResidueSulfur_P1', 
-            'Comments', 
             'GrainYieldWet_P2', 
             'GrainYieldAirDry_P2',
             'GrainYieldDry0_P2', 
             'ResidueMassWet_P2', 
             'ResidueMassAirDry_P2', 
             'ResidueMassWetPerArea_P2', 
-            'ResidueMassAirDryPerArea_P2'
+            'ResidueMassAirDryPerArea_P2',
+            'Comments'
         ]
     
     all_columns_ordered = core.organize_columns(col_order)
 
-    # TODO: Include qc columns here
     harvest_P2 = (harvest_P2
         .select(all_columns_ordered)
         .sort(['HarvestYear', 'ID2']))
@@ -766,7 +718,7 @@ def generate_p3a0(df, args):
         )
     )
 
-    return harvest_p3
+    return harvest_p3.sort(by=['HarvestYear', 'ID2'])
 
 def generate_p3a1(df, args):
     print('generate_p3a1')
@@ -777,7 +729,8 @@ def generate_p3a1(df, args):
     qaUpdate = qa[qa['Verb'] == 'Update']
     qaFlag = qa[qa['Verb'] == 'Flag']
 
-    df_pd = df.to_pandas()
+    drop_cols = ['ResidueMoistureProportionMeanCrop_P3', 'GrainMoistureProportionMeanCrop_P3']
+    df_pd = df.drop(drop_cols).to_pandas()
 
     p1_cols = [col for col in df_pd.columns if '_P1' in col]
     p2_cols = [col for col in df_pd.columns if '_P2' in col]
@@ -836,3 +789,93 @@ def generate_p3a1(df, args):
 
     # TODO: Do bounds checks
     return pl.from_pandas(df_qa).sort(by=['HarvestYear', 'ID2'])
+
+def generate_p3a2(df, args):
+    print('generate_p3a2')
+
+    # Convert to pandas since cafcore works with it
+    df_pd = df.to_pandas()
+
+    rows_original = df.shape[0]
+
+    # Load file with bounds checks
+    qc_point_params = pd.read_csv(args['path_qc_bounds_p3a1']).dropna(subset=['Lower', 'Upper'])
+
+    # Get unique crops in df, filer df and params for each unique crop, merge them to new df
+    crops_in_data = df_pd['Crop'].unique()
+
+    result = pd.DataFrame()
+    
+    for crop in crops_in_data:
+        # Some Crops have values of None, so handle that with generic bounds
+        if crop == None:
+            df_crop = df_pd[df_pd['Crop'].isna()]
+            qc_point_params_crop = qc_point_params[qc_point_params['Crop'] == 'Generic']
+        else:
+            df_crop = df_pd[df_pd['Crop'] == crop]
+            qc_point_params_crop = qc_point_params[qc_point_params['Crop'] == crop]
+
+        #qcPointParamsCrop = qcPointParams[qcPointParams["Crop"] == crop]
+        #dfCrop = df_result[df_result["Crop"] == crop]
+
+        for paramIndex, param_row in qc_point_params_crop.iterrows():
+            df_crop = cafcore.qc.process_qc_bounds_check(df_crop, param_row['FieldName'], param_row['Lower'], param_row['Upper'])
+
+        result = pd.concat([result, df_crop], axis=0, ignore_index=True)
+
+    # There are some Crop values that are None, add them back here
+    #crop_nones = df_result[df_result['Crop'] == None]
+    #result = pd.concat([result, crop_nones])
+
+    rows_result = result.shape[0]
+
+    if rows_original != rows_result:
+        raise Exception("Resultant dataframe is different size than original")
+
+    return pl.from_pandas(result).sort(by=['HarvestYear', 'ID2'])
+
+def generate_p3a3(df, args):
+    print('generate_p3a3')
+    # Convert to pandas
+    df_pd = df.to_pandas()
+
+    rows_original = df.shape[0]
+
+    # Load HI csv
+    qc_point_params = pd.read_csv(args['path_qc_obs_hi_p3a2']).dropna(subset=['Lower', 'Upper'])
+
+    # Create HI column
+    df_pd['HarvestIndex'] = df_pd['GrainYieldAirDry_P3'] / (df_pd['GrainYieldAirDry_P3'] + df_pd['ResidueMassAirDryPerArea_P3'])
+
+    # cafcore.qc does not have a observation check function, so manually call:
+        # cafcore.qc.update_qc_bitstring
+        # cafcore.qc.update_phrase
+    # Get unique crops in df, filer df and params for each unique crop, merge them to new df
+    crops_in_data = df_pd['Crop'].unique()
+
+    result = pd.DataFrame()
+    
+    for crop in crops_in_data:
+        # Some Crops have values of None, so handle that with generic bounds
+        if crop == None:
+            df_crop = df_pd[df_pd['Crop'].isna()]
+            qc_point_params_crop = qc_point_params[qc_point_params['Crop'] == 'Generic']
+        else:
+            df_crop = df_pd[df_pd['Crop'] == crop]
+            qc_point_params_crop = qc_point_params[qc_point_params['Crop'] == crop]
+
+        for paramIndex, param_row in qc_point_params_crop.iterrows():
+            # Convert affected columns string to list
+            affected_cols = param_row['AffectedColumns'].split(',')
+            df_crop = core.process_qc_observation_bounds_check(df_crop, affected_cols, param_row['FieldName'], param_row['Lower'], param_row['Upper'])
+
+        result = pd.concat([result, df_crop], axis=0, ignore_index=True)
+    
+    result = result.drop(['HarvestIndex'], axis=1)
+    # See process_qc_dataset_row in ProcessHarvest common.py
+    rows_result = result.shape[0]
+
+    if rows_original != rows_result:
+        raise Exception("Resultant dataframe is different size than original")
+
+    return pl.from_pandas(result).sort(by=['HarvestYear', 'ID2'])
