@@ -80,8 +80,7 @@ def append_qc_summary_cols(df:pl.DataFrame, dimension_vars):
 
 def prune_columns_outside_p_level(df, processing_level, p_suffixes, qc_suffixes):
     df_result = df.clone()
-    #qc_suffixes = ['_qcApplied', '_qcResult', '_qcPhrase']
-    #p_suffixes = ['_P1', '_P2', '_P3']
+
     p_suffixes_drop = p_suffixes[processing_level:]
 
     # Drop columns ending in _P# if # is higher than processing level
@@ -181,27 +180,14 @@ def write_csv_files(df, key, file_name, processing_level, accuracy_level, output
 
 def condense_processing_columns(df, processing_level, p_suffixes):
     df_result = df.clone()
-    #p_suffixes = ['_P1', '_P2', '_P3']
+
     p_suffixes_keep = p_suffixes[0:processing_level]
-
-    #p_suffixes_keep = ['_P1']
-    #if processing_level == 2:
-    #    p_suffixes_keep = p_suffixes_keep + ['_P2']
-    #elif processing_level == 3:
-    #    p_suffixes_keep = p_suffixes_keep + ['_P2', '_P3']
-
-    # Drop any columns with processing levels higher than processing_level
-    #p_suffixes_drop = [p for p in p_suffixes if p not in p_suffixes_keep]
-    #p_cols_drop = [col for col in df_result.columns if any(col.endswith(p_suffix) for p_suffix in p_suffixes_drop)]
-    #df_result = df_result.drop(p_cols_drop)
     
     # Get base column names for cols at processing_level -- does not assume, e.g. a P3 col has a corresponding P1 col
-    #p_cols = [col for col in df.columns if any(p_suffix in col for p_suffix in p_suffixes_keep)]
     p_cols = [col for col in df_result.columns if any(col.endswith(p_suffix) for p_suffix in p_suffixes_keep)]
     p_cols_basenames = remove_substrings_from_list(p_cols, p_suffixes_keep)
 
     # Fill values 
-    
     for col_base in p_cols_basenames:
         # Get a list of processing cols for this col_base (e.g. _P3, _P2, _P1)
         p = processing_level
@@ -213,10 +199,8 @@ def condense_processing_columns(df, processing_level, p_suffixes):
             p = p - 1
         
         # Set condensed col to values in highest processing level then remove from list
-        #df_result[col_base] = df_result[cols[0]]
         df_result = (df_result
                      .with_columns(pl.col(cols[0]).alias(col_base))
-                     #.drop(cols[0])
         )
         cols.pop(0)
 

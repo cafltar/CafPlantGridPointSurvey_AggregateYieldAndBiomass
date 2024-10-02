@@ -56,5 +56,4 @@ src/testTestingRootWkspc/coverageWorkspace/.coverage
 
 # User
 .vscode/
-data/ouput/*.csv
 notebooks/*.html

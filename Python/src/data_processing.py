@@ -349,10 +349,6 @@ def generate_p2a0(df, args):
             .alias('ResidueMassWetPerArea_P2')
         )
         .with_columns(
-            (pl.col('GrainMassWet_P1') - (pl.col('GrainMassWet_P1') * (pl.col('GrainMoisture_P1') / 100)))
-            .alias('GrainMassDry0_P2')
-        )
-        .with_columns(
             pl.when((pl.col('GrainSampleArea_P1') > 0) & 
                 ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
             .then(pl.col('GrainMassWet_P1') / pl.col('GrainSampleArea_P1'))
@@ -361,16 +357,6 @@ def generate_p2a0(df, args):
             .then(pl.col('GrainMassWet_P1') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldWet_P2')
-        )
-        .with_columns(
-            pl.when((pl.col('GrainSampleArea_P1') > 0) & 
-                ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
-            .then(pl.col('GrainMassDry0_P2') / pl.col('GrainSampleArea_P1'))
-            .when(((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
-                (pl.col('BiomassSampleArea_P1') > 0))
-            .then(pl.col('GrainMassDry0_P2') / pl.col('BiomassSampleArea_P1'))
-            .otherwise(None)
-            .alias('GrainYieldDry0_P2')
         )
     )
     
@@ -386,10 +372,6 @@ def generate_p2a0(df, args):
             .alias('ResidueMassAirDryPerArea_P2')
         )
         .with_columns(
-            (pl.col('GrainMassAirDry_P1') - (pl.col('GrainMassAirDry_P1') * (pl.col('GrainMoisture_P1') / 100)))
-            .alias('GrainMassDry0_P2')
-        )
-        .with_columns(
             pl.when((pl.col('GrainSampleArea_P1') > 0) & 
                 ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
             .then(pl.col('GrainMassAirDry_P1') / pl.col('GrainSampleArea_P1'))
@@ -398,16 +380,6 @@ def generate_p2a0(df, args):
             .then(pl.col('GrainMassAirDry_P1') / pl.col('BiomassSampleArea_P1'))
             .otherwise(None)
             .alias('GrainYieldAirDry_P2')
-        )
-        .with_columns(
-            pl.when((pl.col('GrainSampleArea_P1') > 0) & 
-                ((pl.col('BiomassSampleArea_P1') == 0) | pl.col('BiomassSampleArea_P1').is_null()))
-            .then(pl.col('GrainMassDry0_P2') / pl.col('GrainSampleArea_P1'))
-            .when(((pl.col('GrainSampleArea_P1') == 0) | pl.col('GrainSampleArea_P1').is_null()) & 
-                (pl.col('BiomassSampleArea_P1') > 0))
-            .then(pl.col('GrainMassDry0_P2') / pl.col('BiomassSampleArea_P1'))
-            .otherwise(None)
-            .alias('GrainYieldDry0_P2')
         )
     )
     
@@ -434,7 +406,6 @@ def generate_p2a0(df, args):
             'GrainMassAirDryInGrainSample_P1', 
             'GrainMassAirDryInGrainSample_P2',
             'GrainMassAirDry_P1', 
-            'GrainMassDry0_P2',
             'GrainMoistureProportionPartial_P2',
             'GrainMoisture_P1', 
             'GrainProtein_P1', 
@@ -458,8 +429,7 @@ def generate_p2a0(df, args):
             'ResidueNitrogen_P1', 
             'ResidueSulfur_P1', 
             'GrainYieldWet_P2', 
-            'GrainYieldAirDry_P2',
-            'GrainYieldDry0_P2', 
+            'GrainYieldAirDry_P2', 
             'ResidueMassWet_P2', 
             'ResidueMassAirDry_P2', 
             'ResidueMassWetPerArea_P2', 
@@ -496,8 +466,7 @@ def generate_p2a1(df, args):
         'GrainMassAirDryInBiomassSample_P2', 
         'ResidueMassWetSubsample_P1', 
         'ResidueMassAirDrySubsample_P1', 
-        'ResidueMoistureProportionPartialSubsample_P2', 
-        'GrainYieldDry0_P2', 
+        'ResidueMoistureProportionPartialSubsample_P2',
         'ResidueMassWet_P2', 
         'ResidueMassAirDry_P2']
     
@@ -563,7 +532,6 @@ def generate_p2a1(df, args):
         df_qa.loc[(df_qa['SampleID'] == row['ID']), qaResultCol] = cafcore.qc.update_qc_bitstring(
             '000001', '000000')
 
-    # TODO: Do bounds checks
     return pl.from_pandas(df_qa).sort(by=['HarvestYear', 'ID2'])
 
 def generate_p2a2(df, args):

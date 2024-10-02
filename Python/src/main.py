@@ -50,7 +50,6 @@ def main(args):
         {c: c+'_P1' for c in harvest.columns if c not in args['dimension_vars']})
 
     harvest_p1a1 = data_processing.generate_p1a1(harvest_p1a0, args)
-    #core.write_data_files(harvest_p1a1, 1, 1, args)
     
     harvest_p2a0 = data_processing.generate_p2a0(harvest_p1a1, args)
     harvest_p2a1 = data_processing.generate_p2a1(harvest_p2a0, args)
@@ -62,6 +61,7 @@ def main(args):
     harvest_p3a2 = data_processing.generate_p3a2(harvest_p3a1, args)
     harvest_p3a3 = data_processing.generate_p3a3(harvest_p3a2, args)
 
+    core.write_data_files(harvest_p1a1, 1, 1, args)
     core.write_data_files(harvest_p2a3, 2, 3, args)
     core.write_data_files(harvest_p3a3, 3, 3, args)
 
