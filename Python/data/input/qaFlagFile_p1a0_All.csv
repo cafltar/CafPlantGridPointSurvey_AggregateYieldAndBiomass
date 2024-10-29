@@ -1,5 +1,21 @@
 ID,Verb,Variable,NewVal,Comment,Reviewer
+2001_82,Update,ResidueMassAirDrySubsample,,Value for ResidueMassWetSubsample so assume 0 value here is actually null,Bryan Carlson
 2007_86,Update,CropExists,0,wet spot. This spot was not planted,Bryan Carlson
+2007_4,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_25,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_49,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_74,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_75,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_102,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_129,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_155,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_181,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_206,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_207,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_231,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_329,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_330,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
+2007_354,Update,GrainMassAirDryInGrainSample,,Value for GrainMassWetInGrainSample so assume 0 value here is actually null,Bryan Carlson
 2007_304,Update,CropExists,0,crop Failure,Bryan Carlson
 2008_141,Flag,ResidueMassWetSubsample,,"there is a residue sub sample dry weight for this sample, but no residue subsample wet or corresponding total residue weights?",Bryan Carlson
 2008_325,Update,ResidueMassAirDrySubsample,,Dry value is greater than wet value causing a negative moisture proportion. Setting to null so dry mass is calculated using mean moisture proportion,Bryan Carlson
