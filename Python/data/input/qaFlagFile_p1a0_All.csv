@@ -23,12 +23,12 @@ CF11GPWW_108_15-E,Update,GrainTestWeight,75.6,NIR note: 75.6`,Bryan Carlson
 CF11GPSW_121_29-E,Flag,GrainMoisture,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
 CF11GPSW_121_29-E,Flag,GrainProtein,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
 CF11GPSW_121_29-E,Flag,GrainStarch,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
-CF11GPSW_121_29-E,Flag,GrainWGlutDM,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+CF11GPSW_121_29-E,Flag,GrainGluten,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
 CF11GPSW_121_29-E,Flag,GrainTestWeight,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
 CF11GPSW_147_29-F,Flag,GrainMoisture,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
 CF11GPSW_147_29-F,Flag,GrainProtein,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
 CF11GPSW_147_29-F,Flag,GrainStarch,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
-CF11GPSW_147_29-F,Flag,GrainWGlutDM,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
+CF11GPSW_147_29-F,Flag,GrainGluten,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
 CF11GPSW_147_29-F,Flag,GrainTestWeight,,NIR note: MORE SAMPLE REQUIRED,Bryan Carlson
 GPHY12_WW_A5_2_6-A,Flag,GrainMassWet,,Sample note: mice,Bryan Carlson
 GPHY12_WW_A6_4_8-A,Flag,GrainMassWet,,Sample note: Mice,Bryan Carlson

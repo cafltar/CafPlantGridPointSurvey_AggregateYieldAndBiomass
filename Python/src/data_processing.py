@@ -16,8 +16,8 @@ def generate_p1a1(df, args):
             pl.when(pl.col('HarvestYear') < 2010)
             .then(pl.concat_str([pl.col('HarvestYear'),pl.col('ID2')], separator='_'))
             .otherwise(pl.col('SampleID'))
-            .alias('SampleID')
-          )
+            .alias('SampleID'))
+        .rename({'GrainWGlutDM_P1': 'GrainGluten_P1', 'GrainOilDM_P1': 'GrainOil_P1'})
     )
     
     # Load the QA file
@@ -410,8 +410,8 @@ def generate_p2a0(df, args):
             'GrainMoisture_P1', 
             'GrainProtein_P1', 
             'GrainStarch_P1', 
-            'GrainWGlutDM_P1', 
-            'GrainOilDM_P1', 
+            'GrainGluten_P1', 
+            'GrainOil_P1', 
             'GrainTestWeight_P1', 
             'GrainCarbon_P1', 
             'GrainNitrogen_P1', 

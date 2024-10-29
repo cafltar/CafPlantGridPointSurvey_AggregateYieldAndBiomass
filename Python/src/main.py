@@ -90,6 +90,6 @@ if __name__ == '__main__':
     args['key_vars'] = ['HarvestYear', 'ID2']
     args['qc_suffixes'] = ['_qcApplied', '_qcResult', '_qcPhrase']
     args['p_suffixes'] = ['_P1', '_P2', '_P3']
-    args['file_base_name'] = 'HY1999-2016'
+    args['file_base_name'] = 'CookHandHarvest_HY1999-HY2016'
 
     main(args)
